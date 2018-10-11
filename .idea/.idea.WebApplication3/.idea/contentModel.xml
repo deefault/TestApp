@@ -19,6 +19,7 @@
         <e p="bin" t="ExcludeRecursive" />
         <e p="Controllers" t="Include">
           <e p="HomeController.cs" t="Include" />
+          <e p="UserController.cs" t="Include" />
         </e>
         <e p="Data" t="Include">
           <e p="ApplicationDbContext.cs" t="Include" />
@@ -36,6 +37,11 @@
             <e p="netcoreapp2.1" t="Include">
               <e p="WebApplication3.AssemblyInfo.cs" t="Include" />
             </e>
+          </e>
+        </e>
+        <e p="Pages" t="Include">
+          <e p="User" t="Include">
+            <e p="Index.cshtml" t="Include" />
           </e>
         </e>
         <e p="Program.cs" t="Include" />

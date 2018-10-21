@@ -31,6 +31,10 @@
         </e>
         <e p="Models" t="Include">
           <e p="ErrorViewModel.cs" t="Include" />
+          <e p="QuestionModel.cs" t="Include" />
+          <e p="TestModel.cs" t="Include" />
+          <e p="TestResultModel.cs" t="Include" />
+          <e p="UserModel.cs" t="Include" />
         </e>
         <e p="obj" t="ExcludeRecursive">
           <e p="Debug" t="Include">

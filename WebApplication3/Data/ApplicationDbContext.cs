@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using WebApplication3.Models;
 
 namespace WebApplication3.Data
 {
@@ -12,5 +13,9 @@ namespace WebApplication3.Data
             : base(options)
         {
         }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Test> Tests { get; set; }
+        public DbSet<TestResult> TestResults { get; set; }
+        public DbSet<Question> Questions { get; set; }
     }
 }

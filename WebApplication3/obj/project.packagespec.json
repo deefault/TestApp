@@ -36,6 +36,10 @@
           "target": "Package",
           "version": "[2.1.2, )"
         },
+        "Microsoft.EntityFrameworkCore.Tools.DotNet": {
+          "target": "Package",
+          "version": "[2.1.0-preview1-final, )"
+        },
         "Microsoft.NETCore.App": {
           "suppressParent": "All",
           "target": "Package",
@@ -43,7 +47,6 @@
           "autoReferenced": true
         },
         "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
-          "suppressParent": "All",
           "target": "Package",
           "version": "[2.1.5, )"
         },

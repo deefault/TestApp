@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="app.db" uuid="32f1c335-be3b-463a-a22b-5d63ca941b8b">
-      <driver-ref>sqlite.xerial</driver-ref>
+    <data-source source="LOCAL" name="SQL Server (jTds) - ApplicationDatabase.mdf" uuid="dd2c386e-6076-49fc-af46-5b8d325b7227">
+      <driver-ref>sqlserver.jtds</driver-ref>
       <synchronize>true</synchronize>
-      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/WebApplication3/app.db</jdbc-url>
+      <jdbc-driver>net.sourceforge.jtds.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:jtds:sqlserver://./ApplicationDatabase.mdf;instance=&lt;pipe name&gt;;namedPipe=true</jdbc-url>
+      <jdbc-additional-properties>
+        <property name="LOCAL_DB_INSTANCE" value="MSSQLLocalDB" />
+        <property name="LOCAL_DB_EXECUTABLE" value="C:\Program Files\Microsoft SQL Server\130\Tools\Binn\SqlLocalDB.exe" />
+      </jdbc-additional-properties>
       <driver-properties>
-        <property name="enable_load_extension" value="true" />
+        <property name="applicationName" value="DataGrip" />
+        <property name="appName" value="DataGrip" />
       </driver-properties>
     </data-source>
   </component>

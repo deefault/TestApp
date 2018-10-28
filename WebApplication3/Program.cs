@@ -7,6 +7,10 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using WebApplication3.Data;
+using WebApplication3.Models;
+using Microsoft.Extensions.DependencyInjection;
+
 
 namespace WebApplication3
 {
@@ -14,11 +18,39 @@ namespace WebApplication3
     {
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
+            
+            
+            
+            var host = CreateWebHostBuilder(args).Build();
+            
+            
+            using (var scope = host.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                try
+                {
+                    var context = services.GetRequiredService<ApplicationDbContext>();
+                    DbInitializer.Initialize(context);
+                }
+                catch (Exception ex)
+                {
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "An error occurred while seeding the database.");
+                }
+            }
+
+            host.Run();
+            
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args)
+        {
+            string contentRoot = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
+            return WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>();
+        }
+            
+
     }
 }

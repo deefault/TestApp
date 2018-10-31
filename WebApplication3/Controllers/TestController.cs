@@ -27,14 +27,13 @@ namespace WebApplication3.Controllers
         {
             return View();
         }
-        
+
         [HttpPost]
         [Route("Tests/{action=Add}/")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(AddTestViewModel model)
         {
             throw new NotImplementedException();
-            var user = 
         }
     }
 }

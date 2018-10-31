@@ -29,11 +29,7 @@ namespace WebApplication3.Controllers
             return View();
         }
         
-        [Route("/Login/")]
-        public IActionResult Login()
-        {
-            return View();
-        }
+        
         
         public IActionResult Privacy()
         {
@@ -46,10 +42,6 @@ namespace WebApplication3.Controllers
             return View(new ErrorViewModel {RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier});
         }
 
-        [Route("/Register/")]
-        public IActionResult Register()
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }

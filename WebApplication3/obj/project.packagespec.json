@@ -1,13 +1,13 @@
 ﻿{
   "version": "1.0.0",
   "restore": {
-    "projectUniqueName": "C:\\Users\\alexandersolovyov\\RiderProjects\\WebApplication3\\WebApplication3\\WebApplication3.csproj",
+    "projectUniqueName": "/Users/alexandersolovyov/RiderProjects/TestsApp/WebApplication3/WebApplication3.csproj",
     "projectName": "WebApplication3",
-    "projectPath": "C:\\Users\\alexandersolovyov\\RiderProjects\\WebApplication3\\WebApplication3\\WebApplication3.csproj",
-    "outputPath": "C:\\Users\\alexandersolovyov\\RiderProjects\\WebApplication3\\WebApplication3\\obj\\",
+    "projectPath": "/Users/alexandersolovyov/RiderProjects/TestsApp/WebApplication3/WebApplication3.csproj",
+    "outputPath": "/Users/alexandersolovyov/RiderProjects/TestsApp/WebApplication3/obj/",
     "projectStyle": "PackageReference",
     "fallbackFolders": [
-      "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+      "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
     ],
     "originalTargetFrameworks": [
       "netcoreapp2.1"

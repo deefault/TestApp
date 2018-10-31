@@ -35,12 +35,13 @@ namespace WebApplication3
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            /*
             string conn = Configuration.GetConnectionString("DefaultConnection");
             if(conn.Contains("%CONTENTROOTPATH%"))
             {
                 conn = conn.Replace("%CONTENTROOTPATH%", Directory.GetCurrentDirectory());
             }
-            
+            */
             
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -53,16 +54,23 @@ namespace WebApplication3
             {
                 options.SignIn.RequireConfirmedEmail = false;
                 options.SignIn.RequireConfirmedPhoneNumber = false;
+                options.Password.RequireDigit = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                
             });
+            
 
             
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
             
             services.AddIdentity<User , IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddSignInManager()
                 .AddDefaultTokenProviders();
 
+            services.AddLogging();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
@@ -94,6 +102,7 @@ namespace WebApplication3
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+                routes.MapRoute("user", "{controller=User}/{action=Tests}/");
             });
         }
     }

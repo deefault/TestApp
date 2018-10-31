@@ -143,18 +143,7 @@ namespace WebApplication3.Controllers
             return View(model);
         }
         
-        // GET
-        [HttpGet]
-        //[Route("/{controller}/{view}")]
-        public async Task<IActionResult> Tests()
-        {
-            //throw new NotImplementedException();
-            var user = await _userManager.GetUserAsync(HttpContext.User);
-            var createdTests = user.Tests;
-            //if (createdTests == null) //return View(new ICollection<Test>);
-            return View(createdTests);
-            
-        }
+        
         
         private IActionResult RedirectToLocal(string returnUrl)
         {

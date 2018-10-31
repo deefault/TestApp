@@ -24,6 +24,7 @@ namespace WebApplication3.Models
     public class SingleChoiceQuestion : Question
     {
         [Required]
+        
         public Option RightAnswer { get; set; }
         [Required]
         public List<Option> Options { get; set; }

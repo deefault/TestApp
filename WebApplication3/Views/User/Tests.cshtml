@@ -1,0 +1,39 @@
+﻿@model System.Collections.Generic.ICollection<WebApplication3.Models.Test>
+
+
+@{
+    ViewBag.Title = "Тесты";
+    Layout = "_Layout";
+}
+
+<h2>title</h2>
+@if (Model == null)
+{
+    <h3>Не найдено тестов</h3>
+}
+else
+{
+    <dt>
+        @Html.DisplayNameFor(model => model)
+    </dt>
+    <dd>
+        <table class="table">
+            <tr>
+                <th>Test Name</th>
+                <th>Created By</th>
+            </tr>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CreatedBy.UserName)
+                    </td>
+                </tr>
+            }
+        </table>
+    </dd>
+}
+<a asp-controller="Test" asp-action="Add" ><button class="btn btn-default">Добавить тест</button></a>

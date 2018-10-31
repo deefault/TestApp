@@ -242,4 +242,8 @@ paket-files/
 
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
+<<<<<<< HEAD
 *.pyc
+=======
+*.pyc
+>>>>>>> added tests actions

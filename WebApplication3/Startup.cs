@@ -70,6 +70,12 @@ namespace WebApplication3
                 .AddSignInManager()
                 .AddDefaultTokenProviders();
 
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Login/";
+                options.AccessDeniedPath = "/Login/";
+            });
+            
             services.AddLogging();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }

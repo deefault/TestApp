@@ -55,6 +55,7 @@ namespace WebApplication3.Controllers
         
         // GET
         [HttpGet]
+        [Authorize]
         [Route("/[controller]s/")]
         public async Task<IActionResult> Tests()
         {
@@ -67,6 +68,7 @@ namespace WebApplication3.Controllers
         }
         
         [HttpPost]
+        [Authorize]
         //[Route("Tests/{action=Add}/")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(AddTestViewModel model)
@@ -84,6 +86,7 @@ namespace WebApplication3.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         [Route("/[controller]s/{id}/")]
         public async Task<IActionResult> Details(int id)
         {

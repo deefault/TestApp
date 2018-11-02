@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication3.Data;
 
@@ -15,9 +14,7 @@ namespace WebApplication3.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.2-rtm-30932")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024");
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -37,8 +34,7 @@ namespace WebApplication3.Migrations
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
+                        .HasName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles");
                 });
@@ -46,8 +42,7 @@ namespace WebApplication3.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("ClaimType");
 
@@ -66,8 +61,7 @@ namespace WebApplication3.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("ClaimType");
 
@@ -129,13 +123,37 @@ namespace WebApplication3.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("WebApplication3.Models.Answer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("AnswerType")
+                        .IsRequired()
+                        .HasColumnName("answer_type")
+                        .HasMaxLength(50);
+
+                    b.Property<float>("Score");
+
+                    b.Property<int?>("TestResultId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TestResultId");
+
+                    b.ToTable("Answer");
+
+                    b.HasDiscriminator<string>("AnswerType").HasValue("Answer");
+                });
+
             modelBuilder.Entity("WebApplication3.Models.Option", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<bool>("IsRight");
+
+                    b.Property<int?>("MultiChoiceAnswerId");
 
                     b.Property<int?>("MultiChoiceQuestionId");
 
@@ -145,6 +163,8 @@ namespace WebApplication3.Migrations
                         .IsRequired();
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MultiChoiceAnswerId");
 
                     b.HasIndex("MultiChoiceQuestionId");
 
@@ -156,8 +176,7 @@ namespace WebApplication3.Migrations
             modelBuilder.Entity("WebApplication3.Models.Question", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("QuestionType")
                         .IsRequired()
@@ -181,8 +200,7 @@ namespace WebApplication3.Migrations
             modelBuilder.Entity("WebApplication3.Models.Test", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("CreatedById")
                         .IsRequired();
@@ -205,19 +223,24 @@ namespace WebApplication3.Migrations
             modelBuilder.Entity("WebApplication3.Models.TestResult", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("CompletedById");
-
-                    b.Property<DateTime>("CompletedOn")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("TestId");
+                    b.Property<string>("CompletedByUserId")
+                        .IsRequired();
+
+                    b.Property<DateTime>("CompletedOn");
+
+                    b.Property<uint>("RightAnswersCount");
+
+                    b.Property<int>("TestId");
+
+                    b.Property<uint>("TotalQuestions");
+
+                    b.Property<bool>("isCompleted");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CompletedById");
+                    b.HasIndex("CompletedByUserId");
 
                     b.HasIndex("TestId");
 
@@ -269,10 +292,43 @@ namespace WebApplication3.Migrations
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+                        .HasName("UserNameIndex");
 
                     b.ToTable("User");
+                });
+
+            modelBuilder.Entity("WebApplication3.Models.MultiChoiceAnswer", b =>
+                {
+                    b.HasBaseType("WebApplication3.Models.Answer");
+
+
+                    b.ToTable("MultiChoiceAnswer");
+
+                    b.HasDiscriminator().HasValue("MultiChoiceAnswer");
+                });
+
+            modelBuilder.Entity("WebApplication3.Models.SingleChoiceAnswer", b =>
+                {
+                    b.HasBaseType("WebApplication3.Models.Answer");
+
+                    b.Property<int>("OptionId");
+
+                    b.HasIndex("OptionId");
+
+                    b.ToTable("SingleChoiceAnswer");
+
+                    b.HasDiscriminator().HasValue("SingleChoiceAnswer");
+                });
+
+            modelBuilder.Entity("WebApplication3.Models.TextAnswer", b =>
+                {
+                    b.HasBaseType("WebApplication3.Models.Answer");
+
+                    b.Property<string>("Text");
+
+                    b.ToTable("TextAnswer");
+
+                    b.HasDiscriminator().HasValue("TextAnswer");
                 });
 
             modelBuilder.Entity("WebApplication3.Models.MultiChoiceQuestion", b =>
@@ -355,8 +411,19 @@ namespace WebApplication3.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("WebApplication3.Models.Answer", b =>
+                {
+                    b.HasOne("WebApplication3.Models.TestResult")
+                        .WithMany("Answers")
+                        .HasForeignKey("TestResultId");
+                });
+
             modelBuilder.Entity("WebApplication3.Models.Option", b =>
                 {
+                    b.HasOne("WebApplication3.Models.MultiChoiceAnswer")
+                        .WithMany("Options")
+                        .HasForeignKey("MultiChoiceAnswerId");
+
                     b.HasOne("WebApplication3.Models.MultiChoiceQuestion")
                         .WithMany("Options")
                         .HasForeignKey("MultiChoiceQuestionId");
@@ -384,13 +451,23 @@ namespace WebApplication3.Migrations
 
             modelBuilder.Entity("WebApplication3.Models.TestResult", b =>
                 {
-                    b.HasOne("WebApplication3.Models.User", "CompletedBy")
+                    b.HasOne("WebApplication3.Models.User", "CompletedByUser")
                         .WithMany("TestResults")
-                        .HasForeignKey("CompletedById");
+                        .HasForeignKey("CompletedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("WebApplication3.Models.Test", "Test")
                         .WithMany()
-                        .HasForeignKey("TestId");
+                        .HasForeignKey("TestId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("WebApplication3.Models.SingleChoiceAnswer", b =>
+                {
+                    b.HasOne("WebApplication3.Models.Option", "Option")
+                        .WithMany()
+                        .HasForeignKey("OptionId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("WebApplication3.Models.SingleChoiceQuestion", b =>

@@ -21,10 +21,12 @@ namespace WebApplication3.Data
         public DbSet<MultiChoiceQuestion> MultiChoiceQuestions { get; set; }
         public DbSet<TextQuestion> TextQuestions { get; set; }
         public DbSet<Option> Options { get; set; }
+        public DbSet<Answer> Answers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            
             builder.Entity<Question>(q =>
             {
                 q.HasDiscriminator<string>("QuestionType");
@@ -35,6 +37,18 @@ namespace WebApplication3.Data
             builder.Entity<MultiChoiceQuestion>().ToTable("MultiChoiceQuestion");
             builder.Entity<SingleChoiceQuestion>().ToTable("SingleChoiceQuestion");
             builder.Entity<TextQuestion>().ToTable("TextQuestion");
+            
+            builder.Entity<Answer>(a =>
+            {
+                a.HasDiscriminator<string>("AnswerType");
+                a.ToTable("Answer");
+                a.Property(e => e.AnswerType)
+                    .HasMaxLength(50).HasColumnName("answer_type");
+            });
+            builder.Entity<MultiChoiceAnswer>().ToTable("MultiChoiceAnswer");
+            builder.Entity<SingleChoiceAnswer>().ToTable("SingleChoiceAnswer");
+            builder.Entity<TextAnswer>().ToTable("TextAnswer");
+            
             builder.Entity<Option>().ToTable("Option");
             builder.Entity<Test>().ToTable("Test");
             builder.Entity<TestResult>().ToTable("TestResult");

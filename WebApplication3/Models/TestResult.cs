@@ -10,14 +10,22 @@ namespace WebApplication3.Models
         [Key]
         public int Id { get; set; }
         [Required]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public DateTime CompletedOn { get; set; } = DateTime.UtcNow;
+        public bool isCompleted { get; set; }
+        [Required]
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public DateTime CompletedOn { get; set; } //= DateTime.UtcNow;
 
-
-        public User  CompletedBy { get; set; }
+        public ICollection<Answer> Answers { get; set; }
+        
+        
+        public uint RightAnswersCount { get; set; }
+        
+        public uint TotalQuestions { get; set; }
+        
+        [Required]
+        public User  CompletedByUser { get; set; }
+        [Required]
         public Test Test { get; set; }
-        //public List<Question> RightAnswers { get; set; }
-        //public List<Question> WrongAnswers { get; set; }
-        // TODO
+       
     }
 }

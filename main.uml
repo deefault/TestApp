@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>DATABASE</ID>
+  <OriginalElement>7523870b-954c-416a-b0ce-9136ebb9fbbc.SCHEMA:main</OriginalElement>
+  <nodes>
+    <node x="277.1383928571429" y="834.0">7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.Answer</node>
+    <node x="932.8883928571429" y="421.0">7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.AspNetRoleClaims</node>
+    <node x="419.8883928571429" y="421.0">7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.AspNetUserClaims</node>
+    <node x="80.88839285714289" y="410.0">7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.Test</node>
+    <node x="245.8883928571429" y="421.0">7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.AspNetUserTokens</node>
+    <node x="29.13839285714289" y="834.0">7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.Question</node>
+    <node x="257.1383928571429" y="600.0">7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.TestResult</node>
+    <node x="70.02827380952385" y="1046.0">7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.Option</node>
+    <node x="332.1383928571429" y="0.0">7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.User</node>
+    <node x="0.0" y="1253.0">7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.__EFMigrationsHistory</node>
+    <node x="790.8883928571429" y="443.5">7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.AspNetUserRoles</node>
+    <node x="575.8883928571429" y="421.0">7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.AspNetUserLogins</node>
+    <node x="852.6532738095239" y="121.0">7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.AspNetRoles</node>
+    <node x="206.0" y="1253.0">7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.sqlite_sequence</node>
+    <node x="1113.888392857143" y="0.0">7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.sqlite_master</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.Answer" target="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.TestResult">
+      <point x="0.0" y="-81.0" />
+      <point x="0.0" y="92.0" />
+    </edge>
+    <edge source="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.AspNetUserTokens" target="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.User">
+      <point x="0.0" y="-59.0" />
+      <point x="322.3883928571429" y="390.0" />
+      <point x="390.3883928571429" y="390.0" />
+      <point x="-58.25" y="180.0" />
+    </edge>
+    <edge source="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.Option" target="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.Question">
+      <point x="-90.0" y="-81.0" />
+      <point x="92.52827380952385" y="1026.0" />
+      <point x="58.471726190476204" y="1026.0" />
+      <point x="-58.666666666666686" y="81.0" />
+    </edge>
+    <edge source="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.Option" target="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.Answer">
+      <point x="45.0" y="-81.0" />
+      <point x="227.52827380952385" y="1016.0" />
+      <point x="317.8883928571429" y="1016.0" />
+      <point x="-40.75" y="81.0" />
+    </edge>
+    <edge source="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.Question" target="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.Test">
+      <point x="0.0" y="-81.0" />
+      <point x="-36.25" y="70.0" />
+    </edge>
+    <edge source="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.Answer" target="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.Option">
+      <point x="40.75" y="81.0" />
+      <point x="399.3883928571429" y="1026.0" />
+      <point x="272.52827380952385" y="1026.0" />
+      <point x="90.0" y="-81.0" />
+    </edge>
+    <edge source="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.AspNetUserRoles" target="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.AspNetRoles">
+      <point x="30.5" y="-36.5" />
+      <point x="882.3883928571429" y="390.0" />
+      <point x="897.9032738095239" y="390.0" />
+      <point x="-45.25" y="59.0" />
+    </edge>
+    <edge source="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.AspNetRoleClaims" target="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.AspNetRoles">
+      <point x="0.0" y="-59.0" />
+      <point x="1000.8883928571429" y="390.0" />
+      <point x="988.4032738095239" y="390.0" />
+      <point x="45.25" y="59.0" />
+    </edge>
+    <edge source="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.TestResult" target="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.User">
+      <point x="50.75" y="-92.0" />
+      <point x="409.3883928571429" y="390.0" />
+      <point x="429.22172619047626" y="390.0" />
+      <point x="-19.41666666666663" y="180.0" />
+    </edge>
+    <edge source="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.AspNetUserLogins" target="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.User">
+      <point x="0.0" y="-59.0" />
+      <point x="673.3883928571429" y="390.0" />
+      <point x="506.8883928571429" y="390.0" />
+      <point x="58.25" y="180.0" />
+    </edge>
+    <edge source="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.TestResult" target="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.Test">
+      <point x="-50.75" y="-92.0" />
+      <point x="307.8883928571429" y="575.0" />
+      <point x="189.6383928571429" y="575.0" />
+      <point x="36.25" y="70.0" />
+    </edge>
+    <edge source="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.Test" target="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.User">
+      <point x="0.0" y="-70.0" />
+      <point x="153.3883928571429" y="380.0" />
+      <point x="351.5550595238095" y="380.0" />
+      <point x="-97.08333333333337" y="180.0" />
+    </edge>
+    <edge source="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.Question" target="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.Option">
+      <point x="58.66666666666663" y="81.0" />
+      <point x="175.80505952380952" y="1026.0" />
+      <point x="182.52827380952385" y="1026.0" />
+      <point x="0.0" y="-81.0" />
+    </edge>
+    <edge source="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.AspNetUserClaims" target="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.User">
+      <point x="0.0" y="-59.0" />
+      <point x="487.8883928571429" y="390.0" />
+      <point x="468.0550595238095" y="390.0" />
+      <point x="19.41666666666663" y="180.0" />
+    </edge>
+    <edge source="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.AspNetUserRoles" target="7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.User">
+      <point x="-30.5" y="-36.5" />
+      <point x="821.3883928571429" y="380.0" />
+      <point x="545.7217261904763" y="380.0" />
+      <point x="97.08333333333337" y="180.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="0.43132887899034894" x="620.0" y="663.5" />
+  <SelectedNodes>
+    <node>7523870b-954c-416a-b0ce-9136ebb9fbbc.TABLE:main.AspNetRoles</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Key columns</Category>
+    <Category>Columns</Category>
+  </Categories>
+</Diagram>
+

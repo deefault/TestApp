@@ -1,0 +1,45 @@
+@using Microsoft.AspNetCore.Http
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Identity;
+@model Test
+
+@{
+    ViewBag.Title = @Model.Name;
+    Layout = "_Layout";
+}
+@if (User.Identity.IsAuthenticated)
+{
+    <h2>@ViewBag.Title</h2>
+}
+else
+{
+    // If user created test
+    if (Model.CreatedBy.Id == ((User)ViewData["user"]).Id)
+    {
+        <div class="align-content-center">
+            <h2>test.Name</h2>
+            <h4>You created test</h4>
+            // TODO: add details and edit page
+        </div>
+    }
+    else
+    {
+        if (((TestResult) ViewData["testResult"]).isCompleted)
+        {
+            <div class="align-content-center">
+                <h2>test.Name</h2>
+                <h4>You completed</h4>
+                // TODO: add details about completed test
+            </div>
+        }
+        else
+        {
+            <div class="align-content-center">
+                <h2>test.Name</h2>
+                <h4>You can complete this test</h4>
+                // TODO: add action to complete test
+            </div>
+        }
+        
+    }
+}

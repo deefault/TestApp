@@ -1,0 +1,23 @@
+@model WebApplication3.Models.TestViewModels.AddTestToUserViewModel
+
+@{
+    ViewBag.Title = "Add Test to User";
+    Layout = "_Layout";
+     
+}
+
+<h2>@ViewBag.Title</h2>
+<div class="align-content-center">
+    
+    <div class="row">
+        <div class="col-lg-12">
+            <form asp-controller="Test" asp-action="AddTestToUser" asp-route-testId="@{((Test)ViewData["test"]).Id}"
+                  method="post">
+                <button class="btn btn-primary" type="submit">Добавить тест</button>
+            </form>
+        </div>
+        <div class="col-lg-12">
+            
+        </div>
+    </div>
+</div>

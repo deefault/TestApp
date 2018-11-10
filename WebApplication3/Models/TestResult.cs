@@ -20,6 +20,7 @@ namespace WebApplication3.Models
         
         public uint RightAnswersCount { get; set; }
         
+        [Required]
         public uint TotalQuestions { get; set; }
         
         [Required]

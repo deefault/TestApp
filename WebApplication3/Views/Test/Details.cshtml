@@ -6,6 +6,7 @@
 @{
     ViewBag.Title = @Model.Name;
     Layout = "_Layout";
+    var Questions = Model.Questions.ToList();
 }
 @if (User.Identity.IsAuthenticated)
 {
@@ -19,6 +20,37 @@ else
         <div class="align-content-center">
             <h2>test.Name</h2>
             <h4>You created test</h4>
+            <h4>Questions</h4>
+            @if (Questions.Count == 0)
+            {
+                <h4>Question list empty</h4>
+            }
+            else
+            {
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Text</th>
+                        <th scope="col">Type</th>                   
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @for (int i=0;i<Questions.Count;i++)
+                    {
+                        <tr>
+                            <th scope="row">1</th>
+                            <td>i+1</td>
+                            <td>Questions[i].Title</td>
+                            <td>Questions[i].QuestionType</td>
+                        </tr>
+                    }
+                    
+
+                    </tbody>
+                </table> 
+            }
+            
             // TODO: add details and edit page
         </div>
     }

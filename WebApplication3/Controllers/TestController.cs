@@ -63,7 +63,7 @@ namespace WebApplication3.Controllers
         {
             //throw new NotImplementedException();
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var createdTests = user.Tests;
+            var createdTests = await _context.Tests.Where(t=>t.CreatedBy.Id == user.Id).ToListAsync();
             //if (createdTests == null) //return View(new ICollection<Test>);
             return View(createdTests);
             

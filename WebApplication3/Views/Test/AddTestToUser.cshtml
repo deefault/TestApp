@@ -11,7 +11,7 @@
     
     <div class="row">
         <div class="col-lg-12">
-            <form asp-controller="Test" asp-action="AddTestToUser" asp-route-testId="@{((Test)ViewData["test"]).Id}"
+            <form asp-controller="Test" asp-action="AddTestToUser" asp-route-testId='@((Test) ViewData["test"]).Id'
                   method="post">
                 <button class="btn btn-primary" type="submit">Добавить тест</button>
             </form>

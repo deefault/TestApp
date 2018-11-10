@@ -124,7 +124,7 @@ namespace WebApplication3.Controllers
 
         }
 
-        [HttpGet]
+        [HttpPost]
         [Authorize]
         [Route("User/[controller]s/{testId}/AddTestToUser/")]
         public async Task<IActionResult> AddTestToUser(int testId)
@@ -141,7 +141,8 @@ namespace WebApplication3.Controllers
                 isCompleted = false, 
                 Test = test,
                 CompletedByUser = user,
-                CompletedOn = DateTime.Now
+                CompletedOn = DateTime.Now,
+                //TotalQuestions = (uint)test.Questions.Count()
             };
             await _context.TestResults.AddAsync(testResult);
             await _context.SaveChangesAsync();
@@ -149,7 +150,7 @@ namespace WebApplication3.Controllers
             return RedirectToAction("Details", new {id = testId});
         }
         
-        [HttpPost]
+        [HttpGet]
         [Authorize]
         [Route("User/[controller]s/{testId}/AddTestToUser/")]
         public async Task<IActionResult> AddTestToUser(AddTestToUserViewModel model,int testId)

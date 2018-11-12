@@ -90,7 +90,7 @@ namespace WebApplication3.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.SingleAsync(t => t.Id == id);
+            var test = await _context.Tests.Include(t => t.Questions).SingleAsync(t => t.Id == id);
             var questions = await _context.Questions.Where(q => q.Test == test).ToListAsync();
             if (test == null)
             {

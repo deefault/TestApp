@@ -13,7 +13,7 @@ namespace WebApplication3.Models
         [Required]
         public string AnswerType { get; set; }
         [Required]
-        [Range(0,0.99)]
+        [Range(0,1.00)]
         public float Score { get; set; }
     }
     

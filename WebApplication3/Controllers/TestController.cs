@@ -45,10 +45,8 @@ namespace WebApplication3.Controllers
         }
         
         // GET
-        
-        
         [HttpGet]
-       
+        [Route("/Tests/Add/")]
         public IActionResult Add()
         {
             return View();
@@ -58,12 +56,11 @@ namespace WebApplication3.Controllers
         // GET
         [HttpGet]
         [Authorize]
-        [Route("/[controller]s/")]
+        [Route("/Tests/")]
         public async Task<IActionResult> Tests()
         {
-            //throw new NotImplementedException();
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var createdTests = await _context.Tests.Where(t=>t.CreatedBy.Id == user.Id).ToListAsync();
+            var createdTests = _context.Tests.Where(t=>t.CreatedBy.Id == user.Id).ToList();
             //if (createdTests == null) //return View(new ICollection<Test>);
             return View(createdTests);
             
@@ -71,7 +68,7 @@ namespace WebApplication3.Controllers
         
         [HttpPost]
         [Authorize]
-        //[Route("Tests/{action=Add}/")]
+        [Route("/Tests/Add/")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(AddTestViewModel model)
         {
@@ -89,7 +86,7 @@ namespace WebApplication3.Controllers
 
         [HttpGet]
         [Authorize]
-        [Route("/[controller]s/{id}/")]
+        [Route("/Tests/{id}/")]
         public async Task<IActionResult> Details(int id)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
@@ -107,7 +104,7 @@ namespace WebApplication3.Controllers
             }
             else
             {
-                var testResult = _context.TestResults.Where(r => r.Test == test || r.CompletedByUser == user).FirstAsync();
+                var testResult = await _context.TestResults.Where(r => r.Test == test || r.CompletedByUser == user).FirstAsync();
                 // у пользователя отсутствует тест
                 if (testResult == null)
                 {
@@ -126,7 +123,7 @@ namespace WebApplication3.Controllers
 
         [HttpPost]
         [Authorize]
-        [Route("User/[controller]s/{testId}/AddTestToUser/")]
+        [Route("/User/[controller]s/{testId}/AddTestToUser/")]
         public async Task<IActionResult> AddTestToUser(int testId)
         {
             //throw new NotImplementedException();
@@ -152,7 +149,7 @@ namespace WebApplication3.Controllers
         
         [HttpGet]
         [Authorize]
-        [Route("User/[controller]s/{testId}/AddTestToUser/")]
+        [Route("/User/[controller]s/{testId}/AddTestToUser/")]
         public async Task<IActionResult> AddTestToUser(AddTestToUserViewModel model,int testId)
         {
             var test = await _context.Tests.SingleAsync(t => t.Id == testId);

@@ -23,8 +23,7 @@ namespace WebApplication3.Models
 
     public class SingleChoiceQuestion : Question
     {
-        [Required]
-        
+        [Required]        
         public Option RightAnswer { get; set; }
         [Required]
         public List<Option> Options { get; set; }
@@ -35,8 +34,6 @@ namespace WebApplication3.Models
     {
         [Required]
         public List<Option> Options { get; set; }
-        //[Required]
-        //public List<Option> RightAnswers { get; set; }
     }
     
     public class TextQuestion : Question

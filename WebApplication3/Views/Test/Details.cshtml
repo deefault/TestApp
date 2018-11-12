@@ -6,7 +6,6 @@
 @{
     ViewBag.Title = Model.Name;
     Layout = "_Layout";
-    List<Question> Questions = ViewData["questions"] as List<Question>;
 }
 @if (User.Identity.IsAuthenticated)
 {
@@ -20,7 +19,7 @@
             <h4>Questions</h4>
 
 
-            @if (Questions == null)
+            @if (Model.Questions == null)
             {
                 <p>В тесте еще нет вопросов</p>
             }
@@ -35,14 +34,17 @@
                     </tr>
                     </thead>
                     <tbody>
-                    @for (int i = 0; i < Questions.Count; i++)
+                    @{ int i = 0; }
+                    @foreach (var q in Model.Questions)
                     {
+
                         <tr>
-                            <th scope="row">1</th>
-                            <td>i+1</td>
-                            <td>Questions[i].Title</td>
-                            <td>Questions[i].QuestionType</td>
+                            
+                            <td>@(i + 1)</td>
+                            <td>@q.Title</td>
+                            <td>@q.QuestionType</td>
                         </tr>
+                        i++;
                     }
 
 

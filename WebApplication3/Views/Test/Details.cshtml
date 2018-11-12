@@ -2,18 +2,16 @@
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.AspNetCore.Identity;
 @model Test
-
+@using WebApplication3.Models;
 @{
-    ViewBag.Title = @Model.Name;
+    ViewBag.Title = Model.Name;
     Layout = "_Layout";
-    var Questions = Model.Questions;
+    List<Question> Questions = ViewData["questions"] as List<Question>;
 }
 @if (User.Identity.IsAuthenticated)
 {
     <h2>@ViewBag.Title</h2>
-}
-else
-{
+
     // If user created test
     if (Model.CreatedBy.Id == ((User)ViewData["user"]).Id)
     {

@@ -91,12 +91,14 @@ namespace WebApplication3.Controllers
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var test = await _context.Tests.SingleAsync(t => t.Id == id);
+            var questions = await _context.Questions.Where(q => q.Test == test).ToListAsync();
             if (test == null)
             {
                 Response.StatusCode = 404;
                 return View();
             }
             ViewData["user"] = user;
+            ViewData["question"] = questions;
             if (test.CreatedBy == user)
             {
                 

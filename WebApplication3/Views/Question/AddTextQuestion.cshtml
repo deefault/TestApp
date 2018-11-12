@@ -1,0 +1,39 @@
+﻿@model WebApplication3.Models.QuestionViewModels.AddTextQuestionViewModel
+
+@{
+    ViewBag.Title = "Добавить текстовый вопрос";
+    Layout = "_Layout";
+}
+
+<h2>@ViewBag.Title</h2>
+<form asp-controller="Question" asp-action="Add" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form">
+    <h4>Добавить тест</h4>
+    <hr />
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="form-group row">
+        <label asp-for="Title" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="Text" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Text" type="text" class="form-control" />
+            <span asp-validation-for="Text" class="text-danger"></span>
+        </div>
+    </div>
+    <input type="hidden" value="@ViewContext.RouteData.Values["testId"]" asp-for="TestId" />
+    <input type="hidden" value="@ViewContext.RouteData.Values["type"]" asp-for="QuestionType" />
+
+    <div class="form-group row">
+        <div class="col-md-offset-2 col-md-10">
+            <button type="submit" class="btn btn-primary">Добавить</button>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

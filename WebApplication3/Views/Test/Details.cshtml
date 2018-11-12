@@ -10,53 +10,47 @@
 }
 @if (User.Identity.IsAuthenticated)
 {
-    <h2>@ViewBag.Title</h2>
 
     // If user created test
-    if (Model.CreatedBy.Id == ((User)ViewData["user"]).Id)
+    if (Model.CreatedBy.Id == ((User) ViewData["user"]).Id)
     {
         <div class="align-content-center">
-            <h2>test.Name</h2>
+            <h2>@Model.Name</h2>
             <h4>You created test</h4>
             <h4>Questions</h4>
-            @if (Questions.Count == 0)
+
+
+            @if (Questions == null)
             {
-                <h4>Question list empty</h4>
+                <p>В тесте еще нет вопросов</p>
             }
             else
             {
-                if (Questions == null)
-                {
-                    <p>В тесте еще нет вопросов</p>
-                }
-                else
-                {
-                    <table class="table table-hover">
-                        <thead>
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Text</th>
+                        <th scope="col">Type</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @for (int i = 0; i < Questions.Count; i++)
+                    {
                         <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Text</th>
-                            <th scope="col">Type</th>                   
+                            <th scope="row">1</th>
+                            <td>i+1</td>
+                            <td>Questions[i].Title</td>
+                            <td>Questions[i].QuestionType</td>
                         </tr>
-                        </thead>
-                        <tbody>
-                        @for (int i=0;i<Questions.Count;i++)
-                        {
-                            <tr>
-                                <th scope="row">1</th>
-                                <td>i+1</td>
-                                <td>Questions[i].Title</td>
-                                <td>Questions[i].QuestionType</td>
-                            </tr>
-                        }
-                    
+                    }
 
-                        </tbody>
-                    </table> 
-                }
+
+                    </tbody>
+                </table>
+                // TODO: add details and edit page
             }
             
-            // TODO: add details and edit page
         </div>
     }
     else
@@ -64,7 +58,7 @@
         if (((TestResult) ViewData["testResult"]).isCompleted)
         {
             <div class="align-content-center">
-                <h2>test.Name</h2>
+                <h2>@Model.Name</h2>
                 <h4>You completed</h4>
                 // TODO: add details about completed test
             </div>

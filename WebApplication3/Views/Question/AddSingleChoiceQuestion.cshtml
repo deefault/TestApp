@@ -71,8 +71,10 @@
             var optionGroup = $("#options");
             //var controlForm = $('.controls form:first'),
             var currentEntry = $(this).parents('.entry:first');
-            var newEntry = $(currentEntry.clone()).prependTo(optionGroup);
-            document.getElementById('option1').id = 'option' + ++count;
+            var newEntry = $(currentEntry.clone());
+            newEntry.attr("id", "option" + ++count);
+            newEntry.appendTo(optionGroup);
+            //document.getElementById('option1').id = 'option' + ++count;
             newEntry.find('input').val('');
             optionGroup.find('.entry:not(:last) .btn-add')
                 .removeClass('btn-add').addClass('btn-remove')

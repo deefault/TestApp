@@ -76,14 +76,18 @@
             newEntry.appendTo(optionGroup);
             //document.getElementById('option1').id = 'option' + ++count;
             newEntry.find('input').val('');
-            optionGroup.find('.entry:not(:last) .btn-add')
+            optionGroup.find('.entry:not(:first) .btn-add')
                 .removeClass('btn-add').addClass('btn-remove')
                 .removeClass('btn-success').addClass('btn-danger')
                 .html('<span class="glyphicon glyphicon-minus"></span>');
         }).on('click', '.btn-remove', function (e) {
+            var i = $(this).parents('.entry:first').attr("id").substr(6);
             $(this).parents('.entry:first').remove();
-
             e.preventDefault();
+            for (j = i; j < count; j++) {
+                document.getElementById("option" + ++j).setAttribute("id", "option" + --j);
+            }
+            count--;
             return false;
         });
     });
@@ -96,10 +100,9 @@
         for (i = 0; i < options.length; i++) {
             var o = {};
             o.text = $(options[i]).find("#Text").val();
-            o.isRight = $(options[i]).find("#isRight").checked;
+            o.isRight = $(options[i]).find("#isRight").prop("checked");
             data.options.push(o);
         }
-
         console.log(data);
         return data;
 

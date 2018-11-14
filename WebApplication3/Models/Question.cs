@@ -27,7 +27,9 @@ namespace WebApplication3.Models
         public Option RightAnswer { get; set; }
         [Required]
         public List<Option> Options { get; set; }
-        
+
+
+
     }
     
     public class MultiChoiceQuestion : Question

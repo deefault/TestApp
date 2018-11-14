@@ -16,5 +16,13 @@ namespace WebApplication3.Models.QuestionViewModels
 
         [Required]
         public string QuestionType { get; set; }
+
+        [Required]
+        public string Text { get; set; }
+
+        [Required]
+        public List<Option> options { get; set; }
+
+
     }
 }

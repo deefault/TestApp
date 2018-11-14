@@ -57,6 +57,28 @@ namespace WebApplication3.Controllers
 
         [HttpPost]
         [Authorize]
+        [Route("/Tests/{testid}/Question/Add/SingleChoiceQuestion/")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddSingleChoiceQuestion(AddSingleChoiceQuestionViewModel model)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == model.TestId);
+            if (test == null)
+            {
+                return NotFound();
+            }
+            if (ModelState.IsValid)
+            {
+                var q = new SingleChoiceQuestion { Title = model.Title, Test = test, QuestionType = model.QuestionType };
+                await _context.Questions.AddAsync(q);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Details", "Test", new { id = model.TestId });
+            }
+            return View(model);
+        }
+
+        [HttpPost]
+        [Authorize]
         [Route("/Tests/{testid}/Question/Add/TextQuestion/")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(AddTextQuestionViewModel model)
@@ -76,6 +98,8 @@ namespace WebApplication3.Controllers
             }
             return View(model);
         }
+
+        
 
     }
 }

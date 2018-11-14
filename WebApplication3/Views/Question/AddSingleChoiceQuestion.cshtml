@@ -1,7 +1,110 @@
-﻿
+﻿@model WebApplication3.Models.QuestionViewModels.AddSingleChoiceQuestionViewModel
+
 @{
-    ViewData["Title"] = "AddSingleChoiceQuestion";
+    ViewBag.Title = "Добавить вопрос";
+    Layout = "_Layout";
 }
 
-<h2>AddSingleChoiceQuestion</h2>
 
+<h2>@ViewBag.Title</h2>
+<div class="container">
+    <div class="row">
+        <div class="control-group" id="fields">
+            <div class="controls">
+                <form asp-controller="Question" asp-action="AddSingleChoiceQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
+                    <h4>Добавить вопрос</h4>
+                    <hr />
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <div class="form-group row">
+                        <label asp-for="Title" class="col-md-2 control-label"></label>
+                        <div class="col-md-10">
+                            <input asp-for="Title" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div id="options">
+                        <div class="entry input-group row" id="option1">
+                            <input asp-for="Text" type="text" class="form-control" placeholder="Type something" />
+                            <span asp-validation-for="Text" class="text-danger"></span>
+                            <span class="input-group-btn">
+                                <button class="btn btn-success btn-add" type="button">
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                </button>
+                            </span>
+                            <input type="radio" name="isRight" id="isRight" />
+                        </div>
+                    </div>
+
+
+
+                    <input type="hidden" value="@ViewContext.RouteData.Values["testId"]" asp-for="TestId" />
+                    <input type="hidden" value="@ViewContext.RouteData.Values["type"]" asp-for="QuestionType" />
+
+
+                </form>
+
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-md-offset-2 col-md-10">
+        <button type="submit" class="btn btn-primary" onclick="getData()">Добавить</button>
+    </div>
+</div>
+@*<script src="~/lib/bootstrap/dist/js/bootstrap.@*js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"><@script>*@
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+
+@*<script src="~/lib/jquery/dist/jquery.js"></script>*@
+<script type="text/javascript">
+    var count = 1;
+    // var data = {};
+    $(function () {
+        $(document).on('click', '.btn-add', function (e) {
+            e.preventDefault();
+            var optionGroup = $("#options");
+            //var controlForm = $('.controls form:first'),
+            var currentEntry = $(this).parents('.entry:first');
+            var newEntry = $(currentEntry.clone()).prependTo(optionGroup);
+            document.getElementById('option1').id = 'option' + ++count;
+            newEntry.find('input').val('');
+            optionGroup.find('.entry:not(:last) .btn-add')
+                .removeClass('btn-add').addClass('btn-remove')
+                .removeClass('btn-success').addClass('btn-danger')
+                .html('<span class="glyphicon glyphicon-minus"></span>');
+        }).on('click', '.btn-remove', function (e) {
+            $(this).parents('.entry:first').remove();
+
+            e.preventDefault();
+            return false;
+        });
+    });
+    function getData() {
+        var data = {};
+        data.options = [];
+        data.Title = $("#Title").val();
+        options = $("#options").children();
+        console.log(options);
+        for (i = 0; i < options.length; i++) {
+            var o = {};
+            o.text = $(options[i]).find("#Text").val();
+            o.isRight = $(options[i]).find("#isRight").checked;
+            data.options.push(o);
+        }
+
+        console.log(data);
+        return data;
+
+    }
+</script>
+
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

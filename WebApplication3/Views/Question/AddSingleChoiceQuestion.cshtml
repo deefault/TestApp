@@ -8,31 +8,34 @@
 
 <h2>@ViewBag.Title</h2>
 <div class="container">
-    <div class="row">
-        <div class="control-group" id="fields">
-            <div class="controls">
+    
+        <div class="form-group" id="fields">
+            <div class="">
                 <form asp-controller="Question" asp-action="AddSingleChoiceQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
                     <h4>Добавить вопрос</h4>
                     <hr />
                     <div asp-validation-summary="All" class="text-danger"></div>
                     <div class="form-group row">
-                        <label asp-for="Title" class="col-md-2 control-label"></label>
-                        <div class="col-md-10">
+                        <label asp-for="Title" class="col-md-2 col-lg-2"></label>
+                        <div class="col-md-10 col-lg-4">
                             <input asp-for="Title" class="form-control" />
                             <span asp-validation-for="Title" class="text-danger"></span>
                         </div>
                     </div>
 
                     <div id="options">
-                        <div class="entry input-group row" id="option1">
-                            <input asp-for="Text" type="text" class="form-control" placeholder="Type something" />
-                            <span asp-validation-for="Text" class="text-danger"></span>
-                            <span class="input-group-btn">
-                                <button class="btn btn-success btn-add" type="button">
+                        <div class="entry form-group row" id="option1">
+                            <label asp-for="Text" class="col-md-2 col-lg-2 control-label">Option 1</label>
+                            <div class="col-md-10 col-lg-4">
+                                <input asp-for="Text" type="text" class="form-control" placeholder="Type something"/>
+                                <span asp-validation-for="Text" class="text-danger"></span>
+                            </div>
+                            <span class="col-md-1 col-lg-1">
+                                <button class="form-control btn btn-success btn-add" type="button">
                                     <span class="glyphicon glyphicon-plus"></span>
                                 </button>
                             </span>
-                            <input type="radio" name="isRight" id="isRight" />
+                            <input class="form-check-inline" type="radio" name="isRight" id="isRight"/>
                         </div>
                     </div>
 
@@ -47,7 +50,7 @@
                 <br>
             </div>
         </div>
-    </div>
+   
 </div>
 <div class="form-group row">
     <div class="col-md-offset-2 col-md-10">
@@ -74,6 +77,8 @@
             var currentEntry = $(this).parents('.entry:first');
             var newEntry = $(currentEntry.clone());
             newEntry.attr("id", "option" + ++count);
+            //newEntry..innerHTML = "Option " + ++count;
+            // TODO : Option 1 ,2 ,3 label ++count
             newEntry.appendTo(optionGroup);
             //document.getElementById('option1').id = 'option' + ++count;
             newEntry.find('input').val('');

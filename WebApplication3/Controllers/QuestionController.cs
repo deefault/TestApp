@@ -44,8 +44,11 @@ namespace WebApplication3.Controllers
         [HttpGet]
         [Authorize]
         [Route("/Tests/{testId}/Question/Add/{type}/")]
-        public IActionResult Add(int testId, string type)
+        public async Task<IActionResult> Add(int testId, string type)
         {
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
+            if (test == null) 
+                return NotFound();
             if (type == "SingleChoiceQuestion")
                 return View("AddSingleChoiceQuestion");
             if (type == "MultiChoiceQuestion")

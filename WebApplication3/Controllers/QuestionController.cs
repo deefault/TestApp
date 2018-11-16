@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using WebApplication3.Data;
 using WebApplication3.Models;
 using WebApplication3.Models.QuestionViewModels;
@@ -47,8 +51,14 @@ namespace WebApplication3.Controllers
         public async Task<IActionResult> Add(int testId, string type)
         {
             var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
+            var user = await _userManager.GetUserAsync(HttpContext.User);
             if (test == null) 
                 return NotFound();
+            if (test.CreatedBy != user)
+            {
+                return Forbid();
+            }
+            
             if (type == "SingleChoiceQuestion")
                 return View("AddSingleChoiceQuestion");
             if (type == "MultiChoiceQuestion")
@@ -60,37 +70,76 @@ namespace WebApplication3.Controllers
 
         [HttpPost]
         [Authorize]
-        [Route("/Tests/{testid}/Question/Add/SingleChoiceQuestion/")]
+        [Route("/Tests/{testId}/Question/Add/SingleChoiceQuestion/", Name = "AddSingle")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddSingleChoiceQuestion(AddSingleChoiceQuestionViewModel model)
+        public async Task<IActionResult> AddSingleChoiceQuestion([FromBody]AddSingleChoiceQuestionViewModel model)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == model.TestId);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
             if (test == null)
             {
                 return NotFound();
             }
+            if (test.CreatedBy != user)
+            {
+                return Forbid();
+            }
+    //TODO:asdasd
+            model.ToString();           
+            
+            model.TestId = test.Id;
+            TryValidateModel(model);
             if (ModelState.IsValid)
             {
-                var q = new SingleChoiceQuestion { Title = model.Title, Test = test, QuestionType = model.QuestionType };
-                await _context.Questions.AddAsync(q);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Details", "Test", new { id = model.TestId });
+                // транзакция
+                using (var ts = _context.Database.BeginTransaction())
+                {
+                    List<Option> options= new List<Option>();
+                    var question = new SingleChoiceQuestion
+                    {
+                        Title = model.Title,QuestionType = "SingleChoiceQuestion",Test  = test
+                    };
+                    //создать в базе вопрос
+                    var questionCreated = (await _context.AddAsync(question)).Entity;
+                    await _context.SaveChangesAsync(); //применить изменения
+                    foreach (var option in model.Options)
+                    {
+                        // добавить в базу Options
+                        var optionCreated = (await _context.AddAsync(
+                            new Option{IsRight = option.IsRight,Text = option.Text,Question = questionCreated})).Entity;
+                        //questionCreated.Options.Add(optionCreated);
+                       
+                        if (optionCreated.IsRight) questionCreated.RightAnswer = optionCreated;
+                    }
+                    // обновить вопрос и применить изменения
+                    _context.Questions.Update(questionCreated);
+                    await _context.SaveChangesAsync(); 
+                    ts.Commit();
+                }
+                
+                
+                return new JsonResult(model);
             }
-            return View(model);
+
+            Response.StatusCode = StatusCodes.Status400BadRequest;
+            return new JsonResult(model);
         }
 
         [HttpPost]
         [Authorize]
-        [Route("/Tests/{testid}/Question/Add/TextQuestion/")]
+        [Route("/Tests/{testId}/Question/Add/TextQuestion/")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(AddTextQuestionViewModel model)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == model.TestId);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
             if (test == null)
             {
                 return NotFound();
+            }
+            if (test.CreatedBy != user)
+            {
+                return Forbid();
             }
             if (ModelState.IsValid)
             {

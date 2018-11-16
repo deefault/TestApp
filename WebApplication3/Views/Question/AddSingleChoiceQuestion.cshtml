@@ -1,4 +1,5 @@
-﻿@model WebApplication3.Models.QuestionViewModels.AddSingleChoiceQuestionViewModel
+﻿@using Microsoft.AspNetCore.Routing
+@model WebApplication3.Models.QuestionViewModels.AddSingleChoiceQuestionViewModel
 
 @{
     ViewBag.Title = "Добавить вопрос";
@@ -42,9 +43,13 @@
 
 
                     <input type="hidden" value="@ViewContext.RouteData.Values["testId"]" asp-for="TestId" />
-                    <input type="hidden" value="@ViewContext.RouteData.Values["type"]" asp-for="QuestionType" />
+                    
 
-
+                    <div class="form-group row">
+                        <div class="col-md-offset-2 col-md-10">
+                            <button type="submit" class="btn btn-primary">Добавить</button>
+                        </div>
+                    </div>
                 </form>
 
                 <br>
@@ -52,11 +57,7 @@
         </div>
    
 </div>
-<div class="form-group row">
-    <div class="col-md-offset-2 col-md-10">
-        <button type="submit" class="btn btn-primary" onclick="getData()">Добавить</button>
-    </div>
-</div>
+
 @*<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>*@
 @*<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
 <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -99,20 +100,42 @@
     });
     function getData() {
         var data = {};
-        data.options = [];
+        data.Options = [];
         data.Title = $("#Title").val();
-        options = $("#options").children();
+        var options = $("#options").children();
         console.log(options);
         for (i = 0; i < options.length; i++) {
             var o = {};
-            o.text = $(options[i]).find("#Text").val();
-            o.isRight = $(options[i]).find("#isRight").prop("checked");
-            data.options.push(o);
+            o.Text = $(options[i]).find("#Text").val();
+            o.IsRight = $(options[i]).find("#isRight").prop("checked");
+            data.Options.push(o);
         }
         console.log(data);
         return data;
-
     }
+
+    $("form").submit(function(event) {
+        event.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: '@Url.RouteUrl("AddSingle", new {testId = Context.GetRouteData().Values["testId"]})',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("RequestVerificationToken",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            data: JSON.stringify(getData()),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                console.log(response);
+            },
+            failure: function (response) {
+                console.log(response);
+            }
+        });
+    });
+
+
 </script>
 
 

@@ -19,24 +19,20 @@ namespace WebApplication3.Models
         
         [Required]
         public string QuestionType { get; set; }
+        
+        public List<Option> Options { get; set; }
     }
 
     public class SingleChoiceQuestion : Question
     {
-        [Required]        
+               
         public Option RightAnswer { get; set; }
-
-        [Required]
-        public List<Option> Options { get; set; }
-
-
 
     }
     
     public class MultiChoiceQuestion : Question
     {
-        [Required]
-        public List<Option> Options { get; set; }
+        
     }
     
     public class TextQuestion : Question
@@ -52,6 +48,8 @@ namespace WebApplication3.Models
         public string Text { get; set; }
         [Required]
         public bool IsRight { get; set; }
+        [Required]
+        public Question Question { get; set; }
         
     }
     

@@ -155,9 +155,7 @@ namespace WebApplication3.Migrations
 
                     b.Property<int?>("MultiChoiceAnswerId");
 
-                    b.Property<int?>("MultiChoiceQuestionId");
-
-                    b.Property<int?>("SingleChoiceQuestionId");
+                    b.Property<int>("QuestionId");
 
                     b.Property<string>("Text")
                         .IsRequired();
@@ -166,9 +164,7 @@ namespace WebApplication3.Migrations
 
                     b.HasIndex("MultiChoiceAnswerId");
 
-                    b.HasIndex("MultiChoiceQuestionId");
-
-                    b.HasIndex("SingleChoiceQuestionId");
+                    b.HasIndex("QuestionId");
 
                     b.ToTable("Option");
                 });
@@ -345,7 +341,7 @@ namespace WebApplication3.Migrations
                 {
                     b.HasBaseType("WebApplication3.Models.Question");
 
-                    b.Property<int>("RightAnswerId");
+                    b.Property<int?>("RightAnswerId");
 
                     b.HasIndex("RightAnswerId");
 
@@ -424,13 +420,10 @@ namespace WebApplication3.Migrations
                         .WithMany("Options")
                         .HasForeignKey("MultiChoiceAnswerId");
 
-                    b.HasOne("WebApplication3.Models.MultiChoiceQuestion")
+                    b.HasOne("WebApplication3.Models.Question", "Question")
                         .WithMany("Options")
-                        .HasForeignKey("MultiChoiceQuestionId");
-
-                    b.HasOne("WebApplication3.Models.SingleChoiceQuestion")
-                        .WithMany("Options")
-                        .HasForeignKey("SingleChoiceQuestionId");
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("WebApplication3.Models.Question", b =>
@@ -474,8 +467,7 @@ namespace WebApplication3.Migrations
                 {
                     b.HasOne("WebApplication3.Models.Option", "RightAnswer")
                         .WithMany()
-                        .HasForeignKey("RightAnswerId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("RightAnswerId");
                 });
 #pragma warning restore 612, 618
         }

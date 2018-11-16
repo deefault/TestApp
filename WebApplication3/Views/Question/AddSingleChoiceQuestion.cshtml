@@ -25,7 +25,7 @@
 
                     <div id="options">
                         <div class="entry form-group row" id="option1">
-                            <label asp-for="Text" class="col-md-2 col-lg-2 control-label">Option 1</label>
+                            <label asp-for="Text" class="col-md-2 col-lg-2 control-label" id="label1">Option 1</label>
                             <div class="col-md-10 col-lg-4">
                                 <input asp-for="Text" type="text" class="form-control" placeholder="Type something"/>
                                 <span asp-validation-for="Text" class="text-danger"></span>
@@ -77,6 +77,8 @@
             var currentEntry = $(this).parents('.entry:first');
             var newEntry = $(currentEntry.clone());
             newEntry.attr("id", "option" + ++count);
+            newEntry.find("#label1").text("Option " + count);
+            newEntry.find("#label1").attr("id", "label" + count);
             //newEntry..innerHTML = "Option " + ++count;
             // TODO : Option 1 ,2 ,3 label ++count
             newEntry.appendTo(optionGroup);
@@ -92,6 +94,8 @@
             e.preventDefault();
             for (j = i; j < count; j++) {
                 document.getElementById("option" + ++j).setAttribute("id", "option" + --j);
+                document.getElementById("label" + ++j).innerText = "Option " + --j;
+                document.getElementById("label" + ++j).setAttribute("id", "label" + --j);
             }
             count--;
             return false;

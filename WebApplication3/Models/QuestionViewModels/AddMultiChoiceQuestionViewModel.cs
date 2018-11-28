@@ -1,22 +1,10 @@
-﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+
 
 namespace WebApplication3.Models.QuestionViewModels
 {
-    
-    public class OptionViewModel
-    {
-        [Required]
-        public string Text { get; set; }
-        [Required]
-        public bool IsRight { get; set; }
-    }
-    
-    public class AddSingleChoiceQuestionViewModel
+    public class AddMultiChoiceQuestionViewModel
     {
         public string Text { get; set; }
 
@@ -31,5 +19,4 @@ namespace WebApplication3.Models.QuestionViewModels
 
 
     }
-    
 }

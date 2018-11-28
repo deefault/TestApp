@@ -58,91 +58,83 @@
    
 </div>
 
-@*<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>*@
-@*<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
-<script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
-<script src="~/lib/jquery/dist/jquery.min.js"></script>*@
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
-@*<script src="~/lib/jquery/dist/jquery.js"></script>*@
-<script type="text/javascript">
-    var count = 1;
-    // var data = {};
-    $(function () {
-        $(document).on('click', '.btn-add', function (e) {
-            e.preventDefault();
-            var optionGroup = $("#options");
-            //var controlForm = $('.controls form:first'),
-            var currentEntry = $(this).parents('.entry:first');
-            var newEntry = $(currentEntry.clone());
-            newEntry.attr("id", "option" + ++count);
-            newEntry.find("#label1").text("Option " + count);
-            newEntry.find("#label1").attr("id", "label" + count);
-            //newEntry..innerHTML = "Option " + ++count;
-            // TODO : Option 1 ,2 ,3 label ++count
-            newEntry.appendTo(optionGroup);
-            //document.getElementById('option1').id = 'option' + ++count;
-            newEntry.find('input').val('');
-            optionGroup.find('.entry:not(:first) .btn-add')
-                .removeClass('btn-add').addClass('btn-remove')
-                .removeClass('btn-success').addClass('btn-danger')
-                .html('<span class="glyphicon glyphicon-minus"></span>');
-        }).on('click', '.btn-remove', function (e) {
-            var i = $(this).parents('.entry:first').attr("id").substr(6);
-            $(this).parents('.entry:first').remove();
-            e.preventDefault();
-            for (j = i; j < count; j++) {
-                document.getElementById("option" + ++j).setAttribute("id", "option" + --j);
-                document.getElementById("label" + ++j).innerText = "Option " + --j;
-                document.getElementById("label" + ++j).setAttribute("id", "label" + --j);
-            }
-            count--;
-            return false;
-        });
-    });
-    function getData() {
-        var data = {};
-        data.Options = [];
-        data.Title = $("#Title").val();
-        var options = $("#options").children();
-        console.log(options);
-        for (i = 0; i < options.length; i++) {
-            var o = {};
-            o.Text = $(options[i]).find("#Text").val();
-            o.IsRight = $(options[i]).find("#isRight").prop("checked");
-            data.Options.push(o);
-        }
-        console.log(data);
-        return data;
-    }
-
-    $("form").submit(function(event) {
-        event.preventDefault();
-        $.ajax({
-            type: "POST",
-            url: '@Url.RouteUrl("AddSingle", new {testId = Context.GetRouteData().Values["testId"]})',
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader("RequestVerificationToken",
-                    $('input:hidden[name="__RequestVerificationToken"]').val());
-            },
-            data: JSON.stringify(getData()),
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            success: function (response) {
-                console.log(response);
-            },
-            failure: function (response) {
-                console.log(response);
-            }
-        });
-    });
-
-
-</script>
-
-
 @section Scripts {
+
+    <script>
+        var count = 1;
+        $(function() {
+            $(document).on('click',
+                '.btn-add',
+                function(e) {
+                    e.preventDefault();
+                    var optionGroup = $("#options");
+                    //var controlForm = $('.controls form:first'),
+                    var currentEntry = $(this).parents('.entry:first');
+                    var newEntry = $(currentEntry.clone());
+                    newEntry.attr("id", "option" + ++count);
+                    newEntry.find("#label1").text("Option " + count);
+                    newEntry.find("#label1").attr("id", "label" + count);
+                    //newEntry..innerHTML = "Option " + ++count;
+                    // TODO : Option 1 ,2 ,3 label ++count
+                    newEntry.appendTo(optionGroup);
+                    //document.getElementById('option1').id = 'option' + ++count;
+                    newEntry.find('input').val('');
+                    optionGroup.find('.entry:not(:first) .btn-add')
+                        .removeClass('btn-add').addClass('btn-remove')
+                        .removeClass('btn-success').addClass('btn-danger')
+                        .html('<span class="glyphicon glyphicon-minus"></span>');
+                }).on('click',
+                '.btn-remove',
+                function(e) {
+                    var i = $(this).parents('.entry:first').attr("id").substr(6);
+                    $(this).parents('.entry:first').remove();
+                    e.preventDefault();
+                    for (j = i; j < count; j++) {
+                        document.getElementById("option" + ++j).setAttribute("id", "option" + --j);
+                        document.getElementById("label" + ++j).innerText = "Option " + --j;
+                        document.getElementById("label" + ++j).setAttribute("id", "label" + --j);
+                    }
+                    count--;
+                    return false;
+                });
+        });
+
+        function getData() {
+            var data = {};
+            data.Options = [];
+            data.Title = $("#Title").val();
+            var options = $("#options").children();
+            console.log(options);
+            for (i = 0; i < options.length; i++) {
+                var o = {};
+                o.Text = $(options[i]).find("#Text").val();
+                o.IsRight = $(options[i]).find("#isRight").prop("checked");
+                data.Options.push(o);
+            }
+            console.log(data);
+            return data;
+        }
+
+        $("form").submit(function(event) {
+            event.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: '@Url.RouteUrl("AddSingle", new {testId = Context.GetRouteData().Values["testId"]})',
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("RequestVerificationToken",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+                data: JSON.stringify(getData()),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function(response) {
+                    console.log(response);
+                },
+                failure: function(response) {
+                    console.log(response);
+                }
+            });
+        });
+    </script>
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }

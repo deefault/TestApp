@@ -1,7 +1,140 @@
-﻿
+﻿@using Microsoft.AspNetCore.Routing
+@model WebApplication3.Models.QuestionViewModels.AddSingleChoiceQuestionViewModel
+
 @{
-    ViewData["Title"] = "AddMultiChoiceQuestion";
+    ViewBag.Title = "Добавить вопрос";
+    Layout = "_Layout";
 }
 
-<h2>AddMultiChoiceQuestion</h2>
 
+<h2>@ViewBag.Title</h2>
+<div class="container">
+    
+        <div class="form-group" id="fields">
+            <div class="">
+                <form asp-controller="Question" asp-action="AddSingleChoiceQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
+                    <h4>Добавить вопрос</h4>
+                    <hr />
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <div class="form-group row">
+                        <label asp-for="Title" class="col-md-2 col-lg-2"></label>
+                        <div class="col-md-10 col-lg-4">
+                            <input asp-for="Title" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div id="options">
+                        <div class="entry form-group row" id="option1">
+                            <label asp-for="Text" class="col-md-2 col-lg-2 control-label" id="label1">Option 1</label>
+                            <div class="col-md-10 col-lg-4">
+                                <input asp-for="Text" type="text" class="form-control" placeholder="Type something"/>
+                                <span asp-validation-for="Text" class="text-danger"></span>
+                            </div>
+                            <span class="col-md-1 col-lg-1">
+                                <button class="form-control btn btn-success btn-add" type="button">
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                </button>
+                            </span>
+                            <input class="form-check-inline" type="checkbox" name="isRight" id="isRight"/>
+                        </div>
+                    </div>
+
+
+
+                    <input type="hidden" value="@ViewContext.RouteData.Values["testId"]" asp-for="TestId" />
+                    
+
+                    <div class="form-group row">
+                        <div class="col-md-offset-2 col-md-10">
+                            <button type="submit" class="btn btn-primary">Добавить</button>
+                        </div>
+                    </div>
+                </form>
+
+                <br>
+            </div>
+        </div>
+   
+</div>
+
+@section Scripts {
+
+    <script>
+        var count = 1;
+        $(function() {
+            $(document).on('click',
+                '.btn-add',
+                function(e) {
+                    e.preventDefault();
+                    var optionGroup = $("#options");
+                    //var controlForm = $('.controls form:first'),
+                    var currentEntry = $(this).parents('.entry:first');
+                    var newEntry = $(currentEntry.clone());
+                    newEntry.attr("id", "option" + ++count);
+                    newEntry.find("#label1").text("Option " + count);
+                    newEntry.find("#label1").attr("id", "label" + count);
+                    //newEntry..innerHTML = "Option " + ++count;
+                    // TODO : Option 1 ,2 ,3 label ++count
+                    newEntry.appendTo(optionGroup);
+                    //document.getElementById('option1').id = 'option' + ++count;
+                    newEntry.find('input').val('');
+                    optionGroup.find('.entry:not(:first) .btn-add')
+                        .removeClass('btn-add').addClass('btn-remove')
+                        .removeClass('btn-success').addClass('btn-danger')
+                        .html('<span class="glyphicon glyphicon-minus"></span>');
+                }).on('click',
+                '.btn-remove',
+                function(e) {
+                    var i = $(this).parents('.entry:first').attr("id").substr(6);
+                    $(this).parents('.entry:first').remove();
+                    e.preventDefault();
+                    for (j = i; j < count; j++) {
+                        document.getElementById("option" + ++j).setAttribute("id", "option" + --j);
+                        document.getElementById("label" + ++j).innerText = "Option " + --j;
+                        document.getElementById("label" + ++j).setAttribute("id", "label" + --j);
+                    }
+                    count--;
+                    return false;
+                });
+        });
+
+        function getData() {
+            var data = {};
+            data.Options = [];
+            data.Title = $("#Title").val();
+            var options = $("#options").children();
+            console.log(options);
+            for (i = 0; i < options.length; i++) {
+                var o = {};
+                o.Text = $(options[i]).find("#Text").val();
+                o.IsRight = $(options[i]).find("#isRight").prop("checked");
+                data.Options.push(o);
+            }
+            console.log(data);
+            return data;
+        }
+
+        $("form").submit(function(event) {
+            event.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: '@Url.RouteUrl("AddMulti", new {testId = Context.GetRouteData().Values["testId"]})',
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("RequestVerificationToken",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+                data: JSON.stringify(getData()),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function(response) {
+                    console.log(response);
+                },
+                failure: function(response) {
+                    console.log(response);
+                }
+            });
+        });
+    </script>
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

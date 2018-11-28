@@ -6,7 +6,12 @@ using Newtonsoft.Json;
 
 namespace WebApplication3.Models
 {
-    
+    enum QuestionType
+    {
+        SingleChoiceQuestion=1,
+        MultiChoiceQuestion=2,
+        TextQuestion=3
+    }
     
     public abstract class Question
     {

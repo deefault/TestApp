@@ -52,19 +52,14 @@ namespace WebApplication3.Controllers
         {
             var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            if (test == null) 
-                return NotFound();
-            if (test.CreatedBy != user)
-            {
-                return Forbid();
-            }
-            
-            if (type == "SingleChoiceQuestion")
+            if (test == null) return NotFound();
+            if (test.CreatedBy != user) return Forbid();
+
+            if (string.Equals(type, "SingleChoiceQuestion", StringComparison.OrdinalIgnoreCase))
                 return View("AddSingleChoiceQuestion");
-            if (type == "MultiChoiceQuestion")
+            if (string.Equals(type, "MultiChoiceQuestion", StringComparison.OrdinalIgnoreCase))
                 return View("AddMultiChoiceQuestion");
-            if (type == "TextQuestion")
-                return View("AddTextQuestion");
+            if (string.Equals(type, "TextQuestion", StringComparison.OrdinalIgnoreCase)) return View("AddTextQuestion");
             return View("AddSingleChoiceQuestion");
         }
 
@@ -80,12 +75,11 @@ namespace WebApplication3.Controllers
             {
                 return NotFound();
             }
+
             if (test.CreatedBy != user)
             {
                 return Forbid();
             }
-    //TODO:asdasd
-            model.ToString();           
             
             model.TestId = test.Id;
             TryValidateModel(model);
@@ -97,7 +91,7 @@ namespace WebApplication3.Controllers
                     List<Option> options= new List<Option>();
                     var question = new SingleChoiceQuestion
                     {
-                        Title = model.Title,QuestionType = "SingleChoiceQuestion",Test  = test
+                        Title = model.Title,QuestionType = Enum.GetName(typeof(QuestionType), 1),Test  = test
                     };
                     //создать в базе вопрос
                     var questionCreated = (await _context.AddAsync(question)).Entity;
@@ -127,6 +121,59 @@ namespace WebApplication3.Controllers
 
         [HttpPost]
         [Authorize]
+        [Route("/Tests/{testId}/Question/Add/MultiChoiceQuestion/", Name = "AddMulti")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddMultiChoiceQuestion([FromBody] AddMultiChoiceQuestionViewModel model)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
+            if (test == null)
+            {
+                return NotFound();
+            }
+
+            if (test.CreatedBy != user)
+            {
+                return Forbid();
+            }
+            
+            model.TestId = test.Id;
+            TryValidateModel(model);
+            if (ModelState.IsValid)
+            {
+                // транзакция
+                using (var ts = _context.Database.BeginTransaction())
+                {
+                    List<Option> options= new List<Option>();
+                    var question = new SingleChoiceQuestion
+                    {
+                        Title = model.Title,QuestionType = Enum.GetName(typeof(QuestionType), 2),Test  = test
+                    };
+                    //создать в базе вопрос
+                    var questionCreated = (await _context.AddAsync(question)).Entity;
+                    await _context.SaveChangesAsync(); //применить изменения
+                    foreach (var option in model.Options)
+                    {
+                        // добавить в базу Options
+                        var optionCreated = (await _context.AddAsync(
+                            new Option{IsRight = option.IsRight,Text = option.Text,Question = questionCreated})).Entity;   
+                    }
+                    // обновить вопрос и применить изменения
+                    _context.Questions.Update(questionCreated);
+                    await _context.SaveChangesAsync(); 
+                    ts.Commit();
+                }
+                
+                
+                return new JsonResult(model);
+            }
+
+            Response.StatusCode = StatusCodes.Status400BadRequest;
+            return new JsonResult(model);
+        }
+        
+        [HttpPost]
+        [Authorize]
         [Route("/Tests/{testId}/Question/Add/TextQuestion/")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(AddTextQuestionViewModel model)
@@ -143,7 +190,7 @@ namespace WebApplication3.Controllers
             }
             if (ModelState.IsValid)
             {
-                var q = new TextQuestion { Title = model.Title, Test = test, QuestionType = model.QuestionType, TextRightAnswer = model.Text};
+                var q = new TextQuestion { Title = model.Title, Test = test, QuestionType = Enum.GetName(typeof(QuestionType), 3), TextRightAnswer = model.Text};
                 await _context.Questions.AddAsync(q);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Details","Test",new {id=model.TestId });

@@ -47,25 +47,30 @@ namespace WebApplication3.Controllers
 
         [HttpGet]
         [Authorize]
-        [Route("/Tests/{testId}/Question/Add/{type}/")]
-        public async Task<IActionResult> Add(int testId, string type)
+        [Route("/Tests/{testId}/Question/Add/{type}/", Name="Add")]
+        public async Task<IActionResult> AddGet(int testId, int type)
         {
             var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
             var user = await _userManager.GetUserAsync(HttpContext.User);
             if (test == null) return NotFound();
             if (test.CreatedBy != user) return Forbid();
 
-            if (string.Equals(type, "SingleChoiceQuestion", StringComparison.OrdinalIgnoreCase))
-                return View("AddSingleChoiceQuestion");
-            if (string.Equals(type, "MultiChoiceQuestion", StringComparison.OrdinalIgnoreCase))
-                return View("AddMultiChoiceQuestion");
-            if (string.Equals(type, "TextQuestion", StringComparison.OrdinalIgnoreCase)) return View("AddTextQuestion");
-            return View("AddSingleChoiceQuestion");
+            switch (type)
+            {
+                case (int) Question.QuestionTypeEnum.SingleChoiceQuestion:
+                    return View("AddSingleChoiceQuestion");
+                case (int) Question.QuestionTypeEnum.MultiChoiceQuestion:
+                    return View("AddMultiChoiceQuestion");
+                case (int) Question.QuestionTypeEnum.TextQuestion:
+                    return View("AddTextQuestion");
+                default:
+                    return View("AddSingleChoiceQuestion");
+            }
         }
 
         [HttpPost]
         [Authorize]
-        [Route("/Tests/{testId}/Question/Add/SingleChoiceQuestion/", Name = "AddSingle")]
+        [Route("/Tests/{testId}/Question/Add/Single/", Name = "AddSingle")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddSingleChoiceQuestion([FromBody]AddSingleChoiceQuestionViewModel model)
         {
@@ -73,7 +78,6 @@ namespace WebApplication3.Controllers
             var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
             if (test == null)
             {
-                return NotFound();
             }
 
             if (test.CreatedBy != user)
@@ -91,7 +95,7 @@ namespace WebApplication3.Controllers
                     List<Option> options= new List<Option>();
                     var question = new SingleChoiceQuestion
                     {
-                        Title = model.Title,QuestionType = Enum.GetName(typeof(QuestionType), 1),Test  = test
+                        Title = model.Title,QuestionType = Enum.GetName(typeof(Question.QuestionTypeEnum), 1),Test  = test
                     };
                     //создать в базе вопрос
                     var questionCreated = (await _context.AddAsync(question)).Entity;
@@ -121,7 +125,7 @@ namespace WebApplication3.Controllers
 
         [HttpPost]
         [Authorize]
-        [Route("/Tests/{testId}/Question/Add/MultiChoiceQuestion/", Name = "AddMulti")]
+        [Route("/Tests/{testId}/Question/Add/Multi/", Name = "AddMulti")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddMultiChoiceQuestion([FromBody] AddMultiChoiceQuestionViewModel model)
         {
@@ -147,7 +151,7 @@ namespace WebApplication3.Controllers
                     List<Option> options= new List<Option>();
                     var question = new SingleChoiceQuestion
                     {
-                        Title = model.Title,QuestionType = Enum.GetName(typeof(QuestionType), 2),Test  = test
+                        Title = model.Title,QuestionType = Enum.GetName(typeof(Question.QuestionTypeEnum), 2),Test  = test
                     };
                     //создать в базе вопрос
                     var questionCreated = (await _context.AddAsync(question)).Entity;
@@ -174,7 +178,7 @@ namespace WebApplication3.Controllers
         
         [HttpPost]
         [Authorize]
-        [Route("/Tests/{testId}/Question/Add/TextQuestion/")]
+        [Route("/Tests/{testId}/Question/Add/Text/", Name = "AddText")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(AddTextQuestionViewModel model)
         {
@@ -190,15 +194,12 @@ namespace WebApplication3.Controllers
             }
             if (ModelState.IsValid)
             {
-                var q = new TextQuestion { Title = model.Title, Test = test, QuestionType = Enum.GetName(typeof(QuestionType), 3), TextRightAnswer = model.Text};
+                var q = new TextQuestion { Title = model.Title, Test = test, QuestionType = Enum.GetName(typeof(Question.QuestionTypeEnum), 3), TextRightAnswer = model.Text};
                 await _context.Questions.AddAsync(q);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Details","Test",new {id=model.TestId });
             }
             return View(model);
         }
-
-        
-
     }
 }

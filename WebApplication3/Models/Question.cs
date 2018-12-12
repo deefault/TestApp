@@ -6,15 +6,13 @@ using Newtonsoft.Json;
 
 namespace WebApplication3.Models
 {
-    enum QuestionType
-    {
-        SingleChoiceQuestion=1,
-        MultiChoiceQuestion=2,
-        TextQuestion=3
-    }
+   
+    
     
     public abstract class Question
     {
+        
+        
         public int Id { get; set; }
         [Required]
         public string Title { get; set; }
@@ -26,6 +24,16 @@ namespace WebApplication3.Models
         public string QuestionType { get; set; }
         
         public List<Option> Options { get; set; }
+        
+        public enum QuestionTypeEnum
+        {
+            [Display(Name = "С одним правильным ответом")]
+            SingleChoiceQuestion=1,
+            [Display(Name = "С несколькими правильными ответоми")]
+            MultiChoiceQuestion=2,
+            [Display(Name = "С вводом текста")]
+            TextQuestion=3
+        }
     }
 
     public class SingleChoiceQuestion : Question

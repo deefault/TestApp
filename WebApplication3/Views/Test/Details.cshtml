@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Identity;
 @model Test
 @using WebApplication3.Models;
+@using WebApplication3.Models;
 @{
     ViewBag.Title = Model.Name;
     Layout = "_Layout";
@@ -42,7 +43,7 @@
                             
                             <td>@(i + 1)</td>
                             <td>@q.Title</td>
-                            <td>@q.QuestionType</td>
+                            <td>@q.QuestionType</td> //сделать Enum в базе
                         </tr>
                         i++;
                     }
@@ -52,6 +53,13 @@
                 </table>
                 // TODO: add details and edit page
             }
+            
+            <select id="questionType" asp-items="Html.GetEnumSelectList<Question.QuestionTypeEnum>()" onchange="changeUrl()">
+            </select> 
+            <a id="addLink" asp-controller="Question" asp-action="AddGet" asp-route-testId="@Model.Id" 
+               asp-route-type="@((int)Question.QuestionTypeEnum.SingleChoiceQuestion)" method="get">
+                <button class="btn btn-default">Добавить вопрос</button>
+            </a>
             
         </div>
     }
@@ -76,3 +84,17 @@
         
     }
 }
+<script>$("#questionType").val();
+    function changeUrl() { 
+        var href = $("#addLink").attr("href");
+        
+        var split = href.split("/");
+        // Get selected value
+        console.log($("#questionType").val());
+        split[split.length-1] = $("#questionType").val();
+        href = split.join("/");
+        $("#addLink").attr("href", href);
+        console.log(href);
+    }
+
+</script>

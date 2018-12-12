@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebApplication3.Models
 {
+    
     public class Test
     {
         [Key]
@@ -21,6 +22,16 @@ namespace WebApplication3.Models
         
         
         public ICollection<Question> Questions { get; set; }
+        
+        public enum QuestionTypeEnum
+        {
+            [Display(Name = "С одним правильным ответом")]
+            SingleChoiceQuestion=1,
+            [Display(Name = "С несколькими правильными ответоми")]
+            MultiChoiceQuestion=2,
+            [Display(Name = "С вводом текста")]
+            TextQuestion=3
+        }
         
         
     }

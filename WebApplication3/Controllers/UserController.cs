@@ -41,21 +41,12 @@ namespace WebApplication3.Controllers
             View();
         }
         
-        //
-        // GET: /Account/Login
-        /*
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult Login(string returnUrl = null)
-        {
-            ViewData["ReturnUrl"] = returnUrl;
-            return View();
-        }
-        */
+
         [Route("/Login/")]
         [HttpGet]
         public IActionResult Login(string returnUrl=null)
         {
+            if (User.Identity.IsAuthenticated) Response.Redirect("/");
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }

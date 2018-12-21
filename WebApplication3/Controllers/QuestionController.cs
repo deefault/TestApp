@@ -78,6 +78,7 @@ namespace WebApplication3.Controllers
             var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
             if (test == null)
             {
+                return NotFound();
             }
 
             if (test.CreatedBy != user)

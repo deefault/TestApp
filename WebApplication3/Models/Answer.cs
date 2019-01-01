@@ -33,4 +33,8 @@ namespace WebApplication3.Models
     {
         public string Text { get; set; }
     }
+    public  class DragAndDropAnswer : Answer
+    {
+        
+    }
 }

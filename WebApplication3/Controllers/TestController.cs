@@ -9,8 +9,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http2.HPack;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using WebApplication3.Data;
 using WebApplication3.Models;
 using WebApplication3.Models.TestViewModels;
@@ -66,18 +68,41 @@ namespace WebApplication3.Controllers
             
         }
         
+        // GET
+        [HttpGet]
+        [Authorize]
+        [Route("/Tests/Results/")]
+        public async Task<IActionResult> TestResults()
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var tests = _context.TestResults.Where(t=>t.CompletedByUser == user)
+                .Include(a=>a.Test).ThenInclude(b=>b.CreatedBy).ToList();
+            return View(tests);
+        }
+        
         [HttpPost]
         [Authorize]
         [Route("/Tests/Add/")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(AddTestViewModel model)
-        {
-            
+        {  
             var user = await _userManager.GetUserAsync(HttpContext.User);
             if (ModelState.IsValid)
             {
                 var test = new Test {Name = model.Name, CreatedBy = user, IsEnabled = model.IsEnabled};
                 await _context.Tests.AddAsync(test);
+                
+                // Добавить тест к пользователю, который его создал (чтобы он тоже мог проходить его)
+                TestResult testResult = new TestResult
+                {
+                    isCompleted = false, 
+                    Test = test,
+                    CompletedByUser = user,
+                    //TotalQuestions = (uint)test.Questions.Count()
+                };
+                user.TestResults.Add(testResult);
+                
+                
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Details",new {id=test.Id});
             }
@@ -100,8 +125,7 @@ namespace WebApplication3.Controllers
             ViewData["user"] = user;
             ViewData["question"] = questions;
             if (test.CreatedBy == user)
-            {
-                
+            {    
                 return View(test);
             }
             else
@@ -163,6 +187,68 @@ namespace WebApplication3.Controllers
 
             ViewData["test"] = test;
             return View(model);
+        }
+        
+        [HttpPost]
+        [Authorize]
+        [Route("/User/[controller]s/AddTestToUserAjax/")]
+        public async Task<JsonResult> AddTestToUserAjax(int testId)
+        {
+            // TODO:
+            //throw new NotImplementedException();
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
+            if (test == null)
+            {
+                Response.StatusCode = 404;
+                return new JsonResult("Тест с данным ID не найден");
+            }
+            if (!test.IsEnabled)
+            {
+                Response.StatusCode =400;
+                return new JsonResult("Тест не включен");
+            }
+
+            if (_context.TestResults.Any(t => t.CompletedByUser==user && t.Test == test))
+            {
+                Response.StatusCode =400;
+                return new JsonResult("Тест уже добавлен");
+            }
+            
+            
+            
+            TestResult testResult = new TestResult
+            {
+                isCompleted = false, 
+                Test = test,
+                CompletedByUser = user
+                //TotalQuestions = (uint)test.Questions.Count()
+            };
+            await _context.TestResults.AddAsync(testResult);
+            await _context.SaveChangesAsync();
+            Response.StatusCode = 200;
+            return new JsonResult("Успешно");
+        }
+
+        
+        // GET /User/Tests/<id>/Start/
+        [Authorize]
+        [HttpGet]
+        [Route("/User/[controller]s/{testId}/Start/")]
+        public Task<IActionResult> Start(int testId, ErrorViewModel model)
+        {
+            // TODO: страница с информацией и поддтверждением начала теста (post запрос на этот же url)
+            throw new NotImplementedException();
+        }
+        
+        // POST /User/Tests/<id>/Start/
+        [Authorize]
+        [HttpPost]
+        [Route("/User/[controller]s/{testId}/Start/")]
+        public Task<IActionResult> Start(int testId)
+        {
+            // TODO: пользователь начал проходить тест, переброс на первый вопрос
+            throw new NotImplementedException();
         }
     }
 }

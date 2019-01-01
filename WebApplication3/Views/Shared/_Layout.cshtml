@@ -37,14 +37,14 @@
                     <a class="nav-link"
                        asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                 </li>
-                <li class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "About" ? "active" : "")">
+                <li class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "TestResults" ? "active" : "")">
                     <a class="nav-link"
-                       asp-area="" asp-controller="Test" asp-action="Tests">About</a>
+                       asp-area="" asp-controller="Test" asp-action="TestResults">Тесты</a>
                 </li>
             @if (SignInManager.IsSignedIn(User))
             {
                 <li class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Tests" ? "active" : "")">
-                    <a class="nav-link" asp-controller="Test" asp-action="Tests">Тесты</a>
+                    <a class="nav-link" asp-controller="Test" asp-action="Tests">Созданные Тесты</a>
                 </li>
             }
             </ul>

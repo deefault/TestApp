@@ -32,7 +32,9 @@ namespace WebApplication3.Models
             [Display(Name = "С несколькими правильными ответоми")]
             MultiChoiceQuestion=2,
             [Display(Name = "С вводом текста")]
-            TextQuestion=3
+            TextQuestion=3,
+            [Display(Name = "На восстановление последовательности")]
+            DragAndDropQuestion=4
         }
     }
 
@@ -52,6 +54,11 @@ namespace WebApplication3.Models
     {
         [Required]
         public string TextRightAnswer { get; set; }
+    }
+    
+    public class DragAndDropQuestion : Question
+    {
+        private LinkedList<string> DragAndDropOptions { get; set; }
     }
 
     public class Option

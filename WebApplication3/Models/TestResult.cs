@@ -11,8 +11,7 @@ namespace WebApplication3.Models
         public int Id { get; set; }
         [Required]
         public bool isCompleted { get; set; }
-        [Required]
-        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        
         public DateTime CompletedOn { get; set; } //= DateTime.UtcNow;
 
         public ICollection<Answer> Answers { get; set; }

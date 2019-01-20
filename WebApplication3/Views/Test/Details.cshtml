@@ -16,13 +16,12 @@
     {
         <div class="align-content-center">
             <h2>@Model.Name</h2>
-            <h4>You created test</h4>
-            <h4>Questions</h4>
+            <h4>Вопросы</h4>
 
 
-            @if (Model.Questions == null)
+            @if (Model.Questions == null || Model.Questions.Count == 0)
             {
-                <p>В тесте еще нет вопросов</p>
+                <p class="alert-info">В тесте еще нет вопросов</p>
             }
             else
             {
@@ -30,8 +29,8 @@
                     <thead>
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">Text</th>
-                        <th scope="col">Type</th>
+                        <th scope="col">Название</th>
+                        <th scope="col">Тип</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -53,14 +52,18 @@
                 </table>
                 // TODO: add details and edit page
             }
-            
-            <select id="questionType" asp-items="Html.GetEnumSelectList<Question.QuestionTypeEnum>()" 
-                    onchange="changeUrl()">
-            </select> 
-            <a id="addLink" asp-controller="Question" asp-action="AddGet" asp-route-testId="@Model.Id" 
-               asp-route-type="@((int)Question.QuestionTypeEnum.SingleChoiceQuestion)" method="get">
-                <button class="btn btn-default">Добавить вопрос</button>
-            </a>
+            <div class="form-group row">
+                <select class="form-control col-lg-4" id="questionType" 
+                        asp-items="Html.GetEnumSelectList<Question.QuestionTypeEnum>()" 
+                        onchange="changeUrl()">
+                </select> 
+            </div>
+            <div class="form-group row">
+                <a class="btn btn-primary" id="addLink" asp-controller="Question" asp-action="AddGet" asp-route-testId="@Model.Id" 
+                       asp-route-type="@((int)Question.QuestionTypeEnum.SingleChoiceQuestion)" method="get">
+                       Добавить вопрос
+                </a>
+            </div>
             
         </div>
     }

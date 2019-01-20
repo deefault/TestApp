@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using WebApplication3.Data;
@@ -30,7 +31,12 @@ namespace WebApplication3
                 try
                 {
                     var context = services.GetRequiredService<ApplicationDbContext>();
-                    //DbInitializer.Initialize(context);
+                    DbInitializer dbInit = new DbInitializer(
+                        context,
+                        services.GetRequiredService<UserManager<User>>(), 
+                        services.GetRequiredService<SignInManager<User>>(), 
+                        services.GetRequiredService<ILogger<DbInitializer>>());
+                    dbInit.InitializeNew();
                 }
                 catch (Exception ex)
                 {

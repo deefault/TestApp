@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -78,16 +80,34 @@ namespace WebApplication3.Controllers
                     _logger.LogWarning(2, "User account locked out.");
                     //return View("Lockout");
                 }
+                else if (result.IsNotAllowed)
+                {
+                    ModelState.AddModelError(string.Empty, "Is not allowed.");
+                }
+                else if (result.RequiresTwoFactor)
+                {
+                    ModelState.AddModelError(string.Empty, "Requires Two Factor.");
+                }
                 else
                 {
-                    
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return View(model);
                 }
+                return View(model);
             }
 
             // If we got this far, something failed, redisplay form
             return View(model);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("/Logout/")]
+        [ValidateAntiForgeryToken]
+        public  async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            _logger.LogInformation(4, "User logged out.");
+            return RedirectToAction(nameof(HomeController.Index), "Home");
         }
         
         [HttpGet]
@@ -110,7 +130,6 @@ namespace WebApplication3.Controllers
             {
                 
                 var user = new User {UserName = model.Email,Email = model.Email};
-                
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {

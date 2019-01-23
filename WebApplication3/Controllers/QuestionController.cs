@@ -220,11 +220,40 @@ namespace WebApplication3.Controllers
 
         }
 
+        [HttpGet]
+        [Authorize]
+        [Route("/Tests/{testId}/Question/{questionId}/Edit/")]
+        public async Task<IActionResult> EditGet(int testId, int questionId)
+        {
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            if (test == null) return NotFound();
+            if (test.CreatedBy != user) return Forbid();
+            var question = await _context.Questions
+                .Include(q => q.Options)
+                .SingleOrDefaultAsync(q => q.Id == questionId);
+            if (question == null) return NotFound();
+            if (question.Test != test) return NotFound();
+            
+            switch (question.QuestionType)
+            {
+                // TODO Edit pages
+                case nameof(Question.QuestionTypeEnum.SingleChoiceQuestion):
+                    return View("EditSingleChoiceQuestion", question);
+                case nameof(Question.QuestionTypeEnum.MultiChoiceQuestion):
+                    return View("EditMultiChoiceQuestion", question);
+                case nameof(Question.QuestionTypeEnum.TextQuestion):
+                    return View("EditTextQuestion", question);
+                default:
+                    return View("EditSingleChoiceQuestion", question);
+            }
+        }
+
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
         [Route("/Tests/{testId}/Question/{questionId}/Edit/")]
-        public async Task<IActionResult> Edit(int testId, int questionId)
+        public async Task<IActionResult> Edit()
         {
             throw new NotImplementedException();
         }

@@ -119,8 +119,7 @@ namespace WebApplication3.Controllers
             var questions = await _context.Questions.Where(q => q.Test == test).ToListAsync();
             if (test == null)
             {
-                Response.StatusCode = 404;
-                return View();
+                return NotFound();
             }
             ViewData["user"] = user;
             ViewData["question"] = questions;

@@ -49,10 +49,11 @@ namespace WebApplication3.Models.QuestionViewModels
                 foreach (var option in options)
                 {
                     if (option.IsRight) countChecked++;
-                    if (countChecked > 1)
+                    if (countChecked > 1 || countChecked == 0)
                     {
-                        return new ValidationResult("В данном типе вопроса можно отметить только один ответ.");
+                        return new ValidationResult("В данном типе вопроса нужно отметить только один ответ.");
                     }
+                    
                 }
                 return ValidationResult.Success;
             

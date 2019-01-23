@@ -33,18 +33,6 @@ namespace WebApplication3.Data
         public async void Initialize()
         {
             _context.Database.EnsureCreated();
-
-            var users = new User[]
-            {
-                new User{UserName = "example@sasd.com",Email = "example@sasd.com"},
-                new User{UserName = "example2@sasd.com",Email = "example2@sasd.com"},
-                
-            };
-            
-            foreach (var user in users)
-            {
-                await _userManager.CreateAsync(user, PASSWORD);
-            }
             
             _context.SaveChanges();
 

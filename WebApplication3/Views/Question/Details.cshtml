@@ -1,0 +1,35 @@
+﻿@model WebApplication3.Models.Question
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+    
+}
+
+<h4>@Model.Title</h4>
+<h2>Тип вопроса: @Enum.Parse(typeof(Question.QuestionTypeEnum), Model.QuestionType)</h2>
+<table class="table table-hover">
+    <thead>
+    <tr>
+       
+        <th scope="col">#</th>
+        <th scope="col">Текст</th>
+    </tr>
+    </thead>
+    <tbody>
+    @{ int i = 0; }
+    @foreach (var o in Model.Options)
+    {
+
+        <tr class="@((o.IsRight) ? "table-success" : "")">             
+            <td>@(i + 1)</td>
+            <td>@o.Text</td>
+            
+        </tr>
+        i++;
+    }
+
+
+    </tbody>
+</table>
+

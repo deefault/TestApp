@@ -202,5 +202,49 @@ namespace WebApplication3.Controllers
             }
             return View(model);
         }
+        
+        [HttpGet]
+        [Authorize]
+        [Route("/Tests/{testId}/Question/{questionId}/Details/")]
+        public async Task<IActionResult> Details(int testId, int questionId)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
+            if (test.CreatedBy != user) return Forbid();
+            var question = await _context.Questions
+                .Include(q => q.Options)
+                .SingleOrDefaultAsync(q => q.Id == questionId);
+            if (question == null) return NotFound();
+            if (question.Test != test) return NotFound();
+            return View(question);
+
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [Route("/Tests/{testId}/Question/{questionId}/Edit/")]
+        public async Task<IActionResult> Edit(int testId, int questionId)
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [Route("/Tests/{testId}/Question/{questionId}/Delete/")]
+        public async Task<IActionResult> Delete(int testId, int questionId)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
+            if (test.CreatedBy != user) return Forbid();
+            var question = await _context.Questions
+                .SingleOrDefaultAsync(q => q.Id == questionId);
+            if (question == null) return NotFound();
+            if (question.Test != test) return NotFound();
+            _context.Questions.Remove(question);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Details","Test", new {id = testId});
+        }
     }
 }

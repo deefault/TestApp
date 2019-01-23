@@ -3,7 +3,7 @@
 @using Microsoft.AspNetCore.Identity;
 @model Test
 @using WebApplication3.Models;
-@using WebApplication3.Models;
+
 @{
     ViewBag.Title = Model.Name;
     Layout = "_Layout";
@@ -31,6 +31,8 @@
                         <th scope="col">#</th>
                         <th scope="col">Название</th>
                         <th scope="col">Тип</th>
+                        <th scope="col"></th>
+                        
                     </tr>
                     </thead>
                     <tbody>
@@ -41,8 +43,21 @@
                         <tr>
                             
                             <td>@(i + 1)</td>
-                            <td>@q.Title</td>
-                            <td>@q.QuestionType</td> 
+                            <td>
+                                    <a asp-controller="Question" asp-action="Details"
+                                       asp-route-testId="@Model.Id" asp-route-questionId="@q.Id">@q.Title</a> 
+                            </td>
+                            <td>@q.QuestionType</td>
+                            <td>
+                                // TODO: add edit page
+                                <a asp-controller="Question" asp-action="Edit"
+                                   asp-route-testId="@Model.Id" asp-route-questionId="@q.Id">Edit</a> |
+                                <form asp-controller="Question" asp-action="Delete"
+                                      asp-route-testId="@Model.Id" asp-route-questionId="@q.Id" method="post">
+                                    <input value="Delete" type="submit" id="deleteLink"/>
+                                </form>
+
+                            </td>
                         </tr>
                         i++;
                     }
@@ -50,11 +65,11 @@
 
                     </tbody>
                 </table>
-                // TODO: add details and edit page
+               
             }
             <div class="form-group row">
                 <select class="form-control col-lg-4" id="questionType" 
-                        asp-items="Html.GetEnumSelectList<Question.QuestionTypeEnum>()" 
+                        asp-items="Html.GetEnumSelectList<Question.QuestionTypeEnum>()"
                         onchange="changeUrl()">
                 </select> 
             </div>
@@ -100,5 +115,7 @@
         $("#addLink").attr("href", href);
         console.log(href);
     }
-
+    $('#deleteLink').click(function() {
+        $(this).parents('form:first').submit();
+    });
 </script>

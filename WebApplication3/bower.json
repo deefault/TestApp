@@ -3,7 +3,8 @@
   "directory": "./wwwroot/lib",
   "private": true,
   "dependencies": {
-    "bootstrap": "4.1.3"
+    "bootstrap": "4.1.3",
+    "Sortable": "sortablejs#1.8.1"
   },
   "homepage": "https://github.com/deefault/TestsApp",
   "authors": [
@@ -19,5 +20,7 @@
     "test",
     "tests"
   ],
-  
+  "resolutions": {
+    "Sortable": "1.8.1"
+  }
 }

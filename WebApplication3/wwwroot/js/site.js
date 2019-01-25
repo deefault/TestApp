@@ -8,7 +8,7 @@ function getAddQuestionFormData() {
     data.Options = [];
     data.Title = $("#Title").val();
     data.Score = $("#Score").val();
-    var options = $("#options").children();
+    var options = $("#itemTableBody").children();
     console.log(options);
     for (i = 0; i < options.length; i++) {
         var o = {};
@@ -18,7 +18,7 @@ function getAddQuestionFormData() {
     }
     console.log(data);
     return data;
-}
+};
 
 function addFormErrors(errors) {
     var form = $("form");

@@ -1,0 +1,219 @@
+﻿@using Microsoft.AspNetCore.Routing
+@model WebApplication3.Models.QuestionViewModels.AddSingleChoiceQuestionViewModel
+
+@{
+    ViewBag.Title = "Добавить вопрос на восстановление последовательности";
+    Layout = "_Layout";
+}
+
+
+<h2>@ViewBag.Title</h2>
+<div class="container">
+
+    <div class="form-group" id="fields">
+        <div class="">
+            <form asp-controller="Question" asp-action="AddDnDQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
+                <!--<h4>Добавить вопрос</h4>-->
+                <hr />
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-group row">
+                    <label asp-for="Title" class="col-md-2 col-lg-2"></label>
+                    <div class="col-md-10 col-lg-4">
+                        <input asp-for="Title" class="form-control" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="items">
+                        <table class="item-table" id="itemTable">
+                            <tbody id="itemTableBody">
+                                <tr>
+                                    <td class="drag-handler" draggable="true"></td>
+                                    <td class="item-table__cell">
+                                        <input asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса">
+                                    </td>
+                                    <td class="item-table__cell" align="right">
+                                        <button class="item-table__del-row-btn">
+                                            <span class="glyphicon glyphicon-minus"></span>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="drag-handler" draggable="true"></td>
+                                    <td class="item-table__cell">
+                                        <input asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса">
+                                    </td>
+                                    <td class="item-table__cell" align="right">
+                                        <button class="item-table__del-row-btn">
+                                            <span class="glyphicon glyphicon-minus"></span>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="drag-handler" draggable="true"></td>
+                                    <td class="item-table__cell">
+                                        <input asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса">
+                                    </td>
+                                    <td class="item-table__cell" align="right">
+                                        <button class="item-table__del-row-btn">
+                                            <span class="glyphicon glyphicon-minus"></span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="item-table__add-row">
+                            <span class="item-table__add-row-btn">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </span>
+                        </div>
+                </div>
+                <script id="rowTemplate" type="text/template">
+                    <tr>
+                        <td class="drag-handler"></td>
+                        <td class="item-table__cell">
+                            <input asp-for="Text" type="text" class="item__text-field" placeholder="Teкст вопроса">
+                        </td>
+                        <td class="item-table__cell">
+                            <button class="item-table__del-row-btn" align="right">
+                                <span class="glyphicon glyphicon-minus"></span>
+                            </button>
+                        </td>
+                    </tr>
+                </script>
+
+                <input type="hidden" value="@ViewContext.RouteData.Values["testId"]" asp-for="TestId" />
+
+                <div class="form-group row">
+                    <div class="col-md-offset-2 col-md-10">
+                        <button type="submit" class="btn btn-primary">Добавить</button>
+                    </div>
+                </div>
+            </form>
+
+            <br>
+        </div>
+    </div>
+
+</div>
+<style>
+    .item-table {
+        position: relative;
+        padding: 1em;
+        border: 1px solid #DDD;
+        box-shadow: 0 15px 10px -10px rgba(31, 31, 31, 0.5);
+        z-index: 10;
+        table-layout: auto;
+        width: 100%;
+    }
+
+    .item-table__cell {
+        vertical-align: top;
+        padding: 3px 5px;
+    }
+
+    .item__text-field {
+        margin: 0;
+        padding: .45em 0.92em;
+        font-size: 1em;
+        line-height: 1.4;
+        color: #555555;
+        background-color: #FFF;
+        background-image: none;
+        border: 1px solid #CCC;
+        border-left: 1px solid #CCC;
+    }
+    .item-table__add-row {
+        margin-top: 0;
+        position: relative;
+        border-top: 1px solid #EEE;
+        z-index: 8;
+    }
+
+    .item-table__add-row-btn {
+        cursor: pointer;
+        position: absolute;
+        right: 0;
+        left: 0;
+        width: 4em;
+        margin: 0 auto;
+        -webkit-transition: all .2s ease-in;
+        transition: all .2s ease-in;
+        text-align: center;
+        opacity: 0.5;
+        color: #fff;
+        border: 1px solid #16A085;
+        border-bottom-right-radius: 1em;
+        border-bottom-left-radius: 1em;
+        background: #16A085;
+        height: 1.5em;
+        line-height: 1.5em;
+    }
+
+        .item-table__add-row-btn:hover {
+            opacity: 1;
+        }
+
+    .item-table__del-row-btn {
+        cursor: pointer;
+        display: inline-block;
+        padding: .45em 0.92em;
+        font-size: 1em;
+        line-height: 1.4;
+        border: 1px solid #F39C12;
+        color: #F39C12;
+        text-decoration: none;
+        transition: all .3s;
+        text-align: center;
+        background-color: #fff;
+    }
+
+        .item-table__del-row-btn:hover {
+            background: #F39C12;
+            color: #fff;
+        }
+
+    .drag-handler {
+        width: 1.4em;
+        position: relative;
+        background-color: #E4E6EB;
+        background-image: linear-gradient(45deg, #E4E6EB, #E4E6EB 2px, #fff 2px, #fff 4px, #E4E6EB 4px, #E4E6EB 9px, #fff 9px, #fff 11px, #E4E6EB 11px, #E4E6EB 16px, #fff 16px, #fff 18px, #E4E6EB 18px, #E4E6EB 22px);
+        background-size: 10px 20px;
+        cursor: move;
+        border-top: 2px solid #FFF;
+        border-bottom: 2px solid #FFF;
+    }
+
+        .drag-handler:active {
+            background-image: linear-gradient(45deg, #bab86c, #bab86c 2px, #fff 2px, #fff 4px, #bab86c 4px, #bab86c 9px, #fff 9px, #fff 11px, #bab86c 11px, #bab86c 16px, #fff 16px, #fff 18px, #bab86c 18px, #bab86c 22px);
+            background-size: 10px 20px;
+        }
+</style>
+@section Scripts {
+    <script src="~/js/Sortable.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(document).on('click', '.item-table__add-row-btn', function (e) {
+                var $tableBody = $('#itemTableBody');
+                var htmlString = $('#rowTemplate').html();
+                $tableBody.append(htmlString);
+                return false;
+            });
+
+            $(document).on('click', '.item-table__del-row-btn', function (e) {
+                var $el = $(e.currentTarget);
+                var $row = $el.closest('tr');
+                $row.remove();
+                return false;
+            });
+            new Sortable(
+                $('#itemTableBody')[0], {
+                    animation: 150,
+                    scroll: true,
+                    handle: '.drag-handler',
+                }
+            );
+        });
+    </script>
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

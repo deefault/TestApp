@@ -55,7 +55,7 @@ namespace WebApplication3.Models
         public string TextRightAnswer { get; set; }
     }
     
-    public class DragAndDropQuestion : Question
+    public class DnDQuestion : Question
     {
         private LinkedList<string> DragAndDropOptions { get; set; }
     }

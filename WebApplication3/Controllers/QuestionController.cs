@@ -63,6 +63,8 @@ namespace WebApplication3.Controllers
                     return View("AddMultiChoiceQuestion");
                 case (int) Question.QuestionTypeEnum.TextQuestion:
                     return View("AddTextQuestion");
+                case (int)Question.QuestionTypeEnum.DragAndDropQuestion:
+                    return View("AddDnDQuestion");
                 default:
                     return View("AddSingleChoiceQuestion");
             }
@@ -176,7 +178,62 @@ namespace WebApplication3.Controllers
             Response.StatusCode = StatusCodes.Status400BadRequest;
             return new JsonResult(model);
         }
-        
+
+        [HttpPost]
+        [Authorize]
+        [Route("/Tests/{testId}/Question/Add/DnD/", Name = "AddDnD")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddDnDQuestion([FromBody] AddDnDQuestionViewModel model)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
+            if (test == null)
+            {
+                return NotFound();
+            }
+
+            if (test.CreatedBy != user)
+            {
+                return Forbid();
+            }
+
+            model.TestId = test.Id;
+            TryValidateModel(model);
+            if (ModelState.IsValid)
+            {
+                // транзакция
+                using (var ts = _context.Database.BeginTransaction())
+                {
+                    List<Option> options = new List<Option>();
+                    var question = new DnDQuestion
+                    {
+                        Title = model.Title,
+                        QuestionType = Enum.GetName(typeof(Question.QuestionTypeEnum), 4),
+                        Test = test
+                    };
+                    //создать в базе вопрос
+                    var questionCreated = (await _context.AddAsync(question)).Entity;
+                    await _context.SaveChangesAsync(); //применить изменения
+                    foreach (var option in model.Options)
+                    {
+                        // добавить в базу Options
+                        var optionCreated = (await _context.AddAsync(
+                            new Option { IsRight = option.IsRight, Text = option.Text, Question = questionCreated })).Entity;
+                    }
+                    // обновить вопрос и применить изменения
+                    _context.Questions.Update(questionCreated);
+                    await _context.SaveChangesAsync();
+                    ts.Commit();
+                }
+
+
+                return new JsonResult(model);
+            }
+
+            Response.StatusCode = StatusCodes.Status400BadRequest;
+            return new JsonResult(model);
+        }
+
         [HttpPost]
         [Authorize]
         [Route("/Tests/{testId}/Question/Add/Text/", Name = "AddText")]

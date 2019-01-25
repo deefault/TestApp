@@ -25,4 +25,9 @@
     <Folder Include="Pages\Question" />
     <Folder Include="Pages\Test" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Update="Views\Question\AddDnDQuestion.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+  </ItemGroup>
 </Project>

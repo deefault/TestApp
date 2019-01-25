@@ -20,7 +20,7 @@ namespace WebApplication3.Data
         public DbSet<SingleChoiceQuestion> SingleChoiceQuestions { get; set; }
         public DbSet<MultiChoiceQuestion> MultiChoiceQuestions { get; set; }
         public DbSet<TextQuestion> TextQuestions { get; set; }
-        public DbSet<DragAndDropQuestion> DragAndDropQuestions { get; set; }
+        public DbSet<DnDQuestion> DragAndDropQuestions { get; set; }
         public DbSet<Option> Options { get; set; }
         public DbSet<Answer> Answers { get; set; }
 
@@ -37,7 +37,7 @@ namespace WebApplication3.Data
             builder.Entity<MultiChoiceQuestion>().ToTable("MultiChoiceQuestion");
             builder.Entity<SingleChoiceQuestion>().ToTable("SingleChoiceQuestion");
             builder.Entity<TextQuestion>().ToTable("TextQuestion");
-            builder.Entity<DragAndDropQuestion>().ToTable("DragAndDropQuestion");
+            builder.Entity<DnDQuestion>().ToTable("DragAndDropQuestion");
             
             builder.Entity<Answer>(a =>
             {

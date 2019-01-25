@@ -48,15 +48,14 @@
                                    asp-route-testId="@Model.Id" asp-route-questionId="@q.Id">@q.Title</a>
                             </td>
                             <td>@q.QuestionType</td>
-                            <td>
-                                // TODO: add edit page
-                                <a asp-controller="Question" asp-action="Edit"
-                                   asp-route-testId="@Model.Id" asp-route-questionId="@q.Id">Edit</a> |
-                                <form asp-controller="Question" asp-action="Delete"
-                                      asp-route-testId="@Model.Id" asp-route-questionId="@q.Id" method="post">
-                                    <input value="Delete" type="submit" id="deleteLink"/>
+                            <td>    
+                                <form method="post">
+                                    // TODO: add edit page
+                                    <a asp-controller="Question" asp-action="Edit"
+                                       asp-route-testId="@Model.Id" asp-route-questionId="@q.Id">Edit</a> |
+                                        <input asp-controller="Question" asp-action="Delete"
+                                          asp-route-testId="@Model.Id" asp-route-questionId="@q.Id" value="Delete" class="btn btn-link" type="submit" id="deleteLink" />
                                 </form>
-
                             </td>
                         </tr>
                         i++;

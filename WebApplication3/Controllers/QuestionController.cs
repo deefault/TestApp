@@ -204,7 +204,7 @@ namespace WebApplication3.Controllers
                 // транзакция
                 using (var ts = _context.Database.BeginTransaction())
                 {
-                    List<DragAndDropOption> options = new List<DragAndDropOption>();
+                    List<Option> options = new List<Option>();
                     var question = new DragAndDropQuestion
                     {
                         Title = model.Title,
@@ -217,8 +217,8 @@ namespace WebApplication3.Controllers
                     foreach (var option in model.Options)
                     {
                         // добавить в базу Options
-                        var optionCreated = (await _context.DragAndDropOptions.AddAsync(
-                            new DragAndDropOption { Order = option.Order, Text = option.Text, Question = questionCreated })).Entity;
+                        var optionCreated = (await _context.Options.AddAsync(
+                            new Option { Order = option.Order, Text = option.Text, Question = questionCreated })).Entity;
                     }
                     // обновить вопрос и применить изменения
                     _context.Questions.Update(questionCreated);

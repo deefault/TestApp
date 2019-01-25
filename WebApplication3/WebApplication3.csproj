@@ -26,7 +26,7 @@
     <Folder Include="Pages\Test" />
   </ItemGroup>
   <ItemGroup>
-    <Content Update="Views\Question\AddDnDQuestion.cshtml">
+    <Content Update="Views\Question\AddDragAndDropQuestion.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
   </ItemGroup>

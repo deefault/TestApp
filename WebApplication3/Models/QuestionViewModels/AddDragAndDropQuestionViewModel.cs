@@ -5,9 +5,6 @@ namespace WebApplication3.Models.QuestionViewModels
 {
     public class AddDragAndDropQuestionViewModel : QuestionViewModel
     {
-        
-
-
         public class DragAndDropOptionViewModel
         {
             [Required]

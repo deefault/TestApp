@@ -12,7 +12,7 @@
 
     <div class="form-group" id="fields">
         <div class="">
-            <form asp-controller="Question" asp-action="AddDnDQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
+            <form asp-controller="Question" asp-action="AddDragAndDropQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
                 <!--<h4>Добавить вопрос</h4>-->
                 <hr />
                 <div asp-validation-summary="All" class="text-danger"></div>
@@ -192,7 +192,7 @@
 @section Scripts {
     <script src="~/lib/Sortable/Sortable.js"></script>
     <script>
-        $(document).ready(function () {
+        $(function () {
             $(document).on('click', '.item-table__add-row-btn', function (e) {
                 var $tableBody = $('#itemTableBody');
                 var htmlString = $('#rowTemplate').html();
@@ -213,6 +213,43 @@
                     handle: '.drag-handler',
                 }
             );
+        });
+
+        function getData() {
+            var data = {};
+            data.Options = [];
+            data.Title = $("#Title").val();
+            var options = $("#itemTableBody").children();
+            console.log(options);
+            for (i = 0; i < options.length; i++) {
+                var o = {};
+                o.Text = $(options[i]).find("#Text").val();
+                o.Order = i;
+                data.Options.push(o);
+            }
+            console.log(data);
+            return data;
+        };
+
+        $("form").submit(function (event) {
+            event.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: '@Url.RouteUrl("AddDragAndDrop", new {testId = Context.GetRouteData().Values["testId"]})',
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("RequestVerificationToken",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+                data: JSON.stringify(getData()),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function(response) {
+                    console.log(response);
+                },
+                failure: function(response) {
+                    console.log(response);
+                }
+            });
         });
     </script>
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }

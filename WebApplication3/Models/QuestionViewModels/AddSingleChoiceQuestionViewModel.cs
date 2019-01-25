@@ -18,7 +18,8 @@ namespace WebApplication3.Models.QuestionViewModels
         [Required]
         public bool IsRight { get; set; }
     }
-    
+
+
     public class AddSingleChoiceQuestionViewModel
     {
         public string Text { get; set; }

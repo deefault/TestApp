@@ -118,12 +118,17 @@ namespace WebApplication3.Controllers
                     ts.Commit();
                 }
                 
-                
-                return new JsonResult(model);
+                var redirectUrl = Url.Action("Details", "Test", new {id = test.Id});
+                return new JsonResult(redirectUrl);
             }
-
+            var errors = new List<ModelError>();
+            foreach (var modelState in ViewData.ModelState.Values) {
+                foreach (ModelError error in modelState.Errors) {
+                    errors.Add(error);
+                }
+            }
             Response.StatusCode = StatusCodes.Status400BadRequest;
-            return new JsonResult(model);
+            return new JsonResult(errors);
         }
 
         [HttpPost]
@@ -171,12 +176,17 @@ namespace WebApplication3.Controllers
                     ts.Commit();
                 }
                 
-                
-                return new JsonResult(model);
+                var redirectUrl = Url.Action("Details", "Test", new {id = test.Id});
+                return new JsonResult(redirectUrl);
             }
-
+            var errors = new List<ModelError>();
+            foreach (var modelState in ViewData.ModelState.Values) {
+                foreach (ModelError error in modelState.Errors) {
+                    errors.Add(error);
+                }
+            }
             Response.StatusCode = StatusCodes.Status400BadRequest;
-            return new JsonResult(model);
+            return new JsonResult(errors);
         }
 
         [HttpPost]
@@ -227,11 +237,18 @@ namespace WebApplication3.Controllers
                 }
 
 
-                return new JsonResult(model);
+                var redirectUrl = Url.Action("Details", "Test", new {id = test.Id});
+                return new JsonResult(redirectUrl);
             }
 
+            var errors = new List<ModelError>();
+            foreach (var modelState in ViewData.ModelState.Values) {
+                foreach (ModelError error in modelState.Errors) {
+                    errors.Add(error);
+                }
+            }
             Response.StatusCode = StatusCodes.Status400BadRequest;
-            return new JsonResult(model);
+            return new JsonResult(errors);
         }
 
         [HttpPost]

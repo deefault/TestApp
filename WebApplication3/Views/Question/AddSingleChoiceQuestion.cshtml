@@ -24,26 +24,65 @@
                         </div>
                     </div>
 
-                    <div id="options">
-                        <div class="entry form-group row" id="option1">
-                            <label asp-for="Text" class="col-md-2 col-lg-2 control-label" id="label1">Option 1</label>
-                            <div class="col-md-10 col-lg-4">
-                                <input asp-for="Text" type="text" class="form-control" placeholder="Type something"/>
-                                <span asp-validation-for="Text" class="text-danger"></span>
-                            </div>
-                            <span class="col-md-1 col-lg-1">
-                                <button class="form-control btn btn-success btn-add" type="button">
-                                    <span class="glyphicon glyphicon-plus"></span>
-                                </button>
+                    <div class="items">
+                        <table class="item-table" id="options">
+                            <tbody id="itemTableBody">
+                                <tr>
+                                    <td class="item-table__cell">
+                                        <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса">
+                                    </td>
+                                    <td class="item-table__cell" align="right">
+                                        <button class="item-table__del-row-btn">
+                                            <span class="glyphicon glyphicon-minus"></span>
+                                        </button>
+                                        <input class="form-check-inline" type="radio" name="isRight" id="isRight" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="item-table__cell">
+                                        <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса">
+                                    </td>
+                                    <td class="item-table__cell" align="right">
+                                        <button class="item-table__del-row-btn">
+                                            <span class="glyphicon glyphicon-minus"></span>
+                                        </button>
+                                        <input class="form-check-inline" type="radio" name="isRight" id="isRight" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="item-table__cell">
+                                        <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса">
+                                    </td>
+                                    <td class="item-table__cell" align="right">
+                                        <button class="item-table__del-row-btn">
+                                            <span class="glyphicon glyphicon-minus"></span>
+                                        </button>
+                                        <input class="form-check-inline" type="radio" name="isRight" id="isRight" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="item-table__add-row">
+                            <span class="item-table__add-row-btn">
+                                <span class="glyphicon glyphicon-plus"></span>
                             </span>
-                            <input class="form-check-inline" type="radio" name="isRight" id="isRight"/>
                         </div>
                     </div>
-
-
+                    <script id="rowTemplate" type="text/template">
+                        <tr>
+                            <td class="item-table__cell">
+                                <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Teкст вопроса">
+                            </td>
+                            <td class="item-table__cell" align="right">
+                                <button class="item-table__del-row-btn">
+                                    <span class="glyphicon glyphicon-minus"></span>
+                                </button>
+                                <input class="form-check-inline" type="radio" name="isRight" id="isRight" />
+                            </td>
+                        </tr>
+                    </script>
 
                     <input type="hidden" value="@ViewContext.RouteData.Values["testId"]" asp-for="TestId" />
-                    
 
                     <div class="form-group row">
                         <div class="col-md-offset-2 col-md-10">
@@ -58,45 +97,102 @@
    
 </div>
 
+<style>
+    .item-table {
+        position: relative;
+        padding: 1em;
+        border: 1px solid #DDD;
+        box-shadow: 0 15px 10px -10px rgba(31, 31, 31, 0.5);
+        z-index: 10;
+        table-layout: auto;
+        width: 100%;
+    }
+
+    .item-table__cell {
+        vertical-align: top;
+        padding: 3px 5px;
+    }
+
+    .item__text-field {
+        margin: 0;
+        padding: .45em 0.92em;
+        font-size: 1em;
+        line-height: 1.4;
+        color: #555555;
+        background-color: #FFF;
+        background-image: none;
+        border: 1px solid #CCC;
+        border-left: 1px solid #CCC;
+    }
+
+    .item-table__add-row {
+        margin-top: 0;
+        position: relative;
+        border-top: 1px solid #EEE;
+        z-index: 8;
+    }
+
+    .item-table__add-row-btn {
+        cursor: pointer;
+        position: absolute;
+        right: 0;
+        left: 0;
+        width: 4em;
+        margin: 0 auto;
+        -webkit-transition: all .2s ease-in;
+        transition: all .2s ease-in;
+        text-align: center;
+        opacity: 0.5;
+        color: #fff;
+        border: 1px solid #16A085;
+        border-bottom-right-radius: 1em;
+        border-bottom-left-radius: 1em;
+        background: #16A085;
+        height: 1.5em;
+        line-height: 1.5em;
+    }
+
+        .item-table__add-row-btn:hover {
+            opacity: 1;
+        }
+
+    .item-table__del-row-btn {
+        cursor: pointer;
+        display: inline-block;
+        padding: .45em 0.92em;
+        font-size: 1em;
+        line-height: 1.4;
+        border: 1px solid #F39C12;
+        color: #F39C12;
+        text-decoration: none;
+        transition: all .3s;
+        text-align: center;
+        background-color: #fff;
+    }
+
+        .item-table__del-row-btn:hover {
+            background: #F39C12;
+            color: #fff;
+        }
+</style>
+
 @section Scripts {
 
     <script>
-        var count = 1;
-        $(function() {
-            $(document).on('click',
-                '.btn-add',
-                function(e) {
-                    e.preventDefault();
-                    var optionGroup = $("#options");
-                    //var controlForm = $('.controls form:first'),
-                    var currentEntry = $(this).parents('.entry:first');
-                    var newEntry = $(currentEntry.clone());
-                    newEntry.attr("id", "option" + ++count);
-                    newEntry.find("#label1").text("Option " + count);
-                    newEntry.find("#label1").attr("id", "label" + count);
-                    //newEntry..innerHTML = "Option " + ++count;
-                    // TODO : Option 1 ,2 ,3 label ++count
-                    newEntry.appendTo(optionGroup);
-                    //document.getElementById('option1').id = 'option' + ++count;
-                    newEntry.find('input').val('');
-                    optionGroup.find('.entry:not(:first) .btn-add')
-                        .removeClass('btn-add').addClass('btn-remove')
-                        .removeClass('btn-success').addClass('btn-danger')
-                        .html('<span class="glyphicon glyphicon-minus"></span>');
-                }).on('click',
-                '.btn-remove',
-                function(e) {
-                    var i = $(this).parents('.entry:first').attr("id").substr(6);
-                    $(this).parents('.entry:first').remove();
-                    e.preventDefault();
-                    for (j = i; j < count; j++) {
-                        document.getElementById("option" + ++j).setAttribute("id", "option" + --j);
-                        document.getElementById("label" + ++j).innerText = "Option " + --j;
-                        document.getElementById("label" + ++j).setAttribute("id", "label" + --j);
-                    }
-                    count--;
-                    return false;
-                });
+        $(function () {
+            $(document).on('click', '.item-table__add-row-btn', function (e) {
+                var $tableBody = $('#itemTableBody');
+                var htmlString = $('#rowTemplate').html();
+                $tableBody.append(htmlString);
+                return false;
+            });
+
+            $(document).on('click', '.item-table__del-row-btn', function (e) {
+                var $el = $(e.currentTarget);
+                var $row = $el.closest('tr');
+                $row.remove();
+                return false;
+            });
         });
 
         $("form").submit(function(event) {

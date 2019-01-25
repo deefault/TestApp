@@ -64,7 +64,7 @@ namespace WebApplication3.Controllers
                 case (int) Question.QuestionTypeEnum.TextQuestion:
                     return View("AddTextQuestion");
                 case (int)Question.QuestionTypeEnum.DragAndDropQuestion:
-                    return View("AddDnDQuestion");
+                    return View("AddDragAndDropQuestion");
                 default:
                     return View("AddSingleChoiceQuestion");
             }
@@ -181,9 +181,9 @@ namespace WebApplication3.Controllers
 
         [HttpPost]
         [Authorize]
-        [Route("/Tests/{testId}/Question/Add/DnD/", Name = "AddDnD")]
+        [Route("/Tests/{testId}/Question/Add/DragAndDrop/", Name = "AddDragAndDrop")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddDnDQuestion([FromBody] AddDnDQuestionViewModel model)
+        public async Task<IActionResult> AddDragAndDropQuestion([FromBody] AddDragAndDropQuestionViewModel model)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
@@ -204,21 +204,21 @@ namespace WebApplication3.Controllers
                 // транзакция
                 using (var ts = _context.Database.BeginTransaction())
                 {
-                    List<Option> options = new List<Option>();
-                    var question = new DnDQuestion
+                    List<DragAndDropOption> options = new List<DragAndDropOption>();
+                    var question = new DragAndDropQuestion
                     {
                         Title = model.Title,
                         QuestionType = Enum.GetName(typeof(Question.QuestionTypeEnum), 4),
                         Test = test
                     };
                     //создать в базе вопрос
-                    var questionCreated = (await _context.AddAsync(question)).Entity;
+                    var questionCreated = (await _context.Questions.AddAsync(question)).Entity;
                     await _context.SaveChangesAsync(); //применить изменения
                     foreach (var option in model.Options)
                     {
                         // добавить в базу Options
-                        var optionCreated = (await _context.AddAsync(
-                            new Option { IsRight = option.IsRight, Text = option.Text, Question = questionCreated })).Entity;
+                        var optionCreated = (await _context.DragAndDropOptions.AddAsync(
+                            new DragAndDropOption { Order = option.Order, Text = option.Text, Question = questionCreated })).Entity;
                     }
                     // обновить вопрос и применить изменения
                     _context.Questions.Update(questionCreated);

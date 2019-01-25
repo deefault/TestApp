@@ -20,9 +20,10 @@ namespace WebApplication3.Data
         public DbSet<SingleChoiceQuestion> SingleChoiceQuestions { get; set; }
         public DbSet<MultiChoiceQuestion> MultiChoiceQuestions { get; set; }
         public DbSet<TextQuestion> TextQuestions { get; set; }
-        public DbSet<DnDQuestion> DragAndDropQuestions { get; set; }
+        public DbSet<DragAndDropQuestion> DragAndDropQuestions { get; set; }
         public DbSet<Option> Options { get; set; }
         public DbSet<Answer> Answers { get; set; }
+        public DbSet<DragAndDropOption> DragAndDropOptions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -37,7 +38,7 @@ namespace WebApplication3.Data
             builder.Entity<MultiChoiceQuestion>().ToTable("MultiChoiceQuestion");
             builder.Entity<SingleChoiceQuestion>().ToTable("SingleChoiceQuestion");
             builder.Entity<TextQuestion>().ToTable("TextQuestion");
-            builder.Entity<DnDQuestion>().ToTable("DragAndDropQuestion");
+            builder.Entity<DragAndDropQuestion>().ToTable("DragAndDropQuestion");
             
             builder.Entity<Answer>(a =>
             {
@@ -50,7 +51,8 @@ namespace WebApplication3.Data
             builder.Entity<SingleChoiceAnswer>().ToTable("SingleChoiceAnswer");
             builder.Entity<TextAnswer>().ToTable("TextAnswer");
             builder.Entity<DragAndDropAnswer>().ToTable("DragAndDropAnswer");
-            
+
+            builder.Entity<DragAndDropOption>().ToTable("DragAndDropOption");
             builder.Entity<Option>().ToTable("Option");
             builder.Entity<Test>().ToTable("Test");
             builder.Entity<TestResult>().ToTable("TestResult");

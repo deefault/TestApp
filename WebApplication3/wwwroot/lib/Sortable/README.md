@@ -102,7 +102,7 @@ var sortable = new Sortable(el, {
 	invertedSwapThreshold: 1, // Threshold of the inverted swap zone (will be set to swapThreshold value by default)
 	direction: 'horizontal', // Direction of Sortable (will be detected automatically if not given)
 
-	forceFallback: false,  // ignore the HTML5 DnD behaviour and force the fallback to kick in
+	forceFallback: false,  // ignore the HTML5 DragAndDrop behaviour and force the fallback to kick in
 
 	fallbackClass: "sortable-fallback",  // Class name for the cloned DOM Element when using forceFallback
 	fallbackOnBody: false,  // Appends the cloned DOM Element into the Document's Body

@@ -98,7 +98,7 @@
 
 		CSSFloatProperty = Edge || IE11OrLess ? 'cssFloat' : 'float',
 
-		// This will not pass for IE9, because IE9 DnD only works on anchors
+		// This will not pass for IE9, because IE9 DragAndDrop only works on anchors
 		supportDraggable = ('draggable' in document.createElement('div')),
 
 		supportCssPointerEvents = (function() {
@@ -327,7 +327,7 @@
 							scrollThisInstance = true;
 							/* jshint loopfunc:true */
 							autoScrolls[layersOut].pid = setInterval((function () {
-								// emulate drag over during autoscroll (fallback), emulating native DnD behaviour
+								// emulate drag over during autoscroll (fallback), emulating native DragAndDrop behaviour
 								if (isFallback && this.layer === 0) {
 									Sortable.active._emulateDragOver(true);
 								}
@@ -728,7 +728,7 @@
 				) {
 
 					pointerElemChangedInterval && clearInterval(pointerElemChangedInterval);
-					// Detect for pointer elem change, emulating native DnD behaviour
+					// Detect for pointer elem change, emulating native DragAndDrop behaviour
 					pointerElemChangedInterval = setInterval(function() {
 						if (!dragEl) return;
 						// could also check if scroll direction on newElem changes due to parent autoscrolling
@@ -744,7 +744,7 @@
 				}
 
 			} else {
-				// if DnD is enabled (and browser has good autoscrolling), first autoscroll will already scroll, so get parent autoscroll of first autoscroll
+				// if DragAndDrop is enabled (and browser has good autoscrolling), first autoscroll will already scroll, so get parent autoscroll of first autoscroll
 				if (!_this.options.bubbleScroll || _getParentAutoScrollElement(elem, true) === window) {
 					_clearAutoScrolls();
 					return;

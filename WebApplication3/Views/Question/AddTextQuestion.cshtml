@@ -6,7 +6,7 @@
 }
 
 <h2>@ViewBag.Title</h2>
-<form asp-controller="Question" asp-action="Add" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form">
+<form asp-controller="Question" asp-action="AddTextQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form">
     <h4>Добавить текстовый вопрос</h4>
     <hr />
     <div asp-validation-summary="All" class="text-danger"></div>
@@ -17,13 +17,16 @@
             <span asp-validation-for="Title" class="text-danger"></span>
         </div>
     </div>
-    <div class="form-group row">
-        <label asp-for="Text" class="col-md-2 control-label"></label>
-        <div class="col-md-10">
-            <input asp-for="Text" type="text" class="form-control" />
-            <span asp-validation-for="Text" class="text-danger"></span>
-        </div>
-    </div>
+    <table class="item-table" id="itemTable">
+        <tr>
+            <td class="item-table__cell">
+                    <input asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса"/>
+                    <span asp-validation-for="Text" class="text-danger"></span>
+            </td>
+        </tr>
+    </table>
+    
+
     <input type="hidden" value="@ViewContext.RouteData.Values["testId"]" asp-for="TestId" />
     <input type="hidden" value="@ViewContext.RouteData.Values["type"]" asp-for="QuestionType" />
 
@@ -37,3 +40,82 @@
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }
+
+<style>
+    .item-table {
+        position: relative;
+        padding: 1em;
+        border: 1px solid #DDD;
+        box-shadow: 0 15px 10px -10px rgba(31, 31, 31, 0.5);
+        z-index: 10;
+        table-layout: auto;
+        width: 100%;
+    }
+
+    .item-table__cell {
+        vertical-align: top;
+        padding: 3px 5px;
+    }
+
+    .item__text-field {
+        margin: 0;
+        padding: .45em 0.92em;
+        font-size: 1em;
+        line-height: 1.4;
+        color: #555555;
+        background-color: #FFF;
+        background-image: none;
+        border: 1px solid #CCC;
+        border-left: 1px solid #CCC;
+    }
+
+    .item-table__add-row {
+        margin-top: 0;
+        position: relative;
+        border-top: 1px solid #EEE;
+        z-index: 8;
+    }
+
+    .item-table__add-row-btn {
+        cursor: pointer;
+        position: absolute;
+        right: 0;
+        left: 0;
+        width: 4em;
+        margin: 0 auto;
+        -webkit-transition: all .2s ease-in;
+        transition: all .2s ease-in;
+        text-align: center;
+        opacity: 0.5;
+        color: #fff;
+        border: 1px solid #16A085;
+        border-bottom-right-radius: 1em;
+        border-bottom-left-radius: 1em;
+        background: #16A085;
+        height: 1.5em;
+        line-height: 1.5em;
+    }
+
+        .item-table__add-row-btn:hover {
+            opacity: 1;
+        }
+
+    .item-table__del-row-btn {
+        cursor: pointer;
+        display: inline-block;
+        padding: .45em 0.92em;
+        font-size: 1em;
+        line-height: 1.4;
+        border: 1px solid #F39C12;
+        color: #F39C12;
+        text-decoration: none;
+        transition: all .3s;
+        text-align: center;
+        background-color: #fff;
+    }
+
+        .item-table__del-row-btn:hover {
+            background: #F39C12;
+            color: #fff;
+        }
+</style>

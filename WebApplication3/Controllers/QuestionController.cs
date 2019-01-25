@@ -255,7 +255,7 @@ namespace WebApplication3.Controllers
         [Authorize]
         [Route("/Tests/{testId}/Question/Add/Text/", Name = "AddText")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Add(AddTextQuestionViewModel model)
+        public async Task<IActionResult> AddTextQuestion(AddTextQuestionViewModel model)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
@@ -270,6 +270,8 @@ namespace WebApplication3.Controllers
             if (ModelState.IsValid)
             {
                 var q = new TextQuestion { Title = model.Title, Test = test, QuestionType = Enum.GetName(typeof(Question.QuestionTypeEnum), 3), TextRightAnswer = model.Text};
+                var optionCreated = (await _context.Options.AddAsync(
+                    new Option { Text = model.Text, Question = q })).Entity;
                 await _context.Questions.AddAsync(q);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Details","Test",new {id=model.TestId });

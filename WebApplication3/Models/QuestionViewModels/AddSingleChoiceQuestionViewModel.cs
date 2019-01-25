@@ -20,16 +20,8 @@ namespace WebApplication3.Models.QuestionViewModels
     }
 
 
-    public class AddSingleChoiceQuestionViewModel
+    public class AddSingleChoiceQuestionViewModel : QuestionViewModel
     {
-        public string Text { get; set; }
-
-        [Required]
-        public string Title { get; set; }
-
-        [Required]
-        public int TestId { get; set; }
-
         [Required]
         [OptionsValidation]
         public List<OptionViewModel> Options { get; set; }

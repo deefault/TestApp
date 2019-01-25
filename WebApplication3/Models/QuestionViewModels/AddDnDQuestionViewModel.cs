@@ -3,15 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WebApplication3.Models.QuestionViewModels
 {
-    public class AddDragAndDropQuestionViewModel
+    public class AddDragAndDropQuestionViewModel : QuestionViewModel
     {
-        public string Text { get; set; }
-
-        [Required]
-        public string Title { get; set; }
-
-        [Required]
-        public int TestId { get; set; }
+        
 
 
         public class DragAndDropOptionViewModel

@@ -98,42 +98,11 @@
                     return false;
                 });
         });
-
-        function getData() {
-            var data = {};
-            data.Options = [];
-            data.Title = $("#Title").val();
-            var options = $("#options").children();
-            console.log(options);
-            for (i = 0; i < options.length; i++) {
-                var o = {};
-                o.Text = $(options[i]).find("#Text").val();
-                o.IsRight = $(options[i]).find("#isRight").prop("checked");
-                data.Options.push(o);
-            }
-            console.log(data);
-            return data;
-        }
-
+        
         $("form").submit(function(event) {
             event.preventDefault();
-            $.ajax({
-                type: "POST",
-                url: '@Url.RouteUrl("AddMulti", new {testId = Context.GetRouteData().Values["testId"]})',
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader("RequestVerificationToken",
-                        $('input:hidden[name="__RequestVerificationToken"]').val());
-                },
-                data: JSON.stringify(getData()),
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: function(response) {
-                    console.log(response);
-                },
-                failure: function(response) {
-                    console.log(response);
-                }
-            });
+            submitQuestion('@Url.RouteUrl("AddMulti", new {testId = Context.GetRouteData().Values["testId"]})');
+
         });
     </script>
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }

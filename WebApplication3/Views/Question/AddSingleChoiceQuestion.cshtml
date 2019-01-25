@@ -101,8 +101,8 @@
 
         $("form").submit(function(event) {
             event.preventDefault();
-            getAddQuestionFormData(
-                '@Url.RouteUrl("AddSingle", new {testId = Context.GetRouteData().Values["testId"]})');
+            submitQuestion('@Url.RouteUrl("AddSingle", new {testId = Context.GetRouteData().Values["testId"]})');
+
         });
     </script>
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }

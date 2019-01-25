@@ -23,7 +23,6 @@ namespace WebApplication3.Data
         public DbSet<DragAndDropQuestion> DragAndDropQuestions { get; set; }
         public DbSet<Option> Options { get; set; }
         public DbSet<Answer> Answers { get; set; }
-        public DbSet<DragAndDropOption> DragAndDropOptions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -51,8 +50,6 @@ namespace WebApplication3.Data
             builder.Entity<SingleChoiceAnswer>().ToTable("SingleChoiceAnswer");
             builder.Entity<TextAnswer>().ToTable("TextAnswer");
             builder.Entity<DragAndDropAnswer>().ToTable("DragAndDropAnswer");
-
-            builder.Entity<DragAndDropOption>().ToTable("DragAndDropOption");
             builder.Entity<Option>().ToTable("Option");
             builder.Entity<Test>().ToTable("Test");
             builder.Entity<TestResult>().ToTable("TestResult");

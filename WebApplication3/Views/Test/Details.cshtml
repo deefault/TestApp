@@ -32,7 +32,7 @@
                         <th scope="col">Название</th>
                         <th scope="col">Тип</th>
                         <th scope="col"></th>
-                        
+
                     </tr>
                     </thead>
                     <tbody>
@@ -41,11 +41,11 @@
                     {
 
                         <tr>
-                            
+
                             <td>@(i + 1)</td>
                             <td>
-                                    <a asp-controller="Question" asp-action="Details"
-                                       asp-route-testId="@Model.Id" asp-route-questionId="@q.Id">@q.Title</a> 
+                                <a asp-controller="Question" asp-action="Details"
+                                   asp-route-testId="@Model.Id" asp-route-questionId="@q.Id">@q.Title</a>
                             </td>
                             <td>@q.QuestionType</td>
                             <td>
@@ -65,21 +65,21 @@
 
                     </tbody>
                 </table>
-               
+
             }
             <div class="form-group row">
-                <select class="form-control col-lg-4" id="questionType" 
+                <select class="form-control col-lg-4" id="questionType"
                         asp-items="Html.GetEnumSelectList<Question.QuestionTypeEnum>()"
                         onchange="changeUrl()">
-                </select> 
+                </select>
             </div>
             <div class="form-group row">
-                <a class="btn btn-primary" id="addLink" asp-controller="Question" asp-action="AddGet" asp-route-testId="@Model.Id" 
-                       asp-route-type="@((int)Question.QuestionTypeEnum.SingleChoiceQuestion)" method="get">
-                       Добавить вопрос
+                <a class="btn btn-primary" id="addLink" asp-controller="Question" asp-action="AddGet" asp-route-testId="@Model.Id"
+                   asp-route-type="@((int) Question.QuestionTypeEnum.SingleChoiceQuestion)" method="get" onclick="changeUrl()">
+                    Добавить вопрос
                 </a>
             </div>
-            
+
         </div>
     }
     else
@@ -100,22 +100,26 @@
                 // TODO: add action to complete test
             </div>
         }
-        
+
     }
 }
-<script>$("#questionType").val();
-    function changeUrl() { 
-        var href = $("#addLink").attr("href");
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    
+    <script>
+        function changeUrl() { 
+            var href = $("#addLink").attr("href");
         
-        var split = href.split("/");
-        // Get selected value
-        console.log($("#questionType").val());
-        split[split.length-1] = $("#questionType").val();
-        href = split.join("/");
-        $("#addLink").attr("href", href);
-        console.log(href);
-    }
-    $('#deleteLink').click(function() {
-        $(this).parents('form:first').submit();
-    });
-</script>
+            var split = href.split("/");
+            // Get selected value
+            console.log($("#questionType").val());
+            split[split.length-1] = $("#questionType").val();
+            href = split.join("/");
+            $("#addLink").attr("href", href);
+            console.log(href);
+        }
+        $('#deleteLink').click(function() {
+            $(this).parents('form:first').submit();
+        });
+    </script>
+}

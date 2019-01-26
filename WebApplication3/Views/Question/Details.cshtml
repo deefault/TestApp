@@ -5,9 +5,10 @@
     Layout = "_Layout";
     
 }
-
-<h4>@Model.Title</h4>
-<h2>Тип вопроса: @Enum.Parse(typeof(Question.QuestionTypeEnum), Model.QuestionType)</h2>
+<hr/>
+<h3 class="text-center">@Model.Title</h3>
+<h5>Тип вопроса: @Enum.Parse(typeof(Question.QuestionTypeEnum), Model.QuestionType)</h5>
+<h5 class="text-center">Варианты</h5>
 <table class="table table-hover">
     <thead>
     <tr>

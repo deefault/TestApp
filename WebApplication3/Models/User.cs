@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace WebApplication3.Models
 {
-    public class User  : IdentityUser
+    public class User  : IdentityUser<int>
     {
         
         public ICollection<TestResult> TestResults { get; set; } //Completed tests

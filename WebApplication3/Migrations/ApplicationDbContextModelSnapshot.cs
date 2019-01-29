@@ -16,9 +16,9 @@ namespace WebApplication3.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.1.4-rtm-31024");
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("ConcurrencyStamp")
@@ -39,7 +39,7 @@ namespace WebApplication3.Migrations
                     b.ToTable("AspNetRoles");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -48,8 +48,7 @@ namespace WebApplication3.Migrations
 
                     b.Property<string>("ClaimValue");
 
-                    b.Property<string>("RoleId")
-                        .IsRequired();
+                    b.Property<int>("RoleId");
 
                     b.HasKey("Id");
 
@@ -58,7 +57,7 @@ namespace WebApplication3.Migrations
                     b.ToTable("AspNetRoleClaims");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -67,8 +66,7 @@ namespace WebApplication3.Migrations
 
                     b.Property<string>("ClaimValue");
 
-                    b.Property<string>("UserId")
-                        .IsRequired();
+                    b.Property<int>("UserId");
 
                     b.HasKey("Id");
 
@@ -77,7 +75,7 @@ namespace WebApplication3.Migrations
                     b.ToTable("AspNetUserClaims");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
                 {
                     b.Property<string>("LoginProvider");
 
@@ -85,8 +83,7 @@ namespace WebApplication3.Migrations
 
                     b.Property<string>("ProviderDisplayName");
 
-                    b.Property<string>("UserId")
-                        .IsRequired();
+                    b.Property<int>("UserId");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -95,11 +92,11 @@ namespace WebApplication3.Migrations
                     b.ToTable("AspNetUserLogins");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
                 {
-                    b.Property<string>("UserId");
+                    b.Property<int>("UserId");
 
-                    b.Property<string>("RoleId");
+                    b.Property<int>("RoleId");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -108,9 +105,9 @@ namespace WebApplication3.Migrations
                     b.ToTable("AspNetUserRoles");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
                 {
-                    b.Property<string>("UserId");
+                    b.Property<int>("UserId");
 
                     b.Property<string>("LoginProvider");
 
@@ -155,6 +152,8 @@ namespace WebApplication3.Migrations
 
                     b.Property<int?>("MultiChoiceAnswerId");
 
+                    b.Property<int>("Order");
+
                     b.Property<int>("QuestionId");
 
                     b.Property<string>("Text")
@@ -198,8 +197,7 @@ namespace WebApplication3.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("CreatedById")
-                        .IsRequired();
+                    b.Property<int>("CreatedById");
 
                     b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd();
@@ -221,8 +219,7 @@ namespace WebApplication3.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("CompletedByUserId")
-                        .IsRequired();
+                    b.Property<int>("CompletedByUserId");
 
                     b.Property<DateTime>("CompletedOn");
 
@@ -245,7 +242,7 @@ namespace WebApplication3.Migrations
 
             modelBuilder.Entity("WebApplication3.Models.User", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("AccessFailedCount");
@@ -293,6 +290,16 @@ namespace WebApplication3.Migrations
                     b.ToTable("User");
                 });
 
+            modelBuilder.Entity("WebApplication3.Models.DragAndDropAnswer", b =>
+                {
+                    b.HasBaseType("WebApplication3.Models.Answer");
+
+
+                    b.ToTable("DragAndDropAnswer");
+
+                    b.HasDiscriminator().HasValue("DragAndDropAnswer");
+                });
+
             modelBuilder.Entity("WebApplication3.Models.MultiChoiceAnswer", b =>
                 {
                     b.HasBaseType("WebApplication3.Models.Answer");
@@ -325,6 +332,16 @@ namespace WebApplication3.Migrations
                     b.ToTable("TextAnswer");
 
                     b.HasDiscriminator().HasValue("TextAnswer");
+                });
+
+            modelBuilder.Entity("WebApplication3.Models.DragAndDropQuestion", b =>
+                {
+                    b.HasBaseType("WebApplication3.Models.Question");
+
+
+                    b.ToTable("DragAndDropQuestion");
+
+                    b.HasDiscriminator().HasValue("DragAndDropQuestion");
                 });
 
             modelBuilder.Entity("WebApplication3.Models.MultiChoiceQuestion", b =>
@@ -362,15 +379,15 @@ namespace WebApplication3.Migrations
                     b.HasDiscriminator().HasValue("TextQuestion");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>")
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
                 {
                     b.HasOne("WebApplication3.Models.User")
                         .WithMany()
@@ -378,7 +395,7 @@ namespace WebApplication3.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
                 {
                     b.HasOne("WebApplication3.Models.User")
                         .WithMany()
@@ -386,9 +403,9 @@ namespace WebApplication3.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>")
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -399,7 +416,7 @@ namespace WebApplication3.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
                 {
                     b.HasOne("WebApplication3.Models.User")
                         .WithMany()

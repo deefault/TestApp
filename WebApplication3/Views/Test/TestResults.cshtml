@@ -1,4 +1,7 @@
 @using System.Security.AccessControl
+@using Microsoft.AspNetCore.Identity;
+@inject UserManager<User> UserManager;
+
 @model ICollection<TestResult>
 @{
     ViewBag.Title = "Тесты";
@@ -25,10 +28,15 @@
 <form  id="addByIdForm" method="post" class="form" role="form">
     <div asp-validation-summary="All" class="text-danger"></div>
     <div class="form-group row">
-        <input id="#testId" name="testId" type="number"/>
+        <label for="testId" class="col-1 col-form-label">ID</label>
+        <div class="col-2">
+            <input class="form-control" id="testId" name="testId" type="number" min="1"/>
+        </div>
+        <input id="userId" name="userId" type="hidden"  value="@UserManager.GetUserId(Context.User)"/>
     </div>
-    <button type="submit" class="btn btn-default">Добавить тест по ID</button>
+    <button type="submit" class="btn btn-default">Добавить пользователя по ID</button>
 </form>
+
 @if (completedTests.Count == 0)
 {
     <h3>Вы не прошли ни одного теста</h3>
@@ -148,37 +156,6 @@ else
 @section Scripts
 {
     <script>
-        $("#addByIdForm").submit(function(e) {
-            e.preventDefault();
-            addById();
-        });
-        function addById() {
-
-            var id = $("#testId").val();
-            // TODO     
-            
-            $.ajax({
-                type: "POST",
-                url: "/User/Tests/AddTestToUserAjax/",
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader("RequestVerificationToken",
-                        $('input:hidden[name="__RequestVerificationToken"]').val());
-                },
-                contentType: "application/x-www-form-urlencoded; charset=utf-8",
-                data: $("#addByIdForm").serialize(),
-                success: function(response,status,xhr) {
-                    console.log(response);
-                    $("#modalSuccessText").text("Тест с ID " + id + " успешно добавлен");
-                    $("#successModal").modal();
-                    location.reload();
-                },
-                error: function(data) {
-                    console.log(data);
-                    $("#modalErrorText").text(JSON.stringify(data.responseJSON));
-                    $("#errorModal").modal();
-                },
-            });
-            
-        }
+        
     </script>
 }

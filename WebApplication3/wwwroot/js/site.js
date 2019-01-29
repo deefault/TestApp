@@ -49,3 +49,36 @@ function submitQuestion(actionUrl){
         },
     });
 }
+
+$("#addByIdForm").submit(function(e) {
+    e.preventDefault();
+    addById();
+});
+function addById() {
+
+    var id = $("#testId").val();
+    // TODO     
+
+    $.ajax({
+        type: "POST",
+        url: "/User/Tests/AddTestToUserAjax/",
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader("RequestVerificationToken",
+                $('input:hidden[name="__RequestVerificationToken"]').val());
+        },
+        contentType: "application/x-www-form-urlencoded; charset=utf-8",
+        data: $("#addByIdForm").serialize(),
+        success: function(response) {
+            console.log(response);
+            $("#modalSuccessText").text("Успешно!");
+            $("#successModal").modal();
+            location.reload();
+        },
+        error: function(data) {
+            console.log(data);
+            $("#modalErrorText").text(JSON.stringify(data.responseJSON));
+            $("#errorModal").modal();
+        },
+    });
+
+}

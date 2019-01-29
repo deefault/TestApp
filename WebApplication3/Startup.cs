@@ -65,9 +65,10 @@ namespace WebApplication3
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
             
-            services.AddIdentity<User , IdentityRole>()
+            services.AddIdentity<User , IdentityRole<int>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddSignInManager()
+                .AddDefaultUI()
                 .AddDefaultTokenProviders();
 
             services.ConfigureApplicationCookie(options =>

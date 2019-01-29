@@ -191,12 +191,15 @@ namespace WebApplication3.Controllers
         [HttpPost]
         [Authorize]
         [Route("/User/[controller]s/AddTestToUserAjax/")]
-        public async Task<JsonResult> AddTestToUserAjax(int testId)
+        public async Task<JsonResult> AddTestToUserAjax(int testId, int userId)
         {
-            // TODO:
-            //throw new NotImplementedException();
-            var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
+            var user = await _context.Users.FindAsync(userId);
+            var test = await _context.Tests.FindAsync(testId);
+            if (user == null)
+            {
+                Response.StatusCode = 404;
+                return new JsonResult("Пользователь с данным ID не найден");
+            }
             if (test == null)
             {
                 Response.StatusCode = 404;
@@ -213,7 +216,6 @@ namespace WebApplication3.Controllers
                 Response.StatusCode =400;
                 return new JsonResult("Тест уже добавлен");
             }
-            
             
             
             TestResult testResult = new TestResult

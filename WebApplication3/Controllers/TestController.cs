@@ -95,7 +95,7 @@ namespace WebApplication3.Controllers
                 // Добавить тест к пользователю, который его создал (чтобы он тоже мог проходить его)
                 TestResult testResult = new TestResult
                 {
-                    isCompleted = false, 
+                    IsCompleted = false, 
                     Test = test,
                     CompletedByUser = user,
                     //TotalQuestions = (uint)test.Questions.Count()
@@ -160,7 +160,7 @@ namespace WebApplication3.Controllers
             }
             TestResult testResult = new TestResult
             {
-                isCompleted = false, 
+                IsCompleted = false, 
                 Test = test,
                 CompletedByUser = user,
                 CompletedOn = DateTime.Now,
@@ -220,7 +220,7 @@ namespace WebApplication3.Controllers
             
             TestResult testResult = new TestResult
             {
-                isCompleted = false, 
+                IsCompleted = false, 
                 Test = test,
                 CompletedByUser = user
                 //TotalQuestions = (uint)test.Questions.Count()
@@ -232,24 +232,72 @@ namespace WebApplication3.Controllers
         }
 
         
-        // GET /User/Tests/<id>/Start/
+        // GET 
         [Authorize]
         [HttpGet]
-        [Route("/User/[controller]s/{testId}/Start/")]
-        public Task<IActionResult> Start(int testId, ErrorViewModel model)
+        [Route("/[controller]/Result/{testResultId}/Start/")]
+        public async Task<IActionResult> Start(int testResultId)
         {
-            // TODO: страница с информацией и поддтверждением начала теста (post запрос на этот же url)
-            throw new NotImplementedException();
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var testResult = await _context.TestResults.Include(t=>t.Test)
+                .SingleAsync(tr => tr.Id == testResultId && tr.CompletedByUser == user);
+            if (testResult == null) return NotFound();
+            if (!testResult.Test.IsEnabled) return Forbid();
+            ViewBag.UserId = user.Id;
+            ViewBag.QuestionsCount = _context.Questions.Count(q => q.Test==testResult.Test);
+            return View(testResult);
         }
         
-        // POST /User/Tests/<id>/Start/
+        // POST 
         [Authorize]
         [HttpPost]
-        [Route("/User/[controller]s/{testId}/Start/")]
-        public Task<IActionResult> Start(int testId)
+        [Route("/[controller]/Result/{testResultId}/Start/")]
+        public async Task<IActionResult> Start(int testResultId, ErrorViewModel model)
         {
             // TODO: пользователь начал проходить тест, переброс на первый вопрос
-            throw new NotImplementedException();
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var testResult = await _context.TestResults
+                .Include(tr => tr.Test)
+                    .ThenInclude(t=>t.Questions)
+                .SingleAsync(t => t.Id == testResultId);
+            if (testResult == null) return NotFound();
+            if (!testResult.Test.IsEnabled) return Forbid();
+            var questions = testResult.Test.Questions;
+            if (questions.Count == 0) return NotFound();
+            List<Answer> answers = new List<Answer>();
+            Answer answer = null;
+            foreach (var question in questions)
+            {
+                switch (question.QuestionType)
+                {
+                    case "SingleChoiceQuestion":
+                       answer = new SingleChoiceAnswer();
+                       break;
+                    case "MultiChoiceQuestion":
+                        answer = new MultiChoiceAnswer();
+                        break;
+                    case "TextQuestion":
+                        answer = new TextAnswer();
+                        break;
+                    case "DragAndDropQuestion":
+                        answer = new DragAndDropAnswer();
+                        break;                            
+                }
+                if (answer == null) throw new NullReferenceException();;
+                answer.Question = question;
+                answer.Score = 0;
+                answer.TestResult = testResult;
+                
+                await _context.Answers.AddAsync(answer);
+                answers.Add(answer);
+                await _context.SaveChangesAsync();
+            }
+            // answers.Shuffle()
+           
+            
+            // TODO: redirect to first answer (question)
+            //throw new NotImplementedException();
+            return Ok();
         }
     }
 }

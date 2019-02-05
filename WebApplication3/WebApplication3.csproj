@@ -22,6 +22,7 @@
     <Compile Remove="Data\Migrations\20181027080805_InitialCreate.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Migrations" />
     <Folder Include="Pages\Question" />
     <Folder Include="Pages\Test" />
   </ItemGroup>

@@ -14,7 +14,7 @@ namespace WebApplication3.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024");
+                .HasAnnotation("ProductVersion", "2.1.2-rtm-30932");
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>
                 {
@@ -130,11 +130,15 @@ namespace WebApplication3.Migrations
                         .HasColumnName("answer_type")
                         .HasMaxLength(50);
 
+                    b.Property<int>("QuestionId");
+
                     b.Property<float>("Score");
 
-                    b.Property<int?>("TestResultId");
+                    b.Property<int>("TestResultId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("QuestionId");
 
                     b.HasIndex("TestResultId");
 
@@ -143,14 +147,34 @@ namespace WebApplication3.Migrations
                     b.HasDiscriminator<string>("AnswerType").HasValue("Answer");
                 });
 
+            modelBuilder.Entity("WebApplication3.Models.DragAndDropAnswerOption", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("ChosenOrder");
+
+                    b.Property<int?>("DragAndDropAnswerId");
+
+                    b.Property<int>("RightOptionId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DragAndDropAnswerId");
+
+                    b.HasIndex("RightOptionId");
+
+                    b.ToTable("DragAndDropAnswerOption");
+                });
+
             modelBuilder.Entity("WebApplication3.Models.Option", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<bool>("IsRight");
+                    b.Property<int?>("AnswerId");
 
-                    b.Property<int?>("MultiChoiceAnswerId");
+                    b.Property<bool>("IsRight");
 
                     b.Property<int>("Order");
 
@@ -161,7 +185,7 @@ namespace WebApplication3.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MultiChoiceAnswerId");
+                    b.HasIndex("AnswerId");
 
                     b.HasIndex("QuestionId");
 
@@ -223,13 +247,15 @@ namespace WebApplication3.Migrations
 
                     b.Property<DateTime>("CompletedOn");
 
+                    b.Property<bool>("IsCompleted");
+
                     b.Property<uint>("RightAnswersCount");
+
+                    b.Property<DateTime>("StartedOn");
 
                     b.Property<int>("TestId");
 
                     b.Property<uint>("TotalQuestions");
-
-                    b.Property<bool>("isCompleted");
 
                     b.HasKey("Id");
 
@@ -426,16 +452,34 @@ namespace WebApplication3.Migrations
 
             modelBuilder.Entity("WebApplication3.Models.Answer", b =>
                 {
-                    b.HasOne("WebApplication3.Models.TestResult")
+                    b.HasOne("WebApplication3.Models.Question", "Question")
+                        .WithMany()
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("WebApplication3.Models.TestResult", "TestResult")
                         .WithMany("Answers")
-                        .HasForeignKey("TestResultId");
+                        .HasForeignKey("TestResultId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("WebApplication3.Models.DragAndDropAnswerOption", b =>
+                {
+                    b.HasOne("WebApplication3.Models.DragAndDropAnswer")
+                        .WithMany("DragAndDropAnswerOptions")
+                        .HasForeignKey("DragAndDropAnswerId");
+
+                    b.HasOne("WebApplication3.Models.Option", "RightOption")
+                        .WithMany()
+                        .HasForeignKey("RightOptionId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("WebApplication3.Models.Option", b =>
                 {
-                    b.HasOne("WebApplication3.Models.MultiChoiceAnswer")
+                    b.HasOne("WebApplication3.Models.Answer")
                         .WithMany("Options")
-                        .HasForeignKey("MultiChoiceAnswerId");
+                        .HasForeignKey("AnswerId");
 
                     b.HasOne("WebApplication3.Models.Question", "Question")
                         .WithMany("Options")

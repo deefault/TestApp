@@ -49,8 +49,6 @@ namespace WebApplication3
             
         }
 
-        // LLLLLLLLLLLLLLLLLLLLLOl
-
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)
         {
             string contentRoot = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;

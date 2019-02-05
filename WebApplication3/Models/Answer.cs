@@ -6,27 +6,26 @@ namespace WebApplication3.Models
 {
     public abstract class Answer
     {
-        [Key]
         public int Id { get; set; }
         [Required]
-        public Question Question;
+        public Question Question { get; set; }
         [Required]
         public string AnswerType { get; set; }
         [Required]
-        [Range(0,1.00)]
         public float Score { get; set; }
+        [Required]
+        public TestResult TestResult { get; set; }
+        
+        public List<Option> Options { get; set; }
     }
     
     public  class SingleChoiceAnswer : Answer
     {
-        [Required]
         public Option Option { get; set; }
     }
     
     public  class MultiChoiceAnswer : Answer
     {
-        
-        public List<Option> Options { get; set; }
     }
     
     public  class TextAnswer : Answer
@@ -35,6 +34,14 @@ namespace WebApplication3.Models
     }
     public  class DragAndDropAnswer : Answer
     {
-        
+        public List<DragAndDropAnswerOption> DragAndDropAnswerOptions { get; set; }
+    }
+
+    public class DragAndDropAnswerOption
+    {
+        public int Id { get; set; }
+        [Required]
+        public Option RightOption { get; set; }
+        public int ChosenOrder { get; set; }
     }
 }

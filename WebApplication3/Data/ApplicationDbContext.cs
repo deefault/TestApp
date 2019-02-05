@@ -1,8 +1,8 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
- using Microsoft.AspNetCore.Identity;
- using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using WebApplication3.Models;
 
@@ -24,7 +24,12 @@ namespace WebApplication3.Data
         public DbSet<DragAndDropQuestion> DragAndDropQuestions { get; set; }
         public DbSet<Option> Options { get; set; }
         public DbSet<Answer> Answers { get; set; }
-
+        public DbSet<SingleChoiceAnswer> SingleChoiceAnswers { get; set; }
+        public DbSet<MultiChoiceAnswer> MultiChoiceAnswers { get; set; }
+        public DbSet<TextAnswer> TextAnswers { get; set; }
+        public DbSet<DragAndDropAnswer> DragAndDropAnswers { get; set; }
+        public DbSet<DragAndDropAnswerOption> DragAndDropAnswerOptions { get; set; }
+        
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -51,12 +56,12 @@ namespace WebApplication3.Data
             builder.Entity<SingleChoiceAnswer>().ToTable("SingleChoiceAnswer");
             builder.Entity<TextAnswer>().ToTable("TextAnswer");
             builder.Entity<DragAndDropAnswer>().ToTable("DragAndDropAnswer");
+            builder.Entity<DragAndDropAnswerOption>().ToTable("DragAndDropAnswerOption");
+            
             builder.Entity<Option>().ToTable("Option");
             builder.Entity<Test>().ToTable("Test");
             builder.Entity<TestResult>().ToTable("TestResult");
             builder.Entity<User>().ToTable("User");
-            
-            
         }
 
     }

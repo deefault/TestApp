@@ -14,7 +14,7 @@
         foreach (var test in Model)
         {
             
-            if (test.isCompleted)
+            if (test.IsCompleted)
             {
                 completedTests.Add(test);
             }
@@ -34,7 +34,7 @@
         </div>
         <input id="userId" name="userId" type="hidden"  value="@UserManager.GetUserId(Context.User)"/>
     </div>
-    <button type="submit" class="btn btn-default">Добавить пользователя по ID</button>
+    <button type="submit" class="btn btn-default">Добавить тест по ID</button>
 </form>
 
 @if (completedTests.Count == 0)
@@ -101,7 +101,7 @@ else
                         @item.Test.Id
                     </td>
                     <td>
-                        <a asp-controller="Test" asp-action="Start" asp-route-id="@item.Id">@item.Test.Name</a>
+                        <a asp-controller="Test" asp-action="Start" asp-route-testResultId="@item.Id">@item.Test.Name</a>
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Test.CreatedBy.UserName)

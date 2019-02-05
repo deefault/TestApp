@@ -10,10 +10,11 @@ namespace WebApplication3.Models
         [Key]
         public int Id { get; set; }
         [Required]
-        public bool isCompleted { get; set; }
+        public bool IsCompleted { get; set; }
         
         public DateTime CompletedOn { get; set; } //= DateTime.UtcNow;
-
+        public DateTime StartedOn { get; set; } 
+        
         public ICollection<Answer> Answers { get; set; }
         
         

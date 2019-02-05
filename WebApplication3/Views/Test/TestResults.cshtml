@@ -33,13 +33,16 @@
             <input class="form-control" id="testId" name="testId" type="number" min="1"/>
         </div>
         <input id="userId" name="userId" type="hidden"  value="@UserManager.GetUserId(Context.User)"/>
+        <button type="submit" class="btn btn-info">Добавить тест по ID</button>
     </div>
-    <button type="submit" class="btn btn-default">Добавить тест по ID</button>
+    
 </form>
 
 @if (completedTests.Count == 0)
 {
-    <h3>Вы не прошли ни одного теста</h3>
+    <div class="alert alert-warning" role="alert">
+        Вы не прошли ни одного теста
+    </div>
 }
 else
 {

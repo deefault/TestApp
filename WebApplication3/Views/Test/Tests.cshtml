@@ -9,7 +9,9 @@
 <h2>title</h2>
 @if (Model == null)
 {
-    <h3>Не найдено тестов</h3>
+    <div class="alert alert-warning" role="alert">
+        Вы пока еще не создали тестов
+    </div>
 }
 else
 {
@@ -20,8 +22,9 @@ else
         <table class="table">
             <tr>
                 <th>#</th>
-                <th>Test Name</th>
-                <th>Created By</th>
+                <th>Название</th>
+                <th>Включен?</th>
+                <th>Создан</th>
             </tr>
             @foreach (var item in Model)
             {
@@ -33,6 +36,16 @@ else
                         <a asp-action="Details" asp-route-id="@item.Id">@item.Name</a>
                     </td>
                     <td>
+                        @if (item.IsEnabled)
+                        {
+                            <span class="badge badge-success">Да</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-danger">Нет</span>
+                        }
+                    </td>
+                    <td>
                         @Html.DisplayFor(modelItem => item.CreatedBy.UserName)
                     </td>
                 </tr>
@@ -40,4 +53,4 @@ else
         </table>
     </dd>
 }
-<a asp-controller="Test" asp-action="Add" method="get"><button class="btn btn-default">Добавить тест</button></a>
+<a asp-controller="Test" asp-action="Add" method="get"><button class="btn btn-info">Добавить тест</button></a>

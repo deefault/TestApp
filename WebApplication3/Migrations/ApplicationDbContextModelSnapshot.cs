@@ -130,6 +130,8 @@ namespace WebApplication3.Migrations
                         .HasColumnName("answer_type")
                         .HasMaxLength(50);
 
+                    b.Property<ushort>("Order");
+
                     b.Property<int>("QuestionId");
 
                     b.Property<float>("Score");
@@ -340,7 +342,7 @@ namespace WebApplication3.Migrations
                 {
                     b.HasBaseType("WebApplication3.Models.Answer");
 
-                    b.Property<int>("OptionId");
+                    b.Property<int?>("OptionId");
 
                     b.HasIndex("OptionId");
 
@@ -520,8 +522,7 @@ namespace WebApplication3.Migrations
                 {
                     b.HasOne("WebApplication3.Models.Option", "Option")
                         .WithMany()
-                        .HasForeignKey("OptionId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("OptionId");
                 });
 
             modelBuilder.Entity("WebApplication3.Models.SingleChoiceQuestion", b =>

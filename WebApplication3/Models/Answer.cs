@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -15,6 +16,8 @@ namespace WebApplication3.Models
         public float Score { get; set; }
         [Required]
         public TestResult TestResult { get; set; }
+        [Required]
+        public ushort Order { get; set; }
         
         public List<Option> Options { get; set; }
     }

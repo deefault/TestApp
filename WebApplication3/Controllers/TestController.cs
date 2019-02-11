@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http2.HPack;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using WebApplication3.Data;
@@ -264,8 +265,13 @@ namespace WebApplication3.Controllers
             if (!testResult.Test.IsEnabled) return Forbid();
             var questions = testResult.Test.Questions;
             if (questions.Count == 0) return NotFound();
+            if (_context.Answers.Any(a => a.TestResult == testResult))
+            {
+                return RedirectToAction("Answer", "Answer", new {testResultId=testResult.Id, answerOrder=1});
+            }
             List<Answer> answers = new List<Answer>();
             Answer answer = null;
+            ushort order = 1;
             foreach (var question in questions)
             {
                 switch (question.QuestionType)
@@ -287,17 +293,18 @@ namespace WebApplication3.Controllers
                 answer.Question = question;
                 answer.Score = 0;
                 answer.TestResult = testResult;
-                
+                answer.Order = order;
                 await _context.Answers.AddAsync(answer);
                 answers.Add(answer);
                 await _context.SaveChangesAsync();
+                order++;
             }
             // answers.Shuffle()
            
             
             // TODO: redirect to first answer (question)
             //throw new NotImplementedException();
-            return Ok();
+            return RedirectToAction("Answer", "Answer", new {testResultId=testResult.Id, answerOrder=1});
         }
     }
 }

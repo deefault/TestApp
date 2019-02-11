@@ -1,0 +1,48 @@
+﻿@model ICollection<Answer>
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+    
+}
+
+<nav aria-label="...">
+    <ul class="pagination justify-content-center">
+        <li class="page-item disabled">
+            <span class="page-link">Previous</span>
+        </li>
+        @foreach (var a in Model)
+        {
+            
+            if (Model.First() == a)
+            {
+                <li class="page-item active"> 
+                    <span class="page-link" id="@a.Id">
+                        @a.Order
+                        <span class="sr-only">(current)</span>
+                    </span>
+                </li>
+            }
+            else
+            {
+                <li class="page-item">
+                    <a class="page-link" id="@a.Id">@a.Order</a>
+                </li>
+            }
+        }
+        <li class="page-item">
+            <a class="page-link" href="#">Next</a>
+        </li>
+    </ul>
+</nav>
+
+<script type="text/javascript">
+    var activeID = $(".nav li .active").id;
+    console.log(activeID);
+    $(".nav li").on("click", function() {
+        $(".nav li").removeClass("active");
+        $(this).addClass("active");
+    });
+    
+    
+</script>

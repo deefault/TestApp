@@ -35,14 +35,22 @@
         </li>
     </ul>
 </nav>
+@section Scripts
+{
+    <script type="text/javascript">
+        function getActiveAnswerId() {
+            var activeID = $($("li").filter($(".active"))[0]).children(".page-link")[0].id;
+            console.log("active answer id: " +activeID);
+            return activeID;
+        }
 
-<script type="text/javascript">
-    var activeID = $(".nav li .active").id;
-    console.log(activeID);
-    $(".nav li").on("click", function() {
-        $(".nav li").removeClass("active");
-        $(this).addClass("active");
-    });
-    
-    
-</script>
+        getActiveAnswerId();
+        
+        $(".nav li").on("click", function() {
+            $(".nav li").removeClass("active");
+            $(this).addClass("active");
+        });
+
+
+    </script>
+}

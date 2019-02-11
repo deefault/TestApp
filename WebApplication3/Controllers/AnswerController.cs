@@ -55,7 +55,7 @@ namespace WebApplication3.Controllers
                 .Include(tr=> tr.Answers)
             .SingleAsync(tr=>tr.Id == testResultId);
             if (testResult == null) return NotFound();
-            var answers = testResult.Answers;
+            var answers = testResult.Answers.OrderBy(a=>a.Order).ToList();
             
             return View("Answer",answers);
         }

@@ -105,14 +105,6 @@
                     var tmp = getActiveAnswerId() - -1;
                     $(".active").removeClass("active");
                     $("#" + tmp).addClass("active");
-                    if (getActiveAnswerId() == 1)
-                        $(".prev-btn").addClass("disabled");
-                    else
-                        $(".prev-btn").removeClass("disabled");
-                    if (getActiveAnswerId() == $("nav ul").children().filter(".num-btn").length)
-                        $(".next-btn").addClass("disabled");
-                    else
-                        $(".next-btn").removeClass("disabled");
                 }
             }
             else
@@ -121,30 +113,21 @@
                         var tmp = getActiveAnswerId() - 1;
                         $(".active").removeClass("active");
                         $("#" + tmp).addClass("active");
-                        if (getActiveAnswerId() == 1)
-                            $(".prev-btn").addClass("disabled");
-                        else
-                            $(".prev-btn").removeClass("disabled");
-                        if (getActiveAnswerId() == $("nav ul").children().filter(".num-btn").length)
-                            $(".next-btn").addClass("disabled");
-                        else
-                            $(".next-btn").removeClass("disabled");
                     }
                 }
                 else
                     if (e.target.parentElement.classList.contains("num-btn")) {
                         $(".active").removeClass("active");
                         $("#" + e.target.parentElement.id).addClass("active");
-                        if (getActiveAnswerId() == 1)
-                            $(".prev-btn").addClass("disabled");
-                        else
-                            $(".prev-btn").removeClass("disabled");
-                        if (getActiveAnswerId() == $("nav ul").children().filter(".num-btn").length)
-                            $(".next-btn").addClass("disabled");
-                        else
-                            $(".next-btn").removeClass("disabled");
                     }
-                
+            if (getActiveAnswerId() == 1)
+                $(".prev-btn").addClass("disabled");
+            else
+                $(".prev-btn").removeClass("disabled");
+            if (getActiveAnswerId() == $("nav ul").children().filter(".num-btn").length)
+                $(".next-btn").addClass("disabled");
+            else
+                $(".next-btn").removeClass("disabled");
         });
     </script>
 }

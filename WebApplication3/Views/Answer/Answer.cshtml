@@ -8,7 +8,7 @@
 
 <nav aria-label="...">
     <ul class="pagination justify-content-center">
-        <li class="page-item disabled">
+        <li class="page-item disabled prev-btn">
             <span class="page-link">Previous</span>
         </li>
         @foreach (var a in Model)
@@ -16,8 +16,8 @@
             
             if (Model.First() == a)
             {
-                <li class="page-item active"> 
-                    <span class="page-link" id="@a.Id">
+                <li class="page-item active num-btn" id="@a.Id"> 
+                    <span class="page-link">
                         @a.Order
                         <span class="sr-only">(current)</span>
                     </span>
@@ -52,56 +52,10 @@
         }
         
         getActiveAnswerId();
-        
-        $(".nav li").on("click", function() {
-            $(".nav li").removeClass("active");
-            $(this).addClass("active");
-        });
-        
-        function submitAnswer(form) {
-            var id = getActiveAnswerId();
-            var type = getActiveAnswerType();
-            var actionUrl;
-            // выбрать url и собрать data
-            if (type == "SingleChoiceAnswer") {
-                var data = form.serialize();
-                // TODO: actionUrl = @@//Url.RouteUrl();
-            }
-            else if (type == "MultiChoiceAnswer") {
-                
-            }
-            else if (type === "TextAnswer") {
-                
-            }
-            else if (type === "DragAndDropAnswer") {
-
-            } else throw new exception("Not valid answer type!s");
-            
-            // запрос
-            $.ajax({
-                type: "POST",
-                url: actionUrl,
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader("RequestVerificationToken",
-                        $('input:hidden[name="__RequestVerificationToken"]').val());
-                },
-                data: data,
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: function(response) {
-                    //window.location.href = response;
-                },
-                error: function(xhr, textStatus, errorThrown) {
-                    //console.log(textStatus + ": Couldn't add control. " + errorThrown);
-                    addFormErrors(xhr.responseJSON);
-
-                },
-            });
-        }
 
         $("nav ul").on("click", function (e) {
             if (e.target.parentElement.classList.contains("next-btn")) {
-                if (getActiveAnswerId() != $("nav ul").children().filter(".num-btn").length) {
+                if (!e.target.parentElement.classList.contains("disabled")) {
                     var tmp = getActiveAnswerId() - -1;
                     $(".active").removeClass("active");
                     $("#" + tmp).addClass("active");
@@ -109,7 +63,7 @@
             }
             else
                 if (e.target.parentElement.classList.contains("prev-btn")) {
-                    if (getActiveAnswerId() != 1) {
+                    if (!e.target.parentElement.classList.contains("disabled")) {
                         var tmp = getActiveAnswerId() - 1;
                         $(".active").removeClass("active");
                         $("#" + tmp).addClass("active");
@@ -120,11 +74,11 @@
                         $(".active").removeClass("active");
                         $("#" + e.target.parentElement.id).addClass("active");
                     }
-            if (getActiveAnswerId() == 1)
+            if (getActiveAnswerId() == $("nav ul").children().filter(".num-btn")[0].id)
                 $(".prev-btn").addClass("disabled");
             else
                 $(".prev-btn").removeClass("disabled");
-            if (getActiveAnswerId() == $("nav ul").children().filter(".num-btn").length)
+            if (getActiveAnswerId() == $("nav ul").children().filter(".num-btn")[$("nav ul").children().filter(".num-btn").length - 1].id)
                 $(".next-btn").addClass("disabled");
             else
                 $(".next-btn").removeClass("disabled");

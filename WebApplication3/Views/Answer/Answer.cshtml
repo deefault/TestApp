@@ -49,22 +49,8 @@
         
         $("nav ul").on("click", function (e) {
             if (e.target.parentElement.classList.contains("next-btn")) {
-                var tmp = getActiveAnswerId() - -1;
-                $(".active").removeClass("active");
-                $("#" + tmp).addClass("active");
-                if (getActiveAnswerId() == 1)
-                    $(".prev-btn").addClass("disabled");
-                else
-                    $(".prev-btn").removeClass("disabled");
-                if (getActiveAnswerId() == $("nav ul").children().filter(".num-btn").length)
-                    $(".next-btn").addClass("disabled");
-                else
-                    $(".next-btn").removeClass("disabled");
-            }
-            
-            else
-                if (e.target.parentElement.classList.contains("prev-btn")) {
-                    var tmp = getActiveAnswerId() - 1;
+                if (getActiveAnswerId() != $("nav ul").children().filter(".num-btn").length) {
+                    var tmp = getActiveAnswerId() - -1;
                     $(".active").removeClass("active");
                     $("#" + tmp).addClass("active");
                     if (getActiveAnswerId() == 1)
@@ -76,8 +62,25 @@
                     else
                         $(".next-btn").removeClass("disabled");
                 }
-                else {
-                    if (getActiveAnswerId() != 1 && getActiveAnswerId() != $("nav ul").children().filter(".num-btn").length) {
+            }
+            else
+                if (e.target.parentElement.classList.contains("prev-btn")) {
+                    if (getActiveAnswerId() != 1) {
+                        var tmp = getActiveAnswerId() - 1;
+                        $(".active").removeClass("active");
+                        $("#" + tmp).addClass("active");
+                        if (getActiveAnswerId() == 1)
+                            $(".prev-btn").addClass("disabled");
+                        else
+                            $(".prev-btn").removeClass("disabled");
+                        if (getActiveAnswerId() == $("nav ul").children().filter(".num-btn").length)
+                            $(".next-btn").addClass("disabled");
+                        else
+                            $(".next-btn").removeClass("disabled");
+                    }
+                }
+                else
+                    if (e.target.parentElement.classList.contains("num-btn")) {
                         $(".active").removeClass("active");
                         $("#" + e.target.parentElement.id).addClass("active");
                         if (getActiveAnswerId() == 1)
@@ -87,8 +90,9 @@
                         if (getActiveAnswerId() == $("nav ul").children().filter(".num-btn").length)
                             $(".next-btn").addClass("disabled");
                         else
-                            $(".next-btn").removeClass("disabled");}
-                }
+                            $(".next-btn").removeClass("disabled");
+                    }
+                
         });
     </script>
 }

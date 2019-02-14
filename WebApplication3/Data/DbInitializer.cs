@@ -44,7 +44,7 @@ namespace WebApplication3.Data
             _context.Database.EnsureDeleted();
             _context.Database.EnsureCreated();
             InitializeUsers();
-            InitializeTests();
+            //InitializeTests();
             
         }
 

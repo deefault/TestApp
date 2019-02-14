@@ -17,7 +17,7 @@
             if (Model.First() == a)
             {
                 <li class="page-item active"> 
-                    <span class="page-link" id="@a.Id" answer-type="@a.AnswerType">
+                    <span class="page-link" id="@a.Id">
                         @a.Order
                         <span class="sr-only">(current)</span>
                     </span>
@@ -25,13 +25,14 @@
             }
             else
             {
-                <li class="page-item">
-                    <a class="page-link" id="@a.Id" answer-type="@a.AnswerType">@a.Order</a>
+                <li class="page-item num-btn" id="@a.Id" answer-type="@a.AnswerType">
+                    <a class="page-link">@a.Order</a>
+
                 </li>
             }
         }
-        <li class="page-item">
-            <a class="page-link" href="#">Next</a>
+        <li class="page-item next-btn">
+            <span class="page-link">Next</span>
         </li>
     </ul>
 </nav>
@@ -39,7 +40,7 @@
 {
     <script type="text/javascript">
         function getActiveAnswerId() {
-            var activeID = $($("li").filter($(".active"))[0]).children(".page-link")[0].id;
+            var activeID = $($("li").filter($(".active"))[0])[0].id;
             console.log("active answer id: " +activeID);
             return activeID;
         }
@@ -98,5 +99,52 @@
             });
         }
 
+        $("nav ul").on("click", function (e) {
+            if (e.target.parentElement.classList.contains("next-btn")) {
+                if (getActiveAnswerId() != $("nav ul").children().filter(".num-btn").length) {
+                    var tmp = getActiveAnswerId() - -1;
+                    $(".active").removeClass("active");
+                    $("#" + tmp).addClass("active");
+                    if (getActiveAnswerId() == 1)
+                        $(".prev-btn").addClass("disabled");
+                    else
+                        $(".prev-btn").removeClass("disabled");
+                    if (getActiveAnswerId() == $("nav ul").children().filter(".num-btn").length)
+                        $(".next-btn").addClass("disabled");
+                    else
+                        $(".next-btn").removeClass("disabled");
+                }
+            }
+            else
+                if (e.target.parentElement.classList.contains("prev-btn")) {
+                    if (getActiveAnswerId() != 1) {
+                        var tmp = getActiveAnswerId() - 1;
+                        $(".active").removeClass("active");
+                        $("#" + tmp).addClass("active");
+                        if (getActiveAnswerId() == 1)
+                            $(".prev-btn").addClass("disabled");
+                        else
+                            $(".prev-btn").removeClass("disabled");
+                        if (getActiveAnswerId() == $("nav ul").children().filter(".num-btn").length)
+                            $(".next-btn").addClass("disabled");
+                        else
+                            $(".next-btn").removeClass("disabled");
+                    }
+                }
+                else
+                    if (e.target.parentElement.classList.contains("num-btn")) {
+                        $(".active").removeClass("active");
+                        $("#" + e.target.parentElement.id).addClass("active");
+                        if (getActiveAnswerId() == 1)
+                            $(".prev-btn").addClass("disabled");
+                        else
+                            $(".prev-btn").removeClass("disabled");
+                        if (getActiveAnswerId() == $("nav ul").children().filter(".num-btn").length)
+                            $(".next-btn").addClass("disabled");
+                        else
+                            $(".next-btn").removeClass("disabled");
+                    }
+                
+        });
     </script>
 }

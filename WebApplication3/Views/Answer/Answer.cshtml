@@ -16,7 +16,7 @@
             
             if (Model.First() == a)
             {
-                <li class="page-item active num-btn" id="@a.Id"> 
+                <li class="page-item active num-btn" id="@a.Id" answer-type="@a.AnswerType"> 
                     <span class="page-link">
                         @a.Order
                         <span class="sr-only">(current)</span>
@@ -46,12 +46,53 @@
         }
 
         function getActiveAnswerType() {
-            var activeType = $($("li").filter($(".active"))[0]).children(".page-link")[0].attr("answer-type");
+            var activeType = $($("li").filter($(".active"))[0])[0].attr("answer-type");
             console.log("active answer type: " +activeType);
             return activeType;
         }
         
         getActiveAnswerId();
+
+        function submitAnswer(form) {
+            var id = getActiveAnswerId();
+            var type = getActiveAnswerType();
+            var actionUrl;
+            // выбрать url и собрать data
+            if (type == "SingleChoiceAnswer") {
+                var data = form.serialize();
+                // TODO: actionUrl = @@//Url.RouteUrl();
+            }
+            else if (type == "MultiChoiceAnswer") {
+
+            }
+            else if (type === "TextAnswer") {
+
+            }
+            else if (type === "DragAndDropAnswer") {
+
+            } else throw new exception("Not valid answer type!s");
+
+            // запрос
+            $.ajax({
+                type: "POST",
+                url: actionUrl,
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("RequestVerificationToken",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+                data: data,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    //window.location.href = response;
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    //console.log(textStatus + ": Couldn't add control. " + errorThrown);
+                    addFormErrors(xhr.responseJSON);
+
+                },
+            });
+        }
 
         $("nav ul").on("click", function (e) {
             if (e.target.parentElement.classList.contains("next-btn")) {

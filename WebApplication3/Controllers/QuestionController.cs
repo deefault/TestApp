@@ -334,7 +334,7 @@ namespace WebApplication3.Controllers
             throw new NotImplementedException();
         }
 
-        [HttpPost]
+        /*[HttpPost]
         [Authorize]
         [Route("/Tests/{testId}/Question/{questionId}/Edit/Single/", Name = "EditSingle")]
         [ValidateAntiForgeryToken]
@@ -380,7 +380,7 @@ namespace WebApplication3.Controllers
             }
             Response.StatusCode = StatusCodes.Status400BadRequest;
             return new JsonResult(errors);
-        }
+        }*/
 
         [HttpPost]
         [Authorize]

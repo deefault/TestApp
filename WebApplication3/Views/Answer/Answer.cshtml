@@ -42,25 +42,29 @@
 @section Scripts
 {
     <script type="text/javascript">
-        var type = getActiveAnswerType();
-        var id = getActiveAnswerId();
-        var actionUrl = "/"+type+"/"+id+"/";
-                
-        $.ajax({
-            cache: false,
-            method: "GET",
-            url: actionUrl,
-            dataType: "html",
-                    
-            success: function(response) {
-                //заменить html код формой внутри div
-                $("#formDiv").html(response);
-            },
-            error: function(xhr, textStatus, errorThrown) {
-                console.log(xhr.responseJSON);
-            }
-        });
-        
+        selectAnswer();
+
+        function selectAnswer() {
+            var type = getActiveAnswerType();
+            var id = getActiveAnswerId();
+            var actionUrl = "/" + type + "/" + id + "/";
+
+            $.ajax({
+                cache: false,
+                method: "GET",
+                url: actionUrl,
+                dataType: "html",
+
+                success: function (response) {
+                    //заменить html код формой внутри div
+                    $("#formDiv").html(response);
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log(xhr.responseJSON);
+                }
+            });
+        }
+
         function getActiveAnswerId() {
             var activeID = $($("li").filter($(".active"))[0])[0].id;
             return activeID;
@@ -148,6 +152,7 @@
             else
                 $(".next-btn").removeClass("disabled");
 
+            selectAnswer();
         });
     </script>
 }

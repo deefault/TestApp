@@ -15,22 +15,22 @@
                     {
                         <div class="form-check">
                             <label class="form-check-label">
-                                <input name="option" type="radio" option-id="@option.Id" 
+                                <input name="option" type="radio" option-id="@option.Id"
                                        id="@option.Id" group="Options" checked="true">
                                 @option.Text
                             </label>
-                        </div>     
+                        </div>
                     }
                     else
                     {
                         <div class="form-check">
                             <label class="form-check-label">
-                                <input name="option" type="radio" option-id="@option.Id" 
+                                <input name="option" type="radio" option-id="@option.Id"
                                        id="@option.Id" group="Options">
                                 @option.Text
                             </label>
-                        </div>  
-                    }    
+                        </div>
+                    }
                 }
                 else
                 {
@@ -39,17 +39,17 @@
                             <input name="option"  type="radio" option-id="@option.Id" id="@option.Id" group="options">
                             @option.Text
                         </label>
-                    </div>  
+                    </div>
                 }
-                  
+
             }
         </div>
     </fieldset>
-    <button class="btn btn-default">Ответить</button>
+@*     <button class="btn btn-default">Ответить</button>
     <script>
         $("form").submit(function(event) {
             event.preventDefault();
             submitAnswer();
         });
-    </script>
+    </script> *@
 </form>

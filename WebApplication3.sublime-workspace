@@ -1,0 +1,248 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"pare",
+				"parentElement\t: Element Node"
+			],
+			[
+				"conso",
+				"console.log"
+			],
+			[
+				"ac",
+				"activeID"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"gitsavv",
+				"GitSavvy: help"
+			],
+			[
+				"Github: ",
+				"Github: History"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Disable Package"
+			],
+			[
+				"Package Control: ins",
+				"Package Control: Install Package"
+			],
+			[
+				"Git: pus",
+				"Git: Push"
+			],
+			[
+				"Git: pu",
+				"Git: Pull"
+			],
+			[
+				"Package Control: is",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: in",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: re",
+				"Package Control: Remove Package"
+			],
+			[
+				"Package Control: remo",
+				"Package Control: Remove Package"
+			],
+			[
+				"Package Control:ins",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Cinsta",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Cont",
+				"Package Control: List Packages"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/kochkin/Projects/TestsApp/WebApplication3/Views/Question/EditSingleChoiceQuestion.cshtml",
+		"/home/kochkin/Projects/WebApplication3/Controllers/TestController.cs",
+		"/home/kochkin/Projects/WebApplication3/Views/Question/EditSingleChoiceQuestion.cshtml",
+		"/home/kochkin/Projects/WebApplication3/Views/Question/AddTextQuestion.cshtml",
+		"/home/kochkin/.config/sublime-text-3/Packages/User/trailing_spaces.sublime-settings",
+		"/home/kochkin/Projects/WebApplication3/Views/Question/Details.cshtml",
+		"/home/kochkin/Projects/WebApplication3/Views/Question/EditMultiChoiceQuestion.cshtml",
+		"/home/kochkin/Projects/WebApplication3/Views/Question/AddMultiChoiceQuestion.cshtml",
+		"/home/kochkin/Projects/WebApplication3/Models/QuestionViewModels/AddSingleChoiceQuestionViewModel.cs",
+		"/home/kochkin/Projects/WebApplication3/Views/Question/AddSingleChoiceQuestion.cshtml",
+		"/home/kochkin/Projects/WebApplication3/Controllers/QuestionController.cs",
+		"/home/kochkin/.config/sublime-text-3/Packages/TrailingSpaces/trailing_spaces.sublime-settings",
+		"/home/kochkin/Projects/WebApplication3/Views/Answer/Answer.cshtml",
+		"/home/kochkin/Projects/WebApplication3/Views/Question/AddDragAndDropQuestion.cshtml",
+		"/home/kochkin/.config/sublime-text-3/Packages/User/Asp.Net Core.sublime-build",
+		"/home/kochkin/.config/sublime-text-3/Packages/Color Highlighter/ColorHighlighter.sublime-settings"
+	],
+	"find":
+	{
+		"height": 0.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 48.5745937962
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.SublimeLinter":
+	{
+		"height": 0.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "Packages/User/Asp.Net Core.sublime-build",
+	"project": "WebApplication3.sublime-project",
+	"replace":
+	{
+		"height": 0.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 376.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

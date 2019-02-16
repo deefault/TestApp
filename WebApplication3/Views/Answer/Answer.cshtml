@@ -5,7 +5,10 @@
     Layout = "_Layout";
     
 }
-
+<div id="formDiv" class="container">
+    
+    
+</div>
 <nav aria-label="...">
     <ul class="pagination justify-content-center">
         <li class="page-item disabled prev-btn">
@@ -39,56 +42,77 @@
 @section Scripts
 {
     <script type="text/javascript">
+        var type = getActiveAnswerType();
+        var id = getActiveAnswerId();
+        var actionUrl = "/"+type+"/"+id+"/";
+                
+        $.ajax({
+            cache: false,
+            method: "GET",
+            url: actionUrl,
+            dataType: "html",
+                    
+            success: function(response) {
+                //заменить html код формой внутри div
+                $("#formDiv").html(response);
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                console.log(xhr.responseJSON);
+            }
+        });
+        
         function getActiveAnswerId() {
             var activeID = $($("li").filter($(".active"))[0])[0].id;
-            console.log("active answer id: " +activeID);
             return activeID;
         }
 
         function getActiveAnswerType() {
-            var activeType = $($("li").filter($(".active"))[0])[0].attr("answer-type");
-            console.log("active answer type: " +activeType);
+            var activeType = $($("li").filter($(".active"))[0])[0].getAttribute("answer-type");
             return activeType;
         }
-        
-        getActiveAnswerId();
+        function getActiveAnswerOrder() {
+            return $("#" + getActiveAnswerId()).children()[0].text;
+        }
 
-        function submitAnswer(form) {
+        function submitAnswer() {
             var id = getActiveAnswerId();
             var type = getActiveAnswerType();
-            var actionUrl;
+            var actionUrl = "/"+type+"/"+id+"/";
             // выбрать url и собрать data
             if (type == "SingleChoiceAnswer") {
-                var data = form.serialize();
-                // TODO: actionUrl = @@//Url.RouteUrl();
+                var data = {};
+                var option = $("input[name='option']:checked");
+                data.OptionId = option.attr("id");
+                
             }
             else if (type == "MultiChoiceAnswer") {
 
             }
-            else if (type === "TextAnswer") {
+            else if (type == "TextAnswer") {
 
             }
-            else if (type === "DragAndDropAnswer") {
+            else if (type == "DragAndDropAnswer") {
 
             } else throw new exception("Not valid answer type!s");
 
+            console.log(data);
             // запрос
             $.ajax({
-                type: "POST",
+                method: "POST",
                 url: actionUrl,
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("RequestVerificationToken",
                         $('input:hidden[name="__RequestVerificationToken"]').val());
                 },
-                data: data,
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify(data),
                 success: function (response) {
-                    //window.location.href = response;
+                    console.log(response);
                 },
                 error: function (xhr, textStatus, errorThrown) {
                     //console.log(textStatus + ": Couldn't add control. " + errorThrown);
-                    addFormErrors(xhr.responseJSON);
+                    console.log(xhr);
+
 
                 },
             });
@@ -103,18 +127,18 @@
                 }
             }
             else
-                if (e.target.parentElement.classList.contains("prev-btn")) {
-                    if (!e.target.parentElement.classList.contains("disabled")) {
-                        var tmp = getActiveAnswerId() - 1;
-                        $(".active").removeClass("active");
-                        $("#" + tmp).addClass("active");
-                    }
+            if (e.target.parentElement.classList.contains("prev-btn")) {
+                if (!e.target.parentElement.classList.contains("disabled")) {
+                    var tmp = getActiveAnswerId() - 1;
+                    $(".active").removeClass("active");
+                    $("#" + tmp).addClass("active");
                 }
-                else
-                    if (e.target.parentElement.classList.contains("num-btn")) {
-                        $(".active").removeClass("active");
-                        $("#" + e.target.parentElement.id).addClass("active");
-                    }
+            }
+            else
+            if (e.target.parentElement.classList.contains("num-btn")) {
+                $(".active").removeClass("active");
+                $("#" + e.target.parentElement.id).addClass("active");
+            }
             if (getActiveAnswerId() == $("nav ul").children().filter(".num-btn")[0].id)
                 $(".prev-btn").addClass("disabled");
             else
@@ -123,6 +147,7 @@
                 $(".next-btn").addClass("disabled");
             else
                 $(".next-btn").removeClass("disabled");
+
         });
     </script>
 }

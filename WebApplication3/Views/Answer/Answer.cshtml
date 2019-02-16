@@ -3,11 +3,11 @@
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
-    
+
 }
 <div id="formDiv" class="container">
-    
-    
+
+
 </div>
 <nav aria-label="...">
     <ul class="pagination justify-content-center">
@@ -16,10 +16,10 @@
         </li>
         @foreach (var a in Model)
         {
-            
+
             if (Model.First() == a)
             {
-                <li class="page-item active num-btn" id="@a.Id" answer-type="@a.AnswerType"> 
+                <li class="page-item active num-btn" id="@a.Id" answer-type="@a.AnswerType">
                     <span class="page-link">
                         @a.Order
                         <span class="sr-only">(current)</span>
@@ -87,7 +87,7 @@
                 var data = {};
                 var option = $("input[name='option']:checked");
                 data.OptionId = option.attr("id");
-                
+
             }
             else if (type == "MultiChoiceAnswer") {
 
@@ -123,6 +123,7 @@
         }
 
         $("nav ul").on("click", function (e) {
+            submitAnswer();
             if (e.target.parentElement.classList.contains("next-btn")) {
                 if (!e.target.parentElement.classList.contains("disabled")) {
                     var tmp = getActiveAnswerId() - -1;
@@ -151,7 +152,6 @@
                 $(".next-btn").addClass("disabled");
             else
                 $(".next-btn").removeClass("disabled");
-
             selectAnswer();
         });
     </script>

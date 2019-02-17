@@ -65,11 +65,11 @@
                         $("li[btn-id=" + e.target.parentElement.getAttribute("btn-id") + "]").addClass("active");
                     }
             var activeId = getActiveAnswerId(); 
-            if (activeId == $("nav ul").children().filter(".num-btn")[0].id)
+            if (activeId == $("nav ul").children().filter(".num-btn")[0].getAttribute("btn-id"))
                 $(".prev-btn").addClass("disabled");
             else
                 $(".prev-btn").removeClass("disabled");
-            if (activeId == $("nav ul").children().filter(".num-btn")[$("nav ul").children().filter(".num-btn").length - 1].id)
+            if (activeId == $("nav ul").children().filter(".num-btn")[$("nav ul").children().filter(".num-btn").length - 1].getAttribute("btn-id"))
                 $(".next-btn").addClass("disabled");
             else
                 $(".next-btn").removeClass("disabled");

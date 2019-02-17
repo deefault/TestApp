@@ -87,7 +87,7 @@ namespace WebApplication3.Controllers
             {
                 return Forbid();
             }
-            
+
             model.TestId = test.Id;
             TryValidateModel(model);
             if (ModelState.IsValid)
@@ -109,15 +109,15 @@ namespace WebApplication3.Controllers
                         var optionCreated = (await _context.AddAsync(
                             new Option{IsRight = option.IsRight,Text = option.Text,Question = questionCreated})).Entity;
                         //questionCreated.Options.Add(optionCreated);
-                       
+
                         if (optionCreated.IsRight) questionCreated.RightAnswer = optionCreated;
                     }
                     // обновить вопрос и применить изменения
                     _context.Questions.Update(questionCreated);
-                    await _context.SaveChangesAsync(); 
+                    await _context.SaveChangesAsync();
                     ts.Commit();
                 }
-                
+
                 var redirectUrl = Url.Action("Details", "Test", new {id = test.Id});
                 return new JsonResult(redirectUrl);
             }
@@ -148,7 +148,7 @@ namespace WebApplication3.Controllers
             {
                 return Forbid();
             }
-            
+
             model.TestId = test.Id;
             TryValidateModel(model);
             if (ModelState.IsValid)
@@ -168,14 +168,14 @@ namespace WebApplication3.Controllers
                     {
                         // добавить в базу Options
                         var optionCreated = (await _context.AddAsync(
-                            new Option{IsRight = option.IsRight,Text = option.Text,Question = questionCreated})).Entity;   
+                            new Option{IsRight = option.IsRight,Text = option.Text,Question = questionCreated})).Entity;
                     }
                     // обновить вопрос и применить изменения
                     _context.Questions.Update(questionCreated);
-                    await _context.SaveChangesAsync(); 
+                    await _context.SaveChangesAsync();
                     ts.Commit();
                 }
-                
+
                 var redirectUrl = Url.Action("Details", "Test", new {id = test.Id});
                 return new JsonResult(redirectUrl);
             }
@@ -278,7 +278,7 @@ namespace WebApplication3.Controllers
             }
             return View(model);
         }
-        
+
         [HttpGet]
         [Authorize]
         [Route("/Tests/{testId}/Question/{questionId}/Details/")]
@@ -310,7 +310,7 @@ namespace WebApplication3.Controllers
                 .SingleOrDefaultAsync(q => q.Id == questionId);
             if (question == null) return NotFound();
             if (question.Test != test) return NotFound();
-            
+
             switch (question.QuestionType)
             {
                 // TODO Edit pages
@@ -334,6 +334,54 @@ namespace WebApplication3.Controllers
         {
             throw new NotImplementedException();
         }
+
+        /*[HttpPost]
+        [Authorize]
+        [Route("/Tests/{testId}/Question/{questionId}/Edit/Single/", Name = "EditSingle")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditSingleChoiceQuestion([FromBody]AddSingleChoiceQuestionViewModel model)
+        {
+            TryValidateModel(model);
+            if (ModelState.IsValid)
+            {
+                // транзакция
+                using (var ts = _context.Database.BeginTransaction())
+                {
+                    List<Option> options= new List<Option>();
+                    var question = new SingleChoiceQuestion
+                    {
+                        Title = model.Title,QuestionType = Enum.GetName(typeof(Question.QuestionTypeEnum), 1),Test  = test
+                    };
+                    //создать в базе вопрос
+                    var questionCreated = (await _context.AddAsync(question)).Entity;
+                    await _context.SaveChangesAsync(); //применить изменения
+                    foreach (var option in model.Options)
+                    {
+                        // добавить в базу Options
+                        var optionCreated = (await _context.AddAsync(
+                            new Option{IsRight = option.IsRight,Text = option.Text,Question = questionCreated})).Entity;
+                        //questionCreated.Options.Add(optionCreated);
+
+                        if (optionCreated.IsRight) questionCreated.RightAnswer = optionCreated;
+                    }
+                    // обновить вопрос и применить изменения
+                    _context.Questions.Update(questionCreated);
+                    await _context.SaveChangesAsync();
+                    ts.Commit();
+                }
+
+                var redirectUrl = Url.Action("Details", "Test", new {id = test.Id});
+                return new JsonResult(redirectUrl);
+            }
+            var errors = new List<ModelError>();
+            foreach (var modelState in ViewData.ModelState.Values) {
+                foreach (ModelError error in modelState.Errors) {
+                    errors.Add(error);
+                }
+            }
+            Response.StatusCode = StatusCodes.Status400BadRequest;
+            return new JsonResult(errors);
+        }*/
 
         [HttpPost]
         [Authorize]

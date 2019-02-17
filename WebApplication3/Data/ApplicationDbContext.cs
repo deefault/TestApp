@@ -29,6 +29,7 @@ namespace WebApplication3.Data
         public DbSet<TextAnswer> TextAnswers { get; set; }
         public DbSet<DragAndDropAnswer> DragAndDropAnswers { get; set; }
         public DbSet<DragAndDropAnswerOption> DragAndDropAnswerOptions { get; set; }
+        public DbSet<AnswerOption> AnswerOptions { get; set; }
         
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -62,6 +63,18 @@ namespace WebApplication3.Data
             builder.Entity<Test>().ToTable("Test");
             builder.Entity<TestResult>().ToTable("TestResult");
             builder.Entity<User>().ToTable("User");
+            
+            // many-to-many
+            builder.Entity<AnswerOption>()
+                .HasKey(ao => new { ao.AnswerId, ao.OptionId });
+            builder.Entity<AnswerOption>()
+                .HasOne(ao => ao.Answer)
+                .WithMany(a => a.AnswerOptions)
+                .HasForeignKey(ao => ao.AnswerId);
+            builder.Entity<AnswerOption>()
+                .HasOne(ao => ao.Option)
+                .WithMany(o => o.AnswerOptions)
+                .HasForeignKey(ao => ao.OptionId);
         }
 
     }

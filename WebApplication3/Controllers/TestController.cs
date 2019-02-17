@@ -239,11 +239,17 @@ namespace WebApplication3.Controllers
         [Route("/[controller]/Result/{testResultId}/Start/")]
         public async Task<IActionResult> Start(int testResultId)
         {
+            ViewBag.IsStarted = false;
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var testResult = await _context.TestResults.Include(t=>t.Test)
                 .SingleAsync(tr => tr.Id == testResultId && tr.CompletedByUser == user);
             if (testResult == null) return NotFound();
             if (!testResult.Test.IsEnabled) return Forbid();
+            if (_context.Answers.Any(a => a.TestResult == testResult))
+            {
+                ViewBag.IsStarted = true;
+            }
+            
             ViewBag.UserId = user.Id;
             ViewBag.QuestionsCount = _context.Questions.Count(q => q.Test==testResult.Test);
             return View(testResult);

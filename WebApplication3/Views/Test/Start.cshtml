@@ -11,9 +11,18 @@
     <hr/>
     <p>Название теста: @Model.Test.Name</p>
     <p>Вопросов: @ViewBag.QuestionsCount</p>
-
-    <form asp-controller="Test" asp-action="Start" asp-route-testResultId="@Model.Id" class="form" role="form" method="post">
-        <div asp-validation-summary="All" class="text-danger"></div>
-        <button type="submit" class="btn btn-success">Начать Тест</button>
-    </form> 
+    @if (ViewBag.IsStarted)
+    {
+            <a class="btn btn-primary" role="button" 
+               href="@Url.Action("Answer", "Answer", new {testResultId = Model.Id, answerOrder = 1})">
+                Продолжить Тест
+            </a>
+    }
+    else
+    {
+        <form asp-controller="Test" asp-action="Start" asp-route-testResultId="@Model.Id" class="form" role="form" method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <button type="submit" class="btn btn-success">Начать Тест</button> 
+        </form> 
+    }
 </div>

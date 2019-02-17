@@ -82,3 +82,83 @@ function addById() {
     });
 
 }
+
+// Answer
+
+function loadAnswer() {
+    var type = getActiveAnswerType();
+    var id = getActiveAnswerId();
+    var actionUrl = "/"+type+"/"+id+"/";
+
+    $.ajax({
+        cache: false,
+        method: "GET",
+        url: actionUrl,
+        dataType: "html",
+
+        success: function(response) {
+            //заменить html код формой внутри div
+            $("#formDiv").html(response);
+        },
+        error: function(xhr, textStatus, errorThrown) {
+            console.log(xhr.responseJSON);
+        }
+    });
+}
+
+function getActiveAnswerId() {
+    var activeID = $($("li").filter($(".active"))[0])[0].id;
+    return activeID;
+}
+
+function getActiveAnswerType() {
+    var activeType = $($("li").filter($(".active"))[0])[0].getAttribute("answer-type");
+    return activeType;
+}
+
+function getActiveAnswerOrder() {
+    return $("#" + getActiveAnswerId()).children()[0].text;
+}
+
+function submitAnswer() {
+    var id = getActiveAnswerId();
+    var type = getActiveAnswerType();
+    var actionUrl = "/"+type+"/"+id+"/";
+    // выбрать url и собрать data
+    if (type == "SingleChoiceAnswer") {
+        var data = {};
+        var option = $("input[name='option']:checked");
+        data.OptionId = option.attr("id");
+
+    }
+    else if (type == "MultiChoiceAnswer") {
+
+    }
+    else if (type == "TextAnswer") {
+
+    }
+    else if (type == "DragAndDropAnswer") {
+
+    } else throw new exception("Not valid answer type!s");
+
+    console.log(data);
+    // запрос
+    $.ajax({
+        method: "POST",
+        url: actionUrl,
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("RequestVerificationToken",
+                $('input:hidden[name="__RequestVerificationToken"]').val());
+        },
+        contentType: "application/json",
+        data: JSON.stringify(data),
+        success: function (response) {
+            console.log(response);
+            $(".next-btn").click();
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            //console.log(textStatus + ": Couldn't add control. " + errorThrown);
+            console.log(xhr);
+        },
+    });
+}

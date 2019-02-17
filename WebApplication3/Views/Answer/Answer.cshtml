@@ -39,89 +39,19 @@
         </li>
     </ul>
 </nav>
+
+
 @section Scripts
 {
     <script type="text/javascript">
-        var type = getActiveAnswerType();
-        var id = getActiveAnswerId();
-        var actionUrl = "/"+type+"/"+id+"/";
-                
-        $.ajax({
-            cache: false,
-            method: "GET",
-            url: actionUrl,
-            dataType: "html",
-                    
-            success: function(response) {
-                //заменить html код формой внутри div
-                $("#formDiv").html(response);
-            },
-            error: function(xhr, textStatus, errorThrown) {
-                console.log(xhr.responseJSON);
-            }
-        });
+        loadAnswer();
         
-        function getActiveAnswerId() {
-            var activeID = $($("li").filter($(".active"))[0])[0].id;
-            return activeID;
-        }
-
-        function getActiveAnswerType() {
-            var activeType = $($("li").filter($(".active"))[0])[0].getAttribute("answer-type");
-            return activeType;
-        }
-        function getActiveAnswerOrder() {
-            return $("#" + getActiveAnswerId()).children()[0].text;
-        }
-
-        function submitAnswer() {
-            var id = getActiveAnswerId();
-            var type = getActiveAnswerType();
-            var actionUrl = "/"+type+"/"+id+"/";
-            // выбрать url и собрать data
-            if (type == "SingleChoiceAnswer") {
-                var data = {};
-                var option = $("input[name='option']:checked");
-                data.OptionId = option.attr("id");
-                
-            }
-            else if (type == "MultiChoiceAnswer") {
-
-            }
-            else if (type == "TextAnswer") {
-
-            }
-            else if (type == "DragAndDropAnswer") {
-
-            } else throw new exception("Not valid answer type!s");
-
-            console.log(data);
-            // запрос
-            $.ajax({
-                method: "POST",
-                url: actionUrl,
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader("RequestVerificationToken",
-                        $('input:hidden[name="__RequestVerificationToken"]').val());
-                },
-                contentType: "application/json",
-                data: JSON.stringify(data),
-                success: function (response) {
-                    console.log(response);
-                },
-                error: function (xhr, textStatus, errorThrown) {
-                    //console.log(textStatus + ": Couldn't add control. " + errorThrown);
-                    console.log(xhr);
-
-
-                },
-            });
-        }
-
         $("nav ul").on("click", function (e) {
+            var activeId = getActiveAnswerId(); 
+            
             if (e.target.parentElement.classList.contains("next-btn")) {
                 if (!e.target.parentElement.classList.contains("disabled")) {
-                    var tmp = getActiveAnswerId() - -1;
+                    var tmp = activeId - -1;
                     $(".active").removeClass("active");
                     $("#" + tmp).addClass("active");
                 }
@@ -129,7 +59,7 @@
             else
             if (e.target.parentElement.classList.contains("prev-btn")) {
                 if (!e.target.parentElement.classList.contains("disabled")) {
-                    var tmp = getActiveAnswerId() - 1;
+                    var tmp = activeId - 1;
                     $(".active").removeClass("active");
                     $("#" + tmp).addClass("active");
                 }
@@ -139,14 +69,18 @@
                 $(".active").removeClass("active");
                 $("#" + e.target.parentElement.id).addClass("active");
             }
-            if (getActiveAnswerId() == $("nav ul").children().filter(".num-btn")[0].id)
+            if (activeId == $("nav ul").children().filter(".num-btn")[0].id)
                 $(".prev-btn").addClass("disabled");
             else
                 $(".prev-btn").removeClass("disabled");
-            if (getActiveAnswerId() == $("nav ul").children().filter(".num-btn")[$("nav ul").children().filter(".num-btn").length - 1].id)
+            if (activeId == $("nav ul").children().filter(".num-btn")[$("nav ul").children().filter(".num-btn").length - 1].id)
                 $(".next-btn").addClass("disabled");
             else
                 $(".next-btn").removeClass("disabled");
+
+            submitAnswer();
+
+            loadAnswer();
 
         });
     </script>

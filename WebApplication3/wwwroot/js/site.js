@@ -128,7 +128,7 @@ function submitAnswer() {
     if (type == "SingleChoiceAnswer") {
         var data = {};
         var option = $("input[name='option']:checked");
-        data.OptionId = option.attr("id");
+        data.OptionId = option.attr("option-id");
 
     }
     else if (type == "MultiChoiceAnswer") {
@@ -154,7 +154,6 @@ function submitAnswer() {
         data: JSON.stringify(data),
         success: function (response) {
             console.log(response);
-            $(".next-btn").click();
         },
         error: function (xhr, textStatus, errorThrown) {
             //console.log(textStatus + ": Couldn't add control. " + errorThrown);

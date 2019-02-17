@@ -48,6 +48,7 @@
         
         $("nav ul").on("click", function (e) {
             var activeId = getActiveAnswerId(); 
+            submitAnswer();
             
             if (e.target.parentElement.classList.contains("next-btn")) {
                 if (!e.target.parentElement.classList.contains("disabled")) {
@@ -77,8 +78,6 @@
                 $(".next-btn").addClass("disabled");
             else
                 $(".next-btn").removeClass("disabled");
-
-            submitAnswer();
 
             loadAnswer();
 

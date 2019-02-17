@@ -107,7 +107,7 @@ function loadAnswer() {
 }
 
 function getActiveAnswerId() {
-    var activeID = $($("li").filter($(".active"))[0])[0].id;
+    var activeID = $($("li").filter($(".active"))[0])[0].getAttribute("btn-id");
     return activeID;
 }
 

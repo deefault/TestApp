@@ -19,7 +19,7 @@
 
             if (Model.First() == a)
             {
-                <li class="page-item active num-btn" id="@a.Id" answer-type="@a.AnswerType">
+                <li class="page-item active num-btn" btn-id="@a.Id" answer-type="@a.AnswerType">
                     <a class="page-link">
                         @a.Order
                     </a>
@@ -27,7 +27,7 @@
             }
             else
             {
-                <li class="page-item num-btn" id="@a.Id" answer-type="@a.AnswerType">
+                <li class="page-item num-btn" btn-id="@a.Id" answer-type="@a.AnswerType">
                     <a class="page-link">@a.Order</a>
                 </li>
             }
@@ -48,7 +48,7 @@
                 if (!e.target.parentElement.classList.contains("disabled")) {
                     var tmp = getActiveAnswerId() - -1;
                     $(".active").removeClass("active");
-                    $("#" + tmp).addClass("active");
+                    $("li[btn-id=" + tmp + "]").addClass("active");
                 }
             }
             else
@@ -56,13 +56,13 @@
                     if (!e.target.parentElement.classList.contains("disabled")) {
                         var tmp = getActiveAnswerId() - 1;
                         $(".active").removeClass("active");
-                        $("#" + tmp).addClass("active");
+                        $("li[btn-id=" + tmp + "]").addClass("active");
                     }
                 }
                 else
                     if (e.target.parentElement.classList.contains("num-btn")) {
                         $(".active").removeClass("active");
-                        $("#" + e.target.parentElement.id).addClass("active");
+                        $("li[btn-id=" + e.target.parentElement.getAttribute("btn-id") + "]").addClass("active");
                     }
             var activeId = getActiveAnswerId(); 
             if (activeId == $("nav ul").children().filter(".num-btn")[0].id)

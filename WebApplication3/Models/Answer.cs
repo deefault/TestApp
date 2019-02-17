@@ -19,7 +19,7 @@ namespace WebApplication3.Models
         [Required]
         public ushort Order { get; set; }
         
-        public List<Option> Options { get; set; }
+       
     }
     
     public  class SingleChoiceAnswer : Answer
@@ -29,6 +29,7 @@ namespace WebApplication3.Models
     
     public  class MultiChoiceAnswer : Answer
     {
+        public ICollection<AnswerOption> AnswerOptions { get; set; }
     }
     
     public  class TextAnswer : Answer
@@ -46,5 +47,13 @@ namespace WebApplication3.Models
         [Required]
         public Option RightOption { get; set; }
         public int ChosenOrder { get; set; }
+    }
+
+    public class AnswerOption
+    {
+        public int AnswerId { get; set; }
+        public MultiChoiceAnswer Answer { get; set; }
+        public int OptionId { get; set; }
+        public Option Option { get; set; }
     }
 }

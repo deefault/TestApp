@@ -299,7 +299,7 @@ namespace WebApplication3.Controllers
         [HttpGet]
         [Authorize]
         [Route("/Tests/{testId}/Question/{questionId}/Edit/")]
-        public async Task<IActionResult> EditGet(int testId, int questionId)
+        public async Task<IActionResult> Edit(int testId, int questionId)
         {
             var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
             var user = await _userManager.GetUserAsync(HttpContext.User);
@@ -329,7 +329,8 @@ namespace WebApplication3.Controllers
         [Authorize]
         [ValidateAntiForgeryToken]
         [Route("/Tests/{testId}/Question/{questionId}/Edit/")]
-        public async Task<IActionResult> Edit()
+        public async Task<IActionResult> EditSingleChoiceQuestion(int testId, int questionId, 
+            [FromBody] AddSingleChoiceQuestionViewModel model)
         {
             throw new NotImplementedException();
         }

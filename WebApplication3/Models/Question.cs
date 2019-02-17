@@ -71,5 +71,7 @@ namespace WebApplication3.Models
         public Question Question { get; set; }
         [Required]
         public int Order { get; set; }
+        
+        public ICollection<AnswerOption> AnswerOptions { get; set; }
     }
 }

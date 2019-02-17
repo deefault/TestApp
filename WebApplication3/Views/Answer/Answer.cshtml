@@ -3,11 +3,11 @@
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
-    
+
 }
 <div id="formDiv" class="container">
-    
-    
+
+
 </div>
 <nav aria-label="...">
     <ul class="pagination justify-content-center">
@@ -16,21 +16,19 @@
         </li>
         @foreach (var a in Model)
         {
-            
+
             if (Model.First() == a)
             {
-                <li class="page-item active num-btn" id="@a.Id" answer-type="@a.AnswerType"> 
-                    <span class="page-link">
+                <li class="page-item active num-btn" id="@a.Id" answer-type="@a.AnswerType">
+                    <a class="page-link">
                         @a.Order
-                        <span class="sr-only">(current)</span>
-                    </span>
+                    </a>
                 </li>
             }
             else
             {
                 <li class="page-item num-btn" id="@a.Id" answer-type="@a.AnswerType">
                     <a class="page-link">@a.Order</a>
-
                 </li>
             }
         }
@@ -39,37 +37,34 @@
         </li>
     </ul>
 </nav>
-
-
 @section Scripts
-{
+    {
     <script type="text/javascript">
         loadAnswer();
-        
+
         $("nav ul").on("click", function (e) {
-            var activeId = getActiveAnswerId(); 
             submitAnswer();
-            
             if (e.target.parentElement.classList.contains("next-btn")) {
                 if (!e.target.parentElement.classList.contains("disabled")) {
-                    var tmp = activeId - -1;
+                    var tmp = getActiveAnswerId() - -1;
                     $(".active").removeClass("active");
                     $("#" + tmp).addClass("active");
                 }
             }
             else
-            if (e.target.parentElement.classList.contains("prev-btn")) {
-                if (!e.target.parentElement.classList.contains("disabled")) {
-                    var tmp = activeId - 1;
-                    $(".active").removeClass("active");
-                    $("#" + tmp).addClass("active");
+                if (e.target.parentElement.classList.contains("prev-btn")) {
+                    if (!e.target.parentElement.classList.contains("disabled")) {
+                        var tmp = getActiveAnswerId() - 1;
+                        $(".active").removeClass("active");
+                        $("#" + tmp).addClass("active");
+                    }
                 }
-            }
-            else
-            if (e.target.parentElement.classList.contains("num-btn")) {
-                $(".active").removeClass("active");
-                $("#" + e.target.parentElement.id).addClass("active");
-            }
+                else
+                    if (e.target.parentElement.classList.contains("num-btn")) {
+                        $(".active").removeClass("active");
+                        $("#" + e.target.parentElement.id).addClass("active");
+                    }
+            var activeId = getActiveAnswerId(); 
             if (activeId == $("nav ul").children().filter(".num-btn")[0].id)
                 $(".prev-btn").addClass("disabled");
             else
@@ -78,9 +73,7 @@
                 $(".next-btn").addClass("disabled");
             else
                 $(".next-btn").removeClass("disabled");
-
             loadAnswer();
-
         });
     </script>
 }

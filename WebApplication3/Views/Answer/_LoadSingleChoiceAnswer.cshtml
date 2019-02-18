@@ -4,52 +4,37 @@
     <div>
         <h4>@Model.Question.Title</h4>
     </div>
-    <input type="hidden" value="@Model.Id" type></input>
+    <input type="hidden" value="@Model.Id">
     <fieldset class="form-group row" id="options">
         <div class="col-sm-10">
             @foreach (var option in Model.Question.Options)
             {
                 if (Model.Option != null)
                 {
-                    if (Model.Option.Id == option.Id)
-                    {
-                        <div class="form-check">
-                            <label class="form-check-label">
-                                <input name="option" type="radio" option-id="@option.Id"
-                                       id="@option.Id" group="Options" checked="true">
-                                @option.Text
-                            </label>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="form-check">
-                            <label class="form-check-label">
-                                <input name="option" type="radio" option-id="@option.Id"
-                                       id="@option.Id" group="Options">
-                                @option.Text
-                            </label>
-                        </div>
-                    }
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input name="option" type="radio" option-id="@option.Id" group="Options" @((Model.Option.Id == option.Id) ? "checked" : "" )>
+                            @option.Text
+                        </label>
+                    </div>
                 }
                 else
                 {
                     <div class="form-check">
                         <label class="form-check-label">
-                            <input name="option"  type="radio" option-id="@option.Id" id="@option.Id" group="options">
+                            <input name="option" type="radio" option-id="@option.Id" group="options">
                             @option.Text
                         </label>
                     </div>
                 }
-
             }
         </div>
     </fieldset>
-@*     <button class="btn btn-default">Ответить</button>
-    <script>
-        $("form").submit(function(event) {
-            event.preventDefault();
-            submitAnswer();
-        });
-    </script> *@
+    @*<button class="btn btn-default">Ответить</button>
+        <script>
+            $("form").submit(function (event) {
+                event.preventDefault();
+                submitAnswer();
+            });
+        </script>*@
 </form>

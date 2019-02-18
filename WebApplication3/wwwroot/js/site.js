@@ -12,7 +12,11 @@ function getAddQuestionFormData() {
     console.log(options);
     for (i = 0; i < options.length; i++) {
         var o = {};
-        o.Text = $(options[i]).find("#Text").val();
+        var optionInput = $(options[i]).find("#Text");
+        o.Text = optionInput.val();
+        if (optionInput.attr("option-id") != undefined){
+            o.Id = optionInput.attr("option-id"); 
+        }
         o.IsRight = $(options[i]).find("#isRight").prop("checked");
         data.Options.push(o);
     }
@@ -44,6 +48,13 @@ function submitQuestion(actionUrl){
         },
         error: function(xhr, textStatus, errorThrown) {
             //console.log(textStatus + ": Couldn't add control. " + errorThrown);
+            var ul = form.find("ul");
+            if (xhr.status == 500){
+                ul.append('<li>HTTP 500 Ошибка на стороне сервера</li>');
+            }
+            if (xhr.status == 404){
+                ul.append('<li>HTTP 404 Ресурс не найден</li>');
+            }
             addFormErrors(xhr.responseJSON);
 
         },
@@ -128,7 +139,7 @@ function submitAnswer() {
     if (type == "SingleChoiceAnswer") {
         var data = {};
         var option = $("input[name='option']:checked");
-        data.OptionId = option.attr("id");
+        data.OptionId = option.getAttribute("option-id");
 
     }
     else if (type == "MultiChoiceAnswer") {
@@ -154,7 +165,7 @@ function submitAnswer() {
         data: JSON.stringify(data),
         success: function (response) {
             console.log(response);
-            $(".next-btn").click();
+            //$(".next-btn").click();
         },
         error: function (xhr, textStatus, errorThrown) {
             //console.log(textStatus + ": Couldn't add control. " + errorThrown);

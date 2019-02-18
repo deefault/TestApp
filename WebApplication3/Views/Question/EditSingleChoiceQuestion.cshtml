@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Routing
-@model WebApplication3.Models.QuestionViewModels.AddSingleChoiceQuestionViewModel
+@model WebApplication3.Models.Question
 
 @{
     ViewBag.Title = "Редактирование вопроса";
@@ -31,7 +31,7 @@
 							    {
 								<tr>
                                     <td class="item-table__cell">
-                                        <input id="Text" asp-for="Text" type="text" class="item__text-field" value="@(o.Text)">
+                                        <input id="Text" option-id="@o.Id" asp-for="@o.Text" type="text" class="item__text-field" value="@(o.Text)">
                                     </td>
                                     <td class="item-table__cell" align="right">
                                         <button class="item-table__del-row-btn">
@@ -63,7 +63,7 @@
                         </tr>
                     </script>
 
-                    <input type="hidden" value="@ViewContext.RouteData.Values["testId"]" asp-for="TestId" />
+                    <input type="hidden" value="@ViewContext.RouteData.Values["testId"]" asp-for="Test.Id" />
 
                     <div class="form-group row">
                         <div class="col-md-offset-2 col-md-10">
@@ -99,7 +99,8 @@
 
         $("form").submit(function(event) {
             event.preventDefault();
-            submitQuestion('@Url.RouteUrl("EditSingle", new {testId = Context.GetRouteData().Values["testId"]})');
+            submitQuestion('@Url.RouteUrl("EditSingle", new {testId = Context.GetRouteData().Values["testId"], 
+                                questionId=Model.Id})');
 
         });
     </script>

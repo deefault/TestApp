@@ -52,7 +52,7 @@
             
             if (e.target.parentElement.classList.contains("next-btn")) {
                 if (!e.target.parentElement.classList.contains("disabled")) {
-                    var tmp = activeId - -1;
+                    var tmp = getActiveAnswerId - -1;
                     $(".active").removeClass("active");
                     $("#" + tmp).addClass("active");
                 }
@@ -60,7 +60,7 @@
             else
             if (e.target.parentElement.classList.contains("prev-btn")) {
                 if (!e.target.parentElement.classList.contains("disabled")) {
-                    var tmp = activeId - 1;
+                    var tmp = getActiveAnswerId - 1;
                     $(".active").removeClass("active");
                     $("#" + tmp).addClass("active");
                 }
@@ -70,11 +70,11 @@
                 $(".active").removeClass("active");
                 $("#" + e.target.parentElement.id).addClass("active");
             }
-            if (activeId == $("nav ul").children().filter(".num-btn")[0].id)
+            if (getActiveAnswerId() == $("nav ul").children().filter(".num-btn")[0].id)
                 $(".prev-btn").addClass("disabled");
             else
                 $(".prev-btn").removeClass("disabled");
-            if (activeId == $("nav ul").children().filter(".num-btn")[$("nav ul").children().filter(".num-btn").length - 1].id)
+            if (getActiveAnswerId() == $("nav ul").children().filter(".num-btn")[$("nav ul").children().filter(".num-btn").length - 1].id)
                 $(".next-btn").addClass("disabled");
             else
                 $(".next-btn").removeClass("disabled");

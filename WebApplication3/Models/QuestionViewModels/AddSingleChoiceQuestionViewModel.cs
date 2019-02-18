@@ -17,6 +17,8 @@ namespace WebApplication3.Models.QuestionViewModels
         public string Text { get; set; }
         [Required]
         public bool IsRight { get; set; }
+
+        public int? Id { get; set; } = null;
     }
 
 

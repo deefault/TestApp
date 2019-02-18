@@ -118,7 +118,7 @@ function loadAnswer() {
 }
 
 function getActiveAnswerId() {
-    var activeID = $($("li").filter($(".active"))[0])[0].id;
+    var activeID = $($("li").filter($(".active"))[0])[0].getAttribute("btn-id");
     return activeID;
 }
 
@@ -139,7 +139,7 @@ function submitAnswer() {
     if (type == "SingleChoiceAnswer") {
         var data = {};
         var option = $("input[name='option']:checked");
-        data.OptionId = option.getAttribute("option-id");
+        data.OptionId = option.attr("option-id");
 
     }
     else if (type == "MultiChoiceAnswer") {
@@ -165,7 +165,6 @@ function submitAnswer() {
         data: JSON.stringify(data),
         success: function (response) {
             console.log(response);
-            //$(".next-btn").click();
         },
         error: function (xhr, textStatus, errorThrown) {
             //console.log(textStatus + ": Couldn't add control. " + errorThrown);

@@ -99,8 +99,7 @@
 
         $("form").submit(function(event) {
             event.preventDefault();
-            submitQuestion('@Url.RouteUrl("EditMulti", new {testId = Context.GetRouteData().Values["testId"], 
-                                questionId=Model.Id})');
+            submitQuestion('@Url.RouteUrl("EditMulti", new {testId = Context.GetRouteData().Values["testId"], questionId=Model.Id})');
 
         });
     </script>

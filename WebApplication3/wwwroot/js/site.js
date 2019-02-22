@@ -26,9 +26,8 @@ function getAddQuestionFormData() {
 };
 
 function addFormErrors(errors) {
-    var form = $("form");
-    var ul = form.find("ul");
-    for (var i =0;i<errors.length;i++){
+    var ul = $("#validation-summary");
+    for (var i = 0; i < errors.length; i++){
         ul.append('<li>'+errors[i].errorMessage+'</li>');
     }
 }
@@ -49,7 +48,8 @@ function submitQuestion(actionUrl){
         },
         error: function(xhr, textStatus, errorThrown) {
             //console.log(textStatus + ": Couldn't add control. " + errorThrown);
-            var ul = form.find("ul");
+            var ul = $("#validation-summary");
+            ul.empty();
             if (xhr.status == 500){
                 ul.append('<li>HTTP 500 Ошибка на стороне сервера</li>');
             }

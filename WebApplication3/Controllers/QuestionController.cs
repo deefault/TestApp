@@ -97,7 +97,6 @@ namespace WebApplication3.Controllers
                 // транзакция
                 using (var ts = _context.Database.BeginTransaction())
                 {
-                    List<Option> options = new List<Option>();
                     var question = new SingleChoiceQuestion
                     {
                         Title = model.Title,
@@ -162,8 +161,7 @@ namespace WebApplication3.Controllers
                 // транзакция
                 using (var ts = _context.Database.BeginTransaction())
                 {
-                    List<Option> options = new List<Option>();
-                    var question = new SingleChoiceQuestion
+                    var question = new MultiChoiceQuestion
                     {
                         Title = model.Title,
                         QuestionType = Enum.GetName(typeof(Question.QuestionTypeEnum), 2),
@@ -224,7 +222,6 @@ namespace WebApplication3.Controllers
                 // транзакция
                 using (var ts = _context.Database.BeginTransaction())
                 {
-                    List<Option> options = new List<Option>();
                     var question = new DragAndDropQuestion
                     {
                         Title = model.Title,
@@ -288,7 +285,6 @@ namespace WebApplication3.Controllers
                 // транзакция
                 using (var ts = _context.Database.BeginTransaction())
                 {
-                    List<Option> options = new List<Option>();
                     var question = new TextQuestion
                     {
                         Title = model.Title,
@@ -298,14 +294,12 @@ namespace WebApplication3.Controllers
                     //создать в базе вопрос
                     var questionCreated = (await _context.AddAsync(question)).Entity;
                     await _context.SaveChangesAsync(); //применить изменения
-                    foreach (var option in model.Options)
-                    {
-                        // добавить в базу Options
-                        var optionCreated = (await _context.AddAsync(
-                            new Option { Text = option.Text, Question = questionCreated })).Entity;
-                        //questionCreated.Options.Add(optionCreated);
-                        questionCreated.TextRightAnswer = optionCreated.Text;
-                    }
+                    var option = model.Options[0];
+                    // добавить в базу Options
+                    var optionCreated = (await _context.AddAsync(
+                        new Option { Text = option.Text, Question = questionCreated })).Entity;
+                    //questionCreated.Options.Add(optionCreated);
+                    questionCreated.TextRightAnswer = optionCreated.Text;
                     // обновить вопрос и применить изменения
                     _context.Questions.Update(questionCreated);
                     await _context.SaveChangesAsync();

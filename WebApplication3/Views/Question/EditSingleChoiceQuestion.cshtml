@@ -15,7 +15,8 @@
                 <form asp-controller="Question" asp-action="EditSingleChoiceQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
                     <h4>Изменить вопрос с выбором одного правильного ответа</h4>
                     <hr />
-                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <ul class="text-danger" id="validation-summary"></ul>
+                    @*<div asp-validation-summary="All" class="text-danger"></div>*@
                     <div class="form-group row">
                         <label asp-for="Title" class="col-md-2 col-lg-2"></label>
                         <div class="col-md-10 col-lg-4">
@@ -27,20 +28,20 @@
                     <div class="items">
                         <table class="item-table" id="options">
                             <tbody id="itemTableBody">
-							    @foreach (var o in Model.Options)
-							    {
-								<tr>
-                                    <td class="item-table__cell">
-                                        <input id="Text" option-id="@o.Id" asp-for="@o.Text" type="text" class="item__text-field" value="@(o.Text)">
-                                    </td>
-                                    <td class="item-table__cell" align="right">
-                                        <button class="item-table__del-row-btn">
-                                            <span class="glyphicon glyphicon-minus"></span>
-                                        </button>
-                                        <input @((o.IsRight) ? "checked" : "") class="form-check-inline" type="radio" name="isRight" id="isRight"/>
-                                    </td>
-                                </tr>
-							    }
+                                @foreach (var o in Model.Options)
+                                {
+                                    <tr>
+                                        <td class="item-table__cell">
+                                            <input id="Text" option-id="@o.Id" asp-for="@o.Text" type="text" class="item__text-field" value="@(o.Text)">
+                                        </td>
+                                        <td class="item-table__cell" align="right">
+                                            <button class="item-table__del-row-btn">
+                                                <span class="glyphicon glyphicon-minus"></span>
+                                            </button>
+                                            <input @((o.IsRight) ? "checked" : "") class="form-check-inline" type="radio" name="isRight" id="isRight" />
+                                        </td>
+                                    </tr>
+                                }
                             </tbody>
                         </table>
                         <div class="item-table__add-row">

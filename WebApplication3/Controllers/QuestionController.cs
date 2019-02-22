@@ -368,6 +368,8 @@ namespace WebApplication3.Controllers
                     return View("EditMultiChoiceQuestion", question);
                 case nameof(Question.QuestionTypeEnum.TextQuestion):
                     return View("EditTextQuestion", question);
+                case nameof(Question.QuestionTypeEnum.DragAndDropQuestion):
+                    return View("EditDragAndDropQuestion", question);
                 default:
                     return View("EditSingleChoiceQuestion", question);
             }
@@ -413,6 +415,52 @@ namespace WebApplication3.Controllers
             foreach (var option in optionsToCreate)
             {
                 var o = new Option { Question = question, IsRight = option.IsRight, Text = option.Text };
+                _context.Options.Add(o);
+            }
+            await _context.SaveChangesAsync();
+
+        }
+
+        private async void UpdateDragAndDropQuestionOptions(List<OptionViewModel> options, Question question)
+        {
+
+            var optionsToCreate = new List<OptionViewModel>();
+            var otherOptions = new List<OptionViewModel>();
+            var optionsToUpdate = new List<Option>();
+            var optionsToDelete = new List<Option>();
+
+
+            foreach (var option in options)
+            {
+                if (option.Id == null) optionsToCreate.Add(option);
+                else otherOptions.Add(option);
+            }
+
+            List<int?> optionsIds = otherOptions.Select(o => o.Id).ToList();
+
+            optionsToUpdate = question.Options.Where(o => optionsIds.Contains(o.Id)).ToList();
+            optionsToDelete = question.Options.Where(o => !optionsIds.Contains(o.Id)).ToList();
+            foreach (var option in optionsToUpdate)
+            {
+                var optionData = options.Single(o => o.Id == option.Id);
+                option.IsRight = optionData.IsRight;
+                option.Text = optionData.Text;
+                option.Order = optionData.Order;
+                _context.Update(option);
+            }
+
+            await _context.SaveChangesAsync();
+
+            foreach (var option in optionsToDelete)
+            {
+                _context.Options.Remove(option);
+            }
+
+            await _context.SaveChangesAsync();
+
+            foreach (var option in optionsToCreate)
+            {
+                var o = new Option { Order = option.Order, Question = question, IsRight = option.IsRight, Text = option.Text };
                 _context.Options.Add(o);
             }
             await _context.SaveChangesAsync();
@@ -574,6 +622,64 @@ namespace WebApplication3.Controllers
                     UpdateQuestionOptions(model.Options, question);
                     // обновить вопрос и применить изменения
                     question.TextRightAnswer = question.Options.Single().Text;
+                    question.Title = model.Title;
+
+                    _context.Questions.Update(question);
+                    await _context.SaveChangesAsync();
+                    ts.Commit();
+                }
+
+                var redirectUrl = Url.Action("Details", "Test", new { id = test.Id });
+                return new JsonResult(redirectUrl);
+            }
+            var errors = new List<ModelError>();
+            foreach (var modelState in ViewData.ModelState.Values)
+            {
+                foreach (ModelError error in modelState.Errors)
+                {
+                    errors.Add(error);
+                }
+            }
+
+            Response.StatusCode = StatusCodes.Status400BadRequest;
+            return new JsonResult(errors);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [Route("/Tests/{testId}/DragAndDropQuestion/{questionId}/Edit/", Name = "EditDragAndDrop")]
+        public async Task<IActionResult> EditDragAndDropQuestion(int testId, int questionId, [FromBody] AddDragAndDropQuestionViewModel model)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
+            if (test == null)
+            {
+                return NotFound();
+            }
+            if (test.CreatedBy != user)
+            {
+                return Forbid();
+            }
+            var question = await _context.DragAndDropQuestions
+                .Include(q => q.Options)
+                .SingleAsync(q => q.Id == questionId);
+            if (question.Test != test)
+            {
+                return NotFound();
+            }
+
+            model.TestId = test.Id;
+            TryValidateModel(model);
+
+            if (ModelState.IsValid)
+            {
+                // транзакция
+                using (var ts = _context.Database.BeginTransaction())
+                {
+                    //обновить опшены
+                    UpdateDragAndDropQuestionOptions(model.Options, question);
+                    // обновить вопрос и применить изменения
                     question.Title = model.Title;
 
                     _context.Questions.Update(question);

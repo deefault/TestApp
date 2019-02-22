@@ -5,23 +5,16 @@ namespace WebApplication3.Models.QuestionViewModels
 {
     public class AddDragAndDropQuestionViewModel : QuestionViewModel
     {
-        public class DragAndDropOptionViewModel
-        {
-            [Required]
-            public string Text { get; set; }
-            [Required]
-            public int Order { get; set; }
-        }
-
         [Required]
         [OptionsValidation]
-        public List<DragAndDropOptionViewModel> Options { get; set; }
+        public List<OptionViewModel> Options { get; set; }
+        public int Order { get; set; }
 
         public class OptionsValidationAttribute : ValidationAttribute
         {
             protected override ValidationResult IsValid(object value, ValidationContext validationContext)
             {
-                var options = value as List<DragAndDropOptionViewModel>;
+                var options = value as List<OptionViewModel>;
                 return ValidationResult.Success;
             }
         }

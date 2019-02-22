@@ -15,9 +15,10 @@ function getAddQuestionFormData() {
         var optionInput = $(options[i]).find("#Text");
         o.Text = optionInput.val();
         if (optionInput.attr("option-id") != undefined){
-            o.Id = optionInput.attr("option-id"); 
+            o.Id = optionInput.attr("option-id");
         }
         o.IsRight = $(options[i]).find("#isRight").prop("checked");
+        o.Order = "" + i - -1;
         data.Options.push(o);
     }
     console.log(data);
@@ -68,7 +69,7 @@ $("#addByIdForm").submit(function(e) {
 function addById() {
 
     var id = $("#testId").val();
-    // TODO     
+    // TODO
 
     $.ajax({
         type: "POST",

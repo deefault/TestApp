@@ -49,7 +49,7 @@ namespace WebApplication3.Controllers
 
         [HttpGet]
         [Authorize]
-        [Route("/Tests/{testId}/Question/Add/{type}/", Name="Add")]
+        [Route("/Tests/{testId}/Question/Add/{type}/", Name = "Add")]
         public async Task<IActionResult> AddGet(int testId, int type)
         {
             var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
@@ -59,11 +59,11 @@ namespace WebApplication3.Controllers
 
             switch (type)
             {
-                case (int) Question.QuestionTypeEnum.SingleChoiceQuestion:
+                case (int)Question.QuestionTypeEnum.SingleChoiceQuestion:
                     return View("AddSingleChoiceQuestion");
-                case (int) Question.QuestionTypeEnum.MultiChoiceQuestion:
+                case (int)Question.QuestionTypeEnum.MultiChoiceQuestion:
                     return View("AddMultiChoiceQuestion");
-                case (int) Question.QuestionTypeEnum.TextQuestion:
+                case (int)Question.QuestionTypeEnum.TextQuestion:
                     return View("AddTextQuestion");
                 case (int)Question.QuestionTypeEnum.DragAndDropQuestion:
                     return View("AddDragAndDropQuestion");
@@ -97,10 +97,12 @@ namespace WebApplication3.Controllers
                 // транзакция
                 using (var ts = _context.Database.BeginTransaction())
                 {
-                    List<Option> options= new List<Option>();
+                    List<Option> options = new List<Option>();
                     var question = new SingleChoiceQuestion
                     {
-                        Title = model.Title,QuestionType = Enum.GetName(typeof(Question.QuestionTypeEnum), 1),Test  = test
+                        Title = model.Title,
+                        QuestionType = Enum.GetName(typeof(Question.QuestionTypeEnum), 1),
+                        Test = test
                     };
                     //создать в базе вопрос
                     var questionCreated = (await _context.AddAsync(question)).Entity;
@@ -109,7 +111,7 @@ namespace WebApplication3.Controllers
                     {
                         // добавить в базу Options
                         var optionCreated = (await _context.AddAsync(
-                            new Option{IsRight = option.IsRight,Text = option.Text,Question = questionCreated})).Entity;
+                            new Option { IsRight = option.IsRight, Text = option.Text, Question = questionCreated })).Entity;
                         //questionCreated.Options.Add(optionCreated);
 
                         if (optionCreated.IsRight) questionCreated.RightAnswer = optionCreated;
@@ -120,12 +122,14 @@ namespace WebApplication3.Controllers
                     ts.Commit();
                 }
 
-                var redirectUrl = Url.Action("Details", "Test", new {id = test.Id});
+                var redirectUrl = Url.Action("Details", "Test", new { id = test.Id });
                 return new JsonResult(redirectUrl);
             }
             var errors = new List<ModelError>();
-            foreach (var modelState in ViewData.ModelState.Values) {
-                foreach (ModelError error in modelState.Errors) {
+            foreach (var modelState in ViewData.ModelState.Values)
+            {
+                foreach (ModelError error in modelState.Errors)
+                {
                     errors.Add(error);
                 }
             }
@@ -158,10 +162,12 @@ namespace WebApplication3.Controllers
                 // транзакция
                 using (var ts = _context.Database.BeginTransaction())
                 {
-                    List<Option> options= new List<Option>();
+                    List<Option> options = new List<Option>();
                     var question = new SingleChoiceQuestion
                     {
-                        Title = model.Title,QuestionType = Enum.GetName(typeof(Question.QuestionTypeEnum), 2),Test  = test
+                        Title = model.Title,
+                        QuestionType = Enum.GetName(typeof(Question.QuestionTypeEnum), 2),
+                        Test = test
                     };
                     //создать в базе вопрос
                     var questionCreated = (await _context.AddAsync(question)).Entity;
@@ -170,7 +176,7 @@ namespace WebApplication3.Controllers
                     {
                         // добавить в базу Options
                         var optionCreated = (await _context.AddAsync(
-                            new Option{IsRight = option.IsRight,Text = option.Text,Question = questionCreated})).Entity;
+                            new Option { IsRight = option.IsRight, Text = option.Text, Question = questionCreated })).Entity;
                     }
                     // обновить вопрос и применить изменения
                     _context.Questions.Update(questionCreated);
@@ -178,12 +184,14 @@ namespace WebApplication3.Controllers
                     ts.Commit();
                 }
 
-                var redirectUrl = Url.Action("Details", "Test", new {id = test.Id});
+                var redirectUrl = Url.Action("Details", "Test", new { id = test.Id });
                 return new JsonResult(redirectUrl);
             }
             var errors = new List<ModelError>();
-            foreach (var modelState in ViewData.ModelState.Values) {
-                foreach (ModelError error in modelState.Errors) {
+            foreach (var modelState in ViewData.ModelState.Values)
+            {
+                foreach (ModelError error in modelState.Errors)
+                {
                     errors.Add(error);
                 }
             }
@@ -239,13 +247,15 @@ namespace WebApplication3.Controllers
                 }
 
 
-                var redirectUrl = Url.Action("Details", "Test", new {id = test.Id});
+                var redirectUrl = Url.Action("Details", "Test", new { id = test.Id });
                 return new JsonResult(redirectUrl);
             }
 
             var errors = new List<ModelError>();
-            foreach (var modelState in ViewData.ModelState.Values) {
-                foreach (ModelError error in modelState.Errors) {
+            foreach (var modelState in ViewData.ModelState.Values)
+            {
+                foreach (ModelError error in modelState.Errors)
+                {
                     errors.Add(error);
                 }
             }
@@ -257,7 +267,7 @@ namespace WebApplication3.Controllers
         [Authorize]
         [Route("/Tests/{testId}/Question/Add/Text/", Name = "AddText")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddTextQuestion(AddTextQuestionViewModel model)
+        public async Task<IActionResult> AddTextQuestion([FromBody] AddTextQuestionViewModel model)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
@@ -265,20 +275,56 @@ namespace WebApplication3.Controllers
             {
                 return NotFound();
             }
+
             if (test.CreatedBy != user)
             {
                 return Forbid();
             }
+
+            model.TestId = test.Id;
+            TryValidateModel(model);
             if (ModelState.IsValid)
             {
-                var q = new TextQuestion { Title = model.Title, Test = test, QuestionType = Enum.GetName(typeof(Question.QuestionTypeEnum), 3), TextRightAnswer = model.Text};
-                var optionCreated = (await _context.Options.AddAsync(
-                    new Option { Text = model.Text, Question = q })).Entity;
-                await _context.Questions.AddAsync(q);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Details","Test",new {id=model.TestId });
+                // транзакция
+                using (var ts = _context.Database.BeginTransaction())
+                {
+                    List<Option> options = new List<Option>();
+                    var question = new TextQuestion
+                    {
+                        Title = model.Title,
+                        QuestionType = Enum.GetName(typeof(Question.QuestionTypeEnum), 3),
+                        Test = test
+                    };
+                    //создать в базе вопрос
+                    var questionCreated = (await _context.AddAsync(question)).Entity;
+                    await _context.SaveChangesAsync(); //применить изменения
+                    foreach (var option in model.Options)
+                    {
+                        // добавить в базу Options
+                        var optionCreated = (await _context.AddAsync(
+                            new Option { Text = option.Text, Question = questionCreated })).Entity;
+                        //questionCreated.Options.Add(optionCreated);
+                        questionCreated.TextRightAnswer = optionCreated.Text;
+                    }
+                    // обновить вопрос и применить изменения
+                    _context.Questions.Update(questionCreated);
+                    await _context.SaveChangesAsync();
+                    ts.Commit();
+                }
+
+                var redirectUrl = Url.Action("Details", "Test", new { id = test.Id });
+                return new JsonResult(redirectUrl);
             }
-            return View(model);
+            var errors = new List<ModelError>();
+            foreach (var modelState in ViewData.ModelState.Values)
+            {
+                foreach (ModelError error in modelState.Errors)
+                {
+                    errors.Add(error);
+                }
+            }
+            Response.StatusCode = StatusCodes.Status400BadRequest;
+            return new JsonResult(errors);
         }
 
         [HttpGet]
@@ -312,7 +358,7 @@ namespace WebApplication3.Controllers
                 .SingleOrDefaultAsync(q => q.Id == questionId);
             if (question == null) return NotFound();
             if (question.Test != test) return NotFound();
-            
+
             switch (question.QuestionType)
             {
                 // TODO Edit pages
@@ -334,8 +380,8 @@ namespace WebApplication3.Controllers
             var otherOptions = new List<OptionViewModel>();
             var optionsToUpdate = new List<Option>();
             var optionsToDelete = new List<Option>();
-            
-            
+
+
             foreach (var option in options)
             {
                 if (option.Id == null) optionsToCreate.Add(option);
@@ -346,7 +392,7 @@ namespace WebApplication3.Controllers
 
             optionsToUpdate = question.Options.Where(o => optionsIds.Contains(o.Id)).ToList();
             optionsToDelete = question.Options.Where(o => !optionsIds.Contains(o.Id)).ToList();
-            
+
             foreach (var option in optionsToUpdate)
             {
                 var optionData = options.Single(o => o.Id == option.Id);
@@ -356,28 +402,28 @@ namespace WebApplication3.Controllers
             }
 
             await _context.SaveChangesAsync();
-            
+
             foreach (var option in optionsToDelete)
             {
                 _context.Options.Remove(option);
             }
-            
+
             await _context.SaveChangesAsync();
-            
+
             foreach (var option in optionsToCreate)
             {
-                var o = new Option {Question = question,IsRight = option.IsRight,Text = option.Text};
+                var o = new Option { Question = question, IsRight = option.IsRight, Text = option.Text };
                 _context.Options.Add(o);
             }
             await _context.SaveChangesAsync();
-            
+
         }
-        
+
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
         [Route("/Tests/{testId}/SingleChoiceQuestion/{questionId}/Edit/", Name = "EditSingle")]
-        public async Task<IActionResult> EditSingleChoiceQuestion(int testId, int questionId, 
+        public async Task<IActionResult> EditSingleChoiceQuestion(int testId, int questionId,
             [FromBody] AddSingleChoiceQuestionViewModel model)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
@@ -397,45 +443,47 @@ namespace WebApplication3.Controllers
             {
                 return NotFound();
             }
-            
+
             model.TestId = test.Id;
-            TryValidateModel(model); 
+            TryValidateModel(model);
 
             if (ModelState.IsValid)
             {
                 // транзакция
                 using (var ts = _context.Database.BeginTransaction())
                 {
-                    //обновить опшены 
-                    UpdateQuestionOptions(model.Options,question);
+                    //обновить опшены
+                    UpdateQuestionOptions(model.Options, question);
                     // обновить вопрос и применить изменения
-                    question.RightAnswer = question.Options.Single(o=>o.IsRight);
+                    question.RightAnswer = question.Options.Single(o => o.IsRight);
                     question.Title = model.Title;
-                    
+
                     _context.Questions.Update(question);
                     await _context.SaveChangesAsync();
                     ts.Commit();
                 }
 
-                var redirectUrl = Url.Action("Details", "Test", new {id = test.Id});
+                var redirectUrl = Url.Action("Details", "Test", new { id = test.Id });
                 return new JsonResult(redirectUrl);
             }
             var errors = new List<ModelError>();
-            foreach (var modelState in ViewData.ModelState.Values) {
-                foreach (ModelError error in modelState.Errors) {
+            foreach (var modelState in ViewData.ModelState.Values)
+            {
+                foreach (ModelError error in modelState.Errors)
+                {
                     errors.Add(error);
                 }
             }
-            
+
             Response.StatusCode = StatusCodes.Status400BadRequest;
             return new JsonResult(errors);
         }
-        
+
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
         [Route("/Tests/{testId}/MultiChoiceQuestion/{questionId}/Edit/", Name = "EditMulti")]
-        public async Task<IActionResult> EditMultiChoiceQuestion(int testId, int questionId, 
+        public async Task<IActionResult> EditMultiChoiceQuestion(int testId, int questionId,
             [FromBody] AddMultiChoiceQuestionViewModel model)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
@@ -455,35 +503,96 @@ namespace WebApplication3.Controllers
             {
                 return NotFound();
             }
-            
+
             model.TestId = test.Id;
-            TryValidateModel(model); 
-            
+            TryValidateModel(model);
+
             if (ModelState.IsValid)
             {
                 // транзакция
                 using (var ts = _context.Database.BeginTransaction())
                 {
-                    //обновить опшены 
-                    UpdateQuestionOptions(model.Options,question);
+                    //обновить опшены
+                    UpdateQuestionOptions(model.Options, question);
                     // обновить вопрос и применить изменения
                     question.Title = model.Title;
-                    
+
                     _context.Questions.Update(question);
                     await _context.SaveChangesAsync();
                     ts.Commit();
                 }
 
-                var redirectUrl = Url.Action("Details", "Test", new {id = test.Id});
+                var redirectUrl = Url.Action("Details", "Test", new { id = test.Id });
                 return new JsonResult(redirectUrl);
             }
             var errors = new List<ModelError>();
-            foreach (var modelState in ViewData.ModelState.Values) {
-                foreach (ModelError error in modelState.Errors) {
+            foreach (var modelState in ViewData.ModelState.Values)
+            {
+                foreach (ModelError error in modelState.Errors)
+                {
                     errors.Add(error);
                 }
             }
-            
+
+            Response.StatusCode = StatusCodes.Status400BadRequest;
+            return new JsonResult(errors);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [Route("/Tests/{testId}/TextQuestion/{questionId}/Edit/", Name = "EditText")]
+        public async Task<IActionResult> EditTextQuestion(int testId, int questionId, [FromBody] AddTextQuestionViewModel model)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
+            if (test == null)
+            {
+                return NotFound();
+            }
+            if (test.CreatedBy != user)
+            {
+                return Forbid();
+            }
+            var question = await _context.TextQuestions
+                .Include(q => q.Options)
+                .SingleAsync(q => q.Id == questionId);
+            if (question.Test != test)
+            {
+                return NotFound();
+            }
+
+            model.TestId = test.Id;
+            TryValidateModel(model);
+
+            if (ModelState.IsValid)
+            {
+                // транзакция
+                using (var ts = _context.Database.BeginTransaction())
+                {
+                    //обновить опшены
+                    UpdateQuestionOptions(model.Options, question);
+                    // обновить вопрос и применить изменения
+                    question.TextRightAnswer = question.Options.Single().Text;
+                    question.Title = model.Title;
+
+                    _context.Questions.Update(question);
+                    await _context.SaveChangesAsync();
+                    ts.Commit();
+                }
+
+                var redirectUrl = Url.Action("Details", "Test", new { id = test.Id });
+                return new JsonResult(redirectUrl);
+            }
+            var errors = new List<ModelError>();
+            foreach (var modelState in ViewData.ModelState.Values)
+            {
+                foreach (ModelError error in modelState.Errors)
+                {
+                    errors.Add(error);
+                }
+            }
+
             Response.StatusCode = StatusCodes.Status400BadRequest;
             return new JsonResult(errors);
         }
@@ -503,7 +612,7 @@ namespace WebApplication3.Controllers
             if (question.Test != test) return NotFound();
             _context.Questions.Remove(question);
             await _context.SaveChangesAsync();
-            return RedirectToAction("Details","Test", new {id = testId});
+            return RedirectToAction("Details", "Test", new { id = testId });
         }
     }
 }

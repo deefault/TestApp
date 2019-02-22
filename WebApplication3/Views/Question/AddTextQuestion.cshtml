@@ -1,42 +1,65 @@
-﻿@model WebApplication3.Models.QuestionViewModels.AddTextQuestionViewModel
+﻿@using Microsoft.AspNetCore.Routing
+@model WebApplication3.Models.QuestionViewModels.AddSingleChoiceQuestionViewModel
 
 @{
-    ViewBag.Title = "Добавить текстовый вопрос";
+    ViewBag.Title = "Добавить вопрос";
     Layout = "_Layout";
 }
 
 
-<form asp-controller="Question" asp-action="AddTextQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form">
-    <h4>Добавить текстовый вопрос</h4>
-    <hr />
-    <div asp-validation-summary="All" class="text-danger"></div>
-    <div class="form-group row">
-        <label asp-for="Title" class="col-md-2 control-label"></label>
-        <div class="col-md-10">
-            <input asp-for="Title" class="form-control" />
-            <span asp-validation-for="Title" class="text-danger"></span>
-        </div>
-    </div>
-    <table class="item-table" id="itemTable">
-        <tr>
-            <td class="item-table__cell">
-                    <input asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса"/>
-                    <span asp-validation-for="Text" class="text-danger"></span>
-            </td>
-        </tr>
-    </table>
-    
 
-    <input type="hidden" value="@ViewContext.RouteData.Values["testId"]" asp-for="TestId" />
-    <input type="hidden" value="@ViewContext.RouteData.Values["type"]" asp-for="QuestionType" />
+<div class="container">
 
-    <div class="form-group row">
-        <div class="col-md-offset-2 col-md-10">
-            <button type="submit" class="btn btn-primary">Добавить</button>
+        <div class="form-group" id="fields">
+            <div class="">
+                <form asp-controller="Question" asp-action="AddTextQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
+                    <h4>Добавить открытый вопрос</h4>
+                    <hr />
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <div class="form-group row">
+                        <label asp-for="Title" class="col-md-2 col-lg-2"></label>
+                        <div class="col-md-10 col-lg-4">
+                            <input asp-for="Title" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="items">
+                        <table class="item-table" id="options">
+                            <tbody id="itemTableBody">
+                                <tr>
+                                    <td class="item-table__cell">
+                                        <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <input type="hidden" value="@ViewContext.RouteData.Values["testId"]" asp-for="TestId" />
+
+                    <div class="form-group row">
+                        <div class="col-md-offset-2 col-md-10">
+                            <button type="submit" class="btn btn-primary">Добавить</button>
+                        </div>
+                    </div>
+                </form>
+
+                <br>
+            </div>
         </div>
-    </div>
-</form>
+
+</div>
 
 @section Scripts {
+
+    <script>
+        $("form").submit(function(event) {
+            event.preventDefault();
+            submitQuestion('@Url.RouteUrl("AddText", new {testId = Context.GetRouteData().Values["testId"]})');
+
+        });
+    </script>
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }
+

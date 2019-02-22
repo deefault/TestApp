@@ -18,8 +18,11 @@
     </tr>
     </thead>
     <tbody>
-    @{ int i = 0; }
-    @foreach (var o in Model.Options)
+    @{  
+        int i = 0;
+        var options = Model.Options.OrderBy(o => o.Order);
+    }
+    @foreach (var o in options)
     {
 
         <tr class="@((o.IsRight) ? "table-success" : "")">             

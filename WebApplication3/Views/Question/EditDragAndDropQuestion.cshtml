@@ -27,7 +27,8 @@
                     <div class="items">
                         <table class="item-table" id="options">
                             <tbody id="itemTableBody">
-                                @foreach (var o in Model.Options)
+                                @{ var options = Model.Options.OrderBy(o => o.Order); }
+                                @foreach (var o in options)
                                 {
                                     <tr>
                                         <td class="drag-handler"></td>

@@ -13,11 +13,6 @@ namespace WebApplication3.Models.QuestionViewModels
 
         public class OptionsValidationAttribute : ValidationAttribute
         {
-            public OptionsValidationAttribute()
-            {
-                this.ErrorMessage = "ErrorMessage.";
-            }
-
             protected override ValidationResult IsValid(object value, ValidationContext validationContext)
             {
                 var options = value as List<OptionViewModel>;

@@ -28,8 +28,7 @@
                     <div class="items">
                         <table class="item-table" id="options">
                             <tbody id="itemTableBody">
-                                @{ var options = Model.Options.OrderBy(o => o.Order); }
-                                @foreach (var o in options)
+                                @foreach (var o in Model.Options)
                                 {
                                     <tr>
                                         <td class="drag-handler"></td>

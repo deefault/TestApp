@@ -333,6 +333,8 @@ namespace WebApplication3.Controllers
                 .Include(q => q.Options)
                 .SingleOrDefaultAsync(q => q.Id == questionId);
             if (question == null) return NotFound();
+            if (question.QuestionType == "DragAndDropQuestion")
+            question.Options = question.Options.OrderBy(o => o.Order).ToList();
             if (question.Test != test) return NotFound();
             return View(question);
 
@@ -363,6 +365,7 @@ namespace WebApplication3.Controllers
                 case nameof(Question.QuestionTypeEnum.TextQuestion):
                     return View("EditTextQuestion", question);
                 case nameof(Question.QuestionTypeEnum.DragAndDropQuestion):
+                    question.Options = question.Options.OrderBy(o => o.Order).ToList();
                     return View("EditDragAndDropQuestion", question);
                 default:
                     return View("EditSingleChoiceQuestion", question);

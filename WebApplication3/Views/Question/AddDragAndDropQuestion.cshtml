@@ -25,8 +25,8 @@
                 </div>
 
                 <div class="items">
-                    <table class="item-table" id="itemTable">
-                        <tbody id="itemTableBody">
+                    <table class="item-table">
+                        <tbody id="item-table__body">
                             <tr>
                                 <td class="drag-handler"></td>
                                 <td class="item-table__cell">
@@ -102,7 +102,7 @@
     <script>
         $(function () {
             $(document).on('click', '.item-table__add-row-btn', function (e) {
-                var $tableBody = $('#itemTableBody');
+                var $tableBody = $('#item-table__body');
                 var htmlString = $('#rowTemplate').html();
                 $tableBody.append(htmlString);
                 return false;
@@ -114,8 +114,9 @@
                 $row.remove();
                 return false;
             });
+
             new Sortable(
-                $('#itemTableBody')[0], {
+                $('#item-table__body')[0], {
                     animation: 150,
                     scroll: true,
                     handle: '.drag-handler',

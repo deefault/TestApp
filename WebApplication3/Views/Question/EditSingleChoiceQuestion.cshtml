@@ -27,7 +27,7 @@
 
                     <div class="items">
                         <table class="item-table" id="options">
-                            <tbody id="itemTableBody">
+                            <tbody id="item-table__body">
                                 @foreach (var o in Model.Options)
                                 {
                                     <tr>
@@ -35,10 +35,10 @@
                                             <input id="Text" option-id="@o.Id" asp-for="@o.Text" type="text" class="item__text-field" value="@(o.Text)">
                                         </td>
                                         <td class="item-table__cell" align="right">
+                                            <input @((o.IsRight) ? "checked" : "") class="form-check-inline" type="radio" name="isRight" id="isRight" />
                                             <button class="item-table__del-row-btn">
                                                 <span class="glyphicon glyphicon-minus"></span>
                                             </button>
-                                            <input @((o.IsRight) ? "checked" : "") class="form-check-inline" type="radio" name="isRight" id="isRight" />
                                         </td>
                                     </tr>
                                 }
@@ -56,10 +56,10 @@
                                 <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса">
                             </td>
                             <td class="item-table__cell" align="right">
+                                <input class="form-check-inline" type="radio" name="isRight" id="isRight" />
                                 <button class="item-table__del-row-btn">
                                     <span class="glyphicon glyphicon-minus"></span>
                                 </button>
-                                <input class="form-check-inline" type="radio" name="isRight" id="isRight" />
                             </td>
                         </tr>
                     </script>
@@ -84,7 +84,7 @@
     <script>
         $(function () {
             $(document).on('click', '.item-table__add-row-btn', function (e) {
-                var $tableBody = $('#itemTableBody');
+                var $tableBody = $('#item-table__body');
                 var htmlString = $('#rowTemplate').html();
                 $tableBody.append(htmlString);
                 return false;

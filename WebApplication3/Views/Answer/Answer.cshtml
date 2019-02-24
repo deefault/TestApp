@@ -12,67 +12,31 @@
 <nav aria-label="...">
     <ul class="pagination justify-content-center">
         <li class="page-item disabled prev-btn">
-            <span class="page-link">Previous</span>
+            <span class="page-link unselectable">Previous</span>
         </li>
         @foreach (var a in Model)
         {
-
-            if (Model.First() == a)
-            {
-                <li class="page-item active num-btn" btn-id="@a.Id" answer-type="@a.AnswerType">
-                    <a class="page-link">
-                        @a.Order
-                    </a>
-                </li>
-            }
-            else
-            {
                 <li class="page-item num-btn" btn-id="@a.Id" answer-type="@a.AnswerType">
-                    <a class="page-link">@a.Order</a>
+                    <a class="page-link unselectable">@a.Order</a>
                 </li>
-            }
         }
         <li class="page-item next-btn">
-            <span class="page-link">Next</span>
+            <span class="page-link unselectable">Next</span>
         </li>
     </ul>
 </nav>
 @section Scripts
     {
     <script type="text/javascript">
-        loadAnswer();
+        var firstId = $("nav ul").children().filter(".num-btn")[0].getAttribute("btn-id");
+        var lastId = $("nav ul").children().filter(".num-btn")[$("nav ul").children().filter(".num-btn").length - 1].getAttribute("btn-id");
+        $("li[btn-id=" + firstId + "]").addClass("active");
 
+        loadAnswer();
+        
         $("nav ul").on("click", function (e) {
             submitAnswer();
-            if (e.target.parentElement.classList.contains("next-btn")) {
-                if (!e.target.parentElement.classList.contains("disabled")) {
-                    var tmp = getActiveAnswerId() - -1;
-                    $(".active").removeClass("active");
-                    $("li[btn-id=" + tmp + "]").addClass("active");
-                }
-            }
-            else
-                if (e.target.parentElement.classList.contains("prev-btn")) {
-                    if (!e.target.parentElement.classList.contains("disabled")) {
-                        var tmp = getActiveAnswerId() - 1;
-                        $(".active").removeClass("active");
-                        $("li[btn-id=" + tmp + "]").addClass("active");
-                    }
-                }
-                else
-                    if (e.target.parentElement.classList.contains("num-btn")) {
-                        $(".active").removeClass("active");
-                        $("li[btn-id=" + e.target.parentElement.getAttribute("btn-id") + "]").addClass("active");
-                    }
-            var activeId = getActiveAnswerId(); 
-            if (activeId == $("nav ul").children().filter(".num-btn")[0].getAttribute("btn-id"))
-                $(".prev-btn").addClass("disabled");
-            else
-                $(".prev-btn").removeClass("disabled");
-            if (activeId == $("nav ul").children().filter(".num-btn")[$("nav ul").children().filter(".num-btn").length - 1].getAttribute("btn-id"))
-                $(".next-btn").addClass("disabled");
-            else
-                $(".next-btn").removeClass("disabled");
+            switchAnswer(e);
             loadAnswer();
         });
     </script>

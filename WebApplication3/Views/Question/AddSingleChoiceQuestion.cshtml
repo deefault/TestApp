@@ -25,17 +25,17 @@
                         </div>
                     </div>
                     <div class="items">
-                        <table class="item-table" id="options">
-                            <tbody id="itemTableBody">
+                        <table class="item-table">
+                            <tbody id="item-table__body">
                                 <tr>
                                     <td class="item-table__cell">
                                         <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса">
                                     </td>
                                     <td class="item-table__cell" align="right">
+                                        <input class="form-check-inline" type="radio" name="isRight" id="isRight" />
                                         <button class="item-table__del-row-btn">
                                             <span class="glyphicon glyphicon-minus"></span>
                                         </button>
-                                        <input class="form-check-inline" type="radio" name="isRight" id="isRight" />
                                     </td>
                                 </tr>
                                 <tr>
@@ -43,10 +43,10 @@
                                         <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса">
                                     </td>
                                     <td class="item-table__cell" align="right">
+                                        <input class="form-check-inline" type="radio" name="isRight" id="isRight" />
                                         <button class="item-table__del-row-btn">
                                             <span class="glyphicon glyphicon-minus"></span>
                                         </button>
-                                        <input class="form-check-inline" type="radio" name="isRight" id="isRight" />
                                     </td>
                                 </tr>
                                 <tr>
@@ -54,10 +54,10 @@
                                         <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса">
                                     </td>
                                     <td class="item-table__cell" align="right">
+                                        <input class="form-check-inline" type="radio" name="isRight" id="isRight" />
                                         <button class="item-table__del-row-btn">
                                             <span class="glyphicon glyphicon-minus"></span>
                                         </button>
-                                        <input class="form-check-inline" type="radio" name="isRight" id="isRight" />
                                     </td>
                                 </tr>
                             </tbody>
@@ -75,10 +75,10 @@
                                 <span asp-validation-for="Text" class="text-danger"></span>
                             </td>
                             <td class="item-table__cell" align="right">
+                                <input class="form-check-inline" type="radio" name="isRight" id="isRight" />
                                 <button class="item-table__del-row-btn">
                                     <span class="glyphicon glyphicon-minus"></span>
                                 </button>
-                                <input class="form-check-inline" type="radio" name="isRight" id="isRight" />
                             </td>
                         </tr>
                     </script>
@@ -103,7 +103,7 @@
     <script>
         $(function () {
             $(document).on('click', '.item-table__add-row-btn', function (e) {
-                var $tableBody = $('#itemTableBody');
+                var $tableBody = $('#item-table__body');
                 var htmlString = $('#rowTemplate').html();
                 $tableBody.append(htmlString);
                 return false;

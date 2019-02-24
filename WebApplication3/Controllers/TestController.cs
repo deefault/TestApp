@@ -23,13 +23,16 @@ namespace WebApplication3.Controllers
 {
     public class TestController : Controller
     {
+        #region Поля
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         //private readonly IEmailSender _emailSender;
         //private readonly ISmsSender _smsSender;
         private readonly ILogger _logger;
-        
+        #endregion
+
+        #region Конструктор
         public TestController(
             ApplicationDbContext context,
             UserManager<User> userManager,
@@ -46,8 +49,9 @@ namespace WebApplication3.Controllers
             //_smsSender = smsSender;
             _logger = loggerFactory.CreateLogger<UserController>();
         }
-        
-        // GET
+        #endregion
+
+        #region Добавление
         [HttpGet]
         [Route("/Tests/Add/")]
         public IActionResult Add()
@@ -55,96 +59,33 @@ namespace WebApplication3.Controllers
             return View();
         }
 
-        
-        // GET
-        [HttpGet]
-        [Authorize]
-        [Route("/Tests/")]
-        public async Task<IActionResult> Tests()
-        {
-            var user = await _userManager.GetUserAsync(HttpContext.User);
-            var createdTests = _context.Tests.Where(t=>t.CreatedBy.Id == user.Id).ToList();
-            //if (createdTests == null) //return View(new ICollection<Test>);
-            return View(createdTests);
-            
-        }
-        
-        // GET
-        [HttpGet]
-        [Authorize]
-        [Route("/Tests/Results/")]
-        public async Task<IActionResult> TestResults()
-        {
-            var user = await _userManager.GetUserAsync(HttpContext.User);
-            var tests = _context.TestResults.Where(t=>t.CompletedByUser == user)
-                .Include(a=>a.Test).ThenInclude(b=>b.CreatedBy).ToList();
-            return View(tests);
-        }
-        
         [HttpPost]
         [Authorize]
         [Route("/Tests/Add/")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(AddTestViewModel model)
-        {  
+        {
             var user = await _userManager.GetUserAsync(HttpContext.User);
             if (ModelState.IsValid)
             {
-                var test = new Test {Name = model.Name, CreatedBy = user, IsEnabled = model.IsEnabled};
+                var test = new Test { Name = model.Name, CreatedBy = user, IsEnabled = model.IsEnabled };
                 await _context.Tests.AddAsync(test);
-                
+
                 // Добавить тест к пользователю, который его создал (чтобы он тоже мог проходить его)
                 TestResult testResult = new TestResult
                 {
-                    IsCompleted = false, 
+                    IsCompleted = false,
                     Test = test,
                     CompletedByUser = user,
                     //TotalQuestions = (uint)test.Questions.Count()
                 };
                 user.TestResults.Add(testResult);
-                
-                
+
+
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Details",new {id=test.Id});
+                return RedirectToAction("Details", new { id = test.Id });
             }
             return View(model);
-        }
-
-        [HttpGet]
-        [Authorize]
-        [Route("/Tests/{id}/")]
-        public async Task<IActionResult> Details(int id)
-        {
-            var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.Include(t => t.Questions).SingleAsync(t => t.Id == id);
-            var questions = await _context.Questions.Where(q => q.Test == test).ToListAsync();
-            if (test == null)
-            {
-                return NotFound();
-            }
-            ViewData["user"] = user;
-            ViewData["question"] = questions;
-            if (test.CreatedBy == user)
-            {    
-                return View(test);
-            }
-            else
-            {
-                var testResult = await _context.TestResults.Where(r => r.Test == test || r.CompletedByUser == user).FirstAsync();
-                // у пользователя отсутствует тест
-                if (testResult == null)
-                {
-                    // добавляем тест к пользователю
-                    return RedirectToAction("AddTestToUser",new {testId = test.Id, userId=user.Id});
-                }
-
-                ViewData["testResult"] = testResult;
-                return View(test);
-            }
-            return View(test);
-
-            
-
         }
 
         [HttpPost]
@@ -161,7 +102,7 @@ namespace WebApplication3.Controllers
             }
             TestResult testResult = new TestResult
             {
-                IsCompleted = false, 
+                IsCompleted = false,
                 Test = test,
                 CompletedByUser = user,
                 CompletedOn = DateTime.Now,
@@ -170,13 +111,13 @@ namespace WebApplication3.Controllers
             await _context.TestResults.AddAsync(testResult);
             await _context.SaveChangesAsync();
             Response.StatusCode = 200;
-            return RedirectToAction("Details", new {id = testId});
+            return RedirectToAction("Details", new { id = testId });
         }
-        
+
         [HttpGet]
         [Authorize]
         [Route("/User/[controller]s/{testId}/AddTestToUser/")]
-        public async Task<IActionResult> AddTestToUser(AddTestToUserViewModel model,int testId)
+        public async Task<IActionResult> AddTestToUser(AddTestToUserViewModel model, int testId)
         {
             var test = await _context.Tests.SingleAsync(t => t.Id == testId);
             if (test == null)
@@ -188,7 +129,7 @@ namespace WebApplication3.Controllers
             ViewData["test"] = test;
             return View(model);
         }
-        
+
         [HttpPost]
         [Authorize]
         [Route("/User/[controller]s/AddTestToUserAjax/")]
@@ -208,20 +149,20 @@ namespace WebApplication3.Controllers
             }
             if (!test.IsEnabled)
             {
-                Response.StatusCode =400;
+                Response.StatusCode = 400;
                 return new JsonResult("Тест не включен");
             }
 
-            if (_context.TestResults.Any(t => t.CompletedByUser==user && t.Test == test))
+            if (_context.TestResults.Any(t => t.CompletedByUser == user && t.Test == test))
             {
-                Response.StatusCode =400;
+                Response.StatusCode = 400;
                 return new JsonResult("Тест уже добавлен");
             }
-            
-            
+
+
             TestResult testResult = new TestResult
             {
-                IsCompleted = false, 
+                IsCompleted = false,
                 Test = test,
                 CompletedByUser = user
                 //TotalQuestions = (uint)test.Questions.Count()
@@ -231,9 +172,71 @@ namespace WebApplication3.Controllers
             Response.StatusCode = 200;
             return new JsonResult("Успешно");
         }
+        #endregion
 
-        
-        // GET 
+        #region Список тестов
+        [HttpGet]
+        [Authorize]
+        [Route("/Tests/")]
+        public async Task<IActionResult> Tests()
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var createdTests = _context.Tests.Where(t=>t.CreatedBy.Id == user.Id).ToList();
+            //if (createdTests == null) //return View(new ICollection<Test>);
+            return View(createdTests);
+            
+        }
+        #endregion
+
+        #region Детали
+        [HttpGet]
+        [Authorize]
+        [Route("/Tests/{id}/")]
+        public async Task<IActionResult> Details(int id)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.Include(t => t.Questions).SingleAsync(t => t.Id == id);
+            var questions = await _context.Questions.Where(q => q.Test == test).ToListAsync();
+            if (test == null)
+            {
+                return NotFound();
+            }
+            ViewData["user"] = user;
+            ViewData["question"] = questions;
+            if (test.CreatedBy == user)
+            {
+                return View(test);
+            }
+            else
+            {
+                var testResult = await _context.TestResults.Where(r => r.Test == test || r.CompletedByUser == user).FirstAsync();
+                // у пользователя отсутствует тест
+                if (testResult == null)
+                {
+                    // добавляем тест к пользователю
+                    return RedirectToAction("AddTestToUser", new { testId = test.Id, userId = user.Id });
+                }
+
+                ViewData["testResult"] = testResult;
+                return View(test);
+            }
+        }
+        #endregion
+
+        #region Результаты
+        [HttpGet]
+        [Authorize]
+        [Route("/Tests/Results/")]
+        public async Task<IActionResult> TestResults()
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var tests = _context.TestResults.Where(t=>t.CompletedByUser == user)
+                .Include(a=>a.Test).ThenInclude(b=>b.CreatedBy).ToList();
+            return View(tests);
+        }
+        #endregion
+
+        #region Старт
         [Authorize]
         [HttpGet]
         [Route("/[controller]/Result/{testResultId}/Start/")]
@@ -313,4 +316,5 @@ namespace WebApplication3.Controllers
             return RedirectToAction("Answer", "Answer", new {testResultId=testResult.Id, answerOrder=1});
         }
     }
+    #endregion
 }

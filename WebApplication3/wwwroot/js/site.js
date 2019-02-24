@@ -3,12 +3,13 @@
 
 // Write your JavaScript code.
 
+// #region Question
 function getAddQuestionFormData() {
     var data = {};
     data.Options = [];
     data.Title = $("#Title").val();
     data.Score = $("#Score").val();
-    var options = $("#itemTableBody").children();
+    var options = $("#item-table__body").children();
     console.log(options);
     for (i = 0; i < options.length; i++) {
         var o = {};
@@ -61,8 +62,10 @@ function submitQuestion(actionUrl){
         },
     });
 }
+// #endregion
 
-$("#addByIdForm").submit(function(e) {
+// #region Test
+$("#addByIdForm").submit(function (e) {
     e.preventDefault();
     addById();
 });
@@ -94,8 +97,9 @@ function addById() {
     });
 
 }
+// #endregion
 
-// Answer
+// #region Answer
 
 function loadAnswer() {
     var type = getActiveAnswerType();
@@ -147,7 +151,8 @@ function submitAnswer() {
 
     }
     else if (type == "TextAnswer") {
-
+        var data = {};
+        data.Text = $("input[name='option']").val();
     }
     else if (type == "DragAndDropAnswer") {
 
@@ -173,3 +178,35 @@ function submitAnswer() {
         },
     });
 }
+function switchAnswer(e) {
+    if (e.target.parentElement.classList.contains("next-btn")) {
+        if (!e.target.parentElement.classList.contains("disabled")) {
+            var tmp = getActiveAnswerId() - -1;
+            $(".active").removeClass("active");
+            $("li[btn-id=" + tmp + "]").addClass("active");
+        }
+    }
+    else
+        if (e.target.parentElement.classList.contains("prev-btn")) {
+            if (!e.target.parentElement.classList.contains("disabled")) {
+                var tmp = getActiveAnswerId() - 1;
+                $(".active").removeClass("active");
+                $("li[btn-id=" + tmp + "]").addClass("active");
+            }
+        }
+        else
+            if (e.target.parentElement.classList.contains("num-btn")) {
+                $(".active").removeClass("active");
+                $("li[btn-id=" + e.target.parentElement.getAttribute("btn-id") + "]").addClass("active");
+            }
+    var activeId = getActiveAnswerId();
+    if (activeId == firstId)
+        $(".prev-btn").addClass("disabled");
+    else
+        $(".prev-btn").removeClass("disabled");
+    if (activeId == lastId)
+        $(".next-btn").addClass("disabled");
+    else
+        $(".next-btn").removeClass("disabled");
+}
+// #endregion

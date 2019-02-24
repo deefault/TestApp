@@ -22,13 +22,16 @@ namespace WebApplication3.Controllers
 {
     public class QuestionController : Controller
     {
+        #region Поля
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         //private readonly IEmailSender _emailSender;
         //private readonly ISmsSender _smsSender;
         private readonly ILogger _logger;
+        #endregion
 
+        #region Конструктор
         public QuestionController(
 
             ApplicationDbContext context,
@@ -46,7 +49,9 @@ namespace WebApplication3.Controllers
             //_smsSender = smsSender;
             _logger = loggerFactory.CreateLogger<UserController>();
         }
+        #endregion
 
+        #region Добавление GET
         [HttpGet]
         [Authorize]
         [Route("/Tests/{testId}/Question/Add/{type}/", Name = "Add")]
@@ -71,7 +76,9 @@ namespace WebApplication3.Controllers
                     return View("AddSingleChoiceQuestion");
             }
         }
+        #endregion
 
+        #region Добавление POST
         [HttpPost]
         [Authorize]
         [Route("/Tests/{testId}/Question/Add/Single/", Name = "AddSingle")]
@@ -320,26 +327,9 @@ namespace WebApplication3.Controllers
             Response.StatusCode = StatusCodes.Status400BadRequest;
             return new JsonResult(errors);
         }
+        #endregion
 
-        [HttpGet]
-        [Authorize]
-        [Route("/Tests/{testId}/Question/{questionId}/Details/")]
-        public async Task<IActionResult> Details(int testId, int questionId)
-        {
-            var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
-            if (test.CreatedBy != user) return Forbid();
-            var question = await _context.Questions
-                .Include(q => q.Options)
-                .SingleOrDefaultAsync(q => q.Id == questionId);
-            if (question == null) return NotFound();
-            if (question.QuestionType == "DragAndDropQuestion")
-            question.Options = question.Options.OrderBy(o => o.Order).ToList();
-            if (question.Test != test) return NotFound();
-            return View(question);
-
-        }
-
+        #region Редактирование GET
         [HttpGet]
         [Authorize]
         [Route("/Tests/{testId}/Question/{questionId}/Edit/")]
@@ -371,99 +361,9 @@ namespace WebApplication3.Controllers
                     return View("EditSingleChoiceQuestion", question);
             }
         }
+        #endregion
 
-        private async void UpdateQuestionOptions(List<OptionViewModel> options, Question question)
-        {
-
-            var optionsToCreate = new List<OptionViewModel>();
-            var otherOptions = new List<OptionViewModel>();
-            var optionsToUpdate = new List<Option>();
-            var optionsToDelete = new List<Option>();
-
-
-            foreach (var option in options)
-            {
-                if (option.Id == null) optionsToCreate.Add(option);
-                else otherOptions.Add(option);
-            }
-
-            List<int?> optionsIds = otherOptions.Select(o => o.Id).ToList();
-
-            optionsToUpdate = question.Options.Where(o => optionsIds.Contains(o.Id)).ToList();
-            optionsToDelete = question.Options.Where(o => !optionsIds.Contains(o.Id)).ToList();
-
-            foreach (var option in optionsToUpdate)
-            {
-                var optionData = options.Single(o => o.Id == option.Id);
-                option.IsRight = optionData.IsRight;
-                option.Text = optionData.Text;
-                _context.Update(option);
-            }
-
-            await _context.SaveChangesAsync();
-
-            foreach (var option in optionsToDelete)
-            {
-                _context.Options.Remove(option);
-            }
-
-            await _context.SaveChangesAsync();
-
-            foreach (var option in optionsToCreate)
-            {
-                var o = new Option { Question = question, IsRight = option.IsRight, Text = option.Text };
-                _context.Options.Add(o);
-            }
-            await _context.SaveChangesAsync();
-
-        }
-
-        private async void UpdateDragAndDropQuestionOptions(List<OptionViewModel> options, Question question)
-        {
-
-            var optionsToCreate = new List<OptionViewModel>();
-            var otherOptions = new List<OptionViewModel>();
-            var optionsToUpdate = new List<Option>();
-            var optionsToDelete = new List<Option>();
-
-
-            foreach (var option in options)
-            {
-                if (option.Id == null) optionsToCreate.Add(option);
-                else otherOptions.Add(option);
-            }
-
-            List<int?> optionsIds = otherOptions.Select(o => o.Id).ToList();
-
-            optionsToUpdate = question.Options.Where(o => optionsIds.Contains(o.Id)).ToList();
-            optionsToDelete = question.Options.Where(o => !optionsIds.Contains(o.Id)).ToList();
-            foreach (var option in optionsToUpdate)
-            {
-                var optionData = options.Single(o => o.Id == option.Id);
-                option.IsRight = optionData.IsRight;
-                option.Text = optionData.Text;
-                option.Order = optionData.Order;
-                _context.Update(option);
-            }
-
-            await _context.SaveChangesAsync();
-
-            foreach (var option in optionsToDelete)
-            {
-                _context.Options.Remove(option);
-            }
-
-            await _context.SaveChangesAsync();
-
-            foreach (var option in optionsToCreate)
-            {
-                var o = new Option { Order = option.Order, Question = question, IsRight = option.IsRight, Text = option.Text };
-                _context.Options.Add(o);
-            }
-            await _context.SaveChangesAsync();
-
-        }
-
+        #region Редактирование POST
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
@@ -717,5 +617,121 @@ namespace WebApplication3.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction("Details", "Test", new { id = testId });
         }
+        #endregion
+
+        #region Детали
+        [HttpGet]
+        [Authorize]
+        [Route("/Tests/{testId}/Question/{questionId}/Details/")]
+        public async Task<IActionResult> Details(int testId, int questionId)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
+            if (test.CreatedBy != user) return Forbid();
+            var question = await _context.Questions
+                .Include(q => q.Options)
+                .SingleOrDefaultAsync(q => q.Id == questionId);
+            if (question == null) return NotFound();
+            if (question.QuestionType == "DragAndDropQuestion")
+                question.Options = question.Options.OrderBy(o => o.Order).ToList();
+            if (question.Test != test) return NotFound();
+            return View(question);
+
+        }
+        #endregion
+
+        #region Вспомогательные методы
+        private async void UpdateQuestionOptions(List<OptionViewModel> options, Question question)
+        {
+
+            var optionsToCreate = new List<OptionViewModel>();
+            var otherOptions = new List<OptionViewModel>();
+            var optionsToUpdate = new List<Option>();
+            var optionsToDelete = new List<Option>();
+
+
+            foreach (var option in options)
+            {
+                if (option.Id == null) optionsToCreate.Add(option);
+                else otherOptions.Add(option);
+            }
+
+            List<int?> optionsIds = otherOptions.Select(o => o.Id).ToList();
+
+            optionsToUpdate = question.Options.Where(o => optionsIds.Contains(o.Id)).ToList();
+            optionsToDelete = question.Options.Where(o => !optionsIds.Contains(o.Id)).ToList();
+
+            foreach (var option in optionsToUpdate)
+            {
+                var optionData = options.Single(o => o.Id == option.Id);
+                option.IsRight = optionData.IsRight;
+                option.Text = optionData.Text;
+                _context.Update(option);
+            }
+
+            await _context.SaveChangesAsync();
+
+            foreach (var option in optionsToDelete)
+            {
+                _context.Options.Remove(option);
+            }
+
+            await _context.SaveChangesAsync();
+
+            foreach (var option in optionsToCreate)
+            {
+                var o = new Option { Question = question, IsRight = option.IsRight, Text = option.Text };
+                _context.Options.Add(o);
+            }
+            await _context.SaveChangesAsync();
+
+        }
+
+        private async void UpdateDragAndDropQuestionOptions(List<OptionViewModel> options, Question question)
+        {
+
+            var optionsToCreate = new List<OptionViewModel>();
+            var otherOptions = new List<OptionViewModel>();
+            var optionsToUpdate = new List<Option>();
+            var optionsToDelete = new List<Option>();
+
+
+            foreach (var option in options)
+            {
+                if (option.Id == null) optionsToCreate.Add(option);
+                else otherOptions.Add(option);
+            }
+
+            List<int?> optionsIds = otherOptions.Select(o => o.Id).ToList();
+
+            optionsToUpdate = question.Options.Where(o => optionsIds.Contains(o.Id)).ToList();
+            optionsToDelete = question.Options.Where(o => !optionsIds.Contains(o.Id)).ToList();
+            foreach (var option in optionsToUpdate)
+            {
+                var optionData = options.Single(o => o.Id == option.Id);
+                option.IsRight = optionData.IsRight;
+                option.Text = optionData.Text;
+                option.Order = optionData.Order;
+                _context.Update(option);
+            }
+
+            await _context.SaveChangesAsync();
+
+            foreach (var option in optionsToDelete)
+            {
+                _context.Options.Remove(option);
+            }
+
+            await _context.SaveChangesAsync();
+
+            foreach (var option in optionsToCreate)
+            {
+                var o = new Option { Order = option.Order, Question = question, IsRight = option.IsRight, Text = option.Text };
+                _context.Options.Add(o);
+            }
+            await _context.SaveChangesAsync();
+
+        }
+        #endregion
     }
 }

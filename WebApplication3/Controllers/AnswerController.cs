@@ -20,6 +20,7 @@ namespace WebApplication3.Controllers
 {
     public class AnswerController : Controller
     {
+        #region Поля
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
 
@@ -28,7 +29,9 @@ namespace WebApplication3.Controllers
         //private readonly IEmailSender _emailSender;
         //private readonly ISmsSender _smsSender;
         private readonly ILogger _logger;
+        #endregion
 
+        #region Конструктор
         public AnswerController(
 
             ApplicationDbContext context,
@@ -46,7 +49,9 @@ namespace WebApplication3.Controllers
             //_smsSender = smsSender;
             _logger = loggerFactory.CreateLogger<UserController>();
         }
+        #endregion
 
+        #region Входная точка
         [Authorize]
         [HttpGet]
         [Route("/{testResultId}/Question/{answerOrder}/")]
@@ -59,6 +64,28 @@ namespace WebApplication3.Controllers
             var answers = testResult.Answers.OrderBy(a=>a.Order).ToList();
             
             return View("Answer",answers);
+        }
+        #endregion
+
+        #region GET
+        [Authorize]
+        [HttpGet]
+        [Route("/TextAnswer/{answerId}")]
+        public async Task<IActionResult> LoadTextAnswer(int answerId)
+        {
+            var answer = await _context.TextAnswers
+                    .Include(a => a.TestResult)
+                    .Include(a => a.Question)
+                .SingleAsync(a => a.Id == answerId)
+                ;
+            if (answer == null) return NotFound();
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && tr.CompletedByUser == user) == 0)
+            {
+                return NotFound();
+            }
+
+            return PartialView("_LoadTextAnswer", answer);
         }
 
         [Authorize]
@@ -81,7 +108,9 @@ namespace WebApplication3.Controllers
 
             return PartialView("_LoadSingleChoiceAnswer",answer);
         }
-        
+        #endregion
+
+        #region POST
         [Authorize]
         [HttpPost]
         [Route("/SingleChoiceAnswer/{answerId}/")]
@@ -114,5 +143,32 @@ namespace WebApplication3.Controllers
             await _context.SaveChangesAsync();
             return new JsonResult("");
         }
+
+        [Authorize]
+        [HttpPost]
+        [Route("/TextAnswer/{answerId}/")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> TextAnswer(int answerId, [FromBody]TextAnswerViewModel model)
+        {
+
+            var answer = await _context.TextAnswers
+                    .Include(a => a.TestResult)
+                    .Include(a => a.Question)
+                    .SingleAsync(a => a.Id == answerId)
+                ;
+            if (answer == null) return NotFound();
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            //проверить что пользоавтель может проходить тест
+            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && tr.CompletedByUser == user) == 0)
+            {
+                return NotFound();
+            }
+
+            answer.Text = model.Text;
+            _context.Answers.Update(answer);
+            await _context.SaveChangesAsync();
+            return new JsonResult("");
+        }
+        #endregion
     }
 }

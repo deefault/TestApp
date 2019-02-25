@@ -3,17 +3,18 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WebApplication3.Models.AnswerViewModels
 {
-    public class AnswerOptionViewModel
+    public class DragAndDropAnswerOptionViewModel
     {
         [Required]
         public int? Id { get; set; } = null;
         [Required]
+        public int ChosenOrder { get; set; }
+        [Required]
         public int OptionId { get; set; }
     }
-
-    public class MultiChoiceAnswerViewModel
+    public class DragAndDropAnswerViewModel
     {
         [Required]
-        public List<AnswerOptionViewModel> Options { get; set; }
+        public List<DragAndDropAnswerOptionViewModel> Options { get; set; }
     }
 }

@@ -28,7 +28,7 @@ namespace WebApplication3.Models
         {
             [Display(Name = "С одним правильным ответом")]
             SingleChoiceQuestion=1,
-            [Display(Name = "С несколькими правильными ответоми")]
+            [Display(Name = "С несколькими правильными ответами")]
             MultiChoiceQuestion=2,
             [Display(Name = "С вводом текста")]
             TextQuestion=3,

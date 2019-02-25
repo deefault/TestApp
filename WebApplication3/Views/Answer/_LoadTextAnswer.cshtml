@@ -11,7 +11,7 @@
                 <tbody id="item-table__body">
                     <tr class="item-table__row">
                         <td class="item-table__cell">
-                            <input name="option" id="Text" type="text" class="item__text-field" placeholder="Ответ" @((Model.Text != null) ? "value=" + Model.Text : "")>
+                            <input name="option" id="Text" type="text" class="item__text-field" @((Model.Text != null && Model.Text != "") ? String.Format("value={0}", Model.Text) : "") placeholder="Ответ">
                         </td>
                     </tr>
                 </tbody>

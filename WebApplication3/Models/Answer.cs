@@ -55,7 +55,6 @@ namespace WebApplication3.Models
 
     public class AnswerOption
     {
-        public int Id { get; set; }
         public int AnswerId { get; set; }
         public MultiChoiceAnswer Answer { get; set; }
         public int OptionId { get; set; }

@@ -176,7 +176,7 @@ namespace WebApplication3.Controllers
                     .Include(a => a.Question)
                     .SingleAsync(a => a.Id == answerId)
                 ;
-            if (model.OptionId == null)return new JsonResult("");
+            if (model.OptionId == 0) return new JsonResult("");
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
             //проверить что пользоавтель может проходить тест
@@ -229,9 +229,9 @@ namespace WebApplication3.Controllers
                 }
             }
             //создать
-            if (answer.AnswerOptions == null)
+            if (answer.AnswerOptions.Count == 0)
             {
-                foreach (var option in answer.Question.Options )
+                foreach (var option in answer.Question.Options)
                 {
                     _context.AnswerOptions.Add(new AnswerOption
                     {

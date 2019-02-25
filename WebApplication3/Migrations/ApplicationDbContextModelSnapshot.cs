@@ -151,18 +151,13 @@ namespace WebApplication3.Migrations
 
             modelBuilder.Entity("WebApplication3.Models.AnswerOption", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
                     b.Property<int>("AnswerId");
-
-                    b.Property<bool>("Checked");
 
                     b.Property<int>("OptionId");
 
-                    b.HasKey("Id");
+                    b.Property<bool>("Checked");
 
-                    b.HasIndex("AnswerId");
+                    b.HasKey("AnswerId", "OptionId");
 
                     b.HasIndex("OptionId");
 
@@ -174,15 +169,17 @@ namespace WebApplication3.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int>("AnswerId");
+
                     b.Property<int>("ChosenOrder");
 
-                    b.Property<int?>("DragAndDropAnswerId");
+                    b.Property<int>("OptionId");
 
                     b.Property<int>("RightOptionId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DragAndDropAnswerId");
+                    b.HasIndex("AnswerId");
 
                     b.HasIndex("RightOptionId");
 
@@ -496,9 +493,10 @@ namespace WebApplication3.Migrations
 
             modelBuilder.Entity("WebApplication3.Models.DragAndDropAnswerOption", b =>
                 {
-                    b.HasOne("WebApplication3.Models.DragAndDropAnswer")
+                    b.HasOne("WebApplication3.Models.DragAndDropAnswer", "Answer")
                         .WithMany("DragAndDropAnswerOptions")
-                        .HasForeignKey("DragAndDropAnswerId");
+                        .HasForeignKey("AnswerId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("WebApplication3.Models.Option", "RightOption")
                         .WithMany()

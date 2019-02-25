@@ -64,6 +64,18 @@ namespace WebApplication3.Data
             builder.Entity<TestResult>().ToTable("TestResult");
             builder.Entity<User>().ToTable("User");
             builder.Entity<AnswerOption>().ToTable("AnswerOptions");
+            
+            // many-to-many
+            builder.Entity<AnswerOption>()
+                .HasKey(ao => new { ao.AnswerId, ao.OptionId });
+            builder.Entity<AnswerOption>()
+                .HasOne(ao => ao.Answer)
+                .WithMany(a => a.AnswerOptions)
+                .HasForeignKey(ao => ao.AnswerId);
+            builder.Entity<AnswerOption>()
+                .HasOne(ao => ao.Option)
+                .WithMany(o => o.AnswerOptions)
+                .HasForeignKey(ao => ao.OptionId);
         }
 
     }

@@ -29,7 +29,7 @@ namespace WebApplication3.Models
     
     public  class MultiChoiceAnswer : Answer
     {
-        public ICollection<AnswerOption> AnswerOptions { get; set; }
+        public IList<AnswerOption> AnswerOptions { get; set; }
     }
     
     public  class TextAnswer : Answer
@@ -56,5 +56,6 @@ namespace WebApplication3.Models
         public MultiChoiceAnswer Answer { get; set; }
         public int OptionId { get; set; }
         public Option Option { get; set; }
+        public bool Checked { get; set; }
     }
 }

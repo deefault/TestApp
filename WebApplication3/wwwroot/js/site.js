@@ -99,7 +99,8 @@ function addById() {
 }
 // #endregion
 
-// #region Answer
+// #rChe
+// egion Answer
 
 function loadAnswer() {
     var type = getActiveAnswerType();
@@ -148,13 +149,15 @@ function submitAnswer() {
     }
     else if (type == "MultiChoiceAnswer") {
         var data = {};
-        data.Options = [];
+        var checked=[];
         var options = $("input[name='option']:checked");
         for (i = 0; i < options.length; i++) {
             var o = {};
             o.OptionId = $(options[i]).attr("option-id");
-            data.Options.push(o);
+            checked.push(o.OptionId)
+            
         }
+        data.checkedOptionIds = checked;
     }
     else if (type == "TextAnswer") {
         var data = {};

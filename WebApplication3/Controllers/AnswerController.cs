@@ -127,6 +127,16 @@ namespace WebApplication3.Controllers
             {
                 return NotFound();
             }
+
+            var checkedOptionsIds = new List<int>();
+            if (answer.AnswerOptions != null)
+            {
+                foreach (var answerOption in answer.AnswerOptions)
+                {
+                    if (answerOption.Checked) checkedOptionsIds.Add(answerOption.OptionId);
+                }
+            };
+            ViewBag.checkedOptionsIds = checkedOptionsIds;
             return PartialView("_LoadMultiChoiceAnswer", answer);
         }
         #endregion
@@ -144,6 +154,7 @@ namespace WebApplication3.Controllers
                     .Include(a => a.Question)
                     .SingleAsync(a => a.Id == answerId)
                 ;
+            if (model.OptionId == null)return new JsonResult("");
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
             //проверить что пользоавтель может проходить тест
@@ -158,6 +169,7 @@ namespace WebApplication3.Controllers
             {
                 return BadRequest();
             }
+            
 
             answer.Option = option;
             _context.Answers.Update(answer);
@@ -165,6 +177,66 @@ namespace WebApplication3.Controllers
             return new JsonResult("");
         }
 
+        [Authorize]
+        [HttpPost]
+        [Route("/MultiChoiceAnswer/{answerId}/")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MultiChoiceAnswer(int answerId, [FromBody]MultiChoiceAnswerViewModel model)
+        {
+
+            var answer = await _context.MultiChoiceAnswers
+                    .Include(a => a.TestResult).Include(a=>a.AnswerOptions)
+                    .Include(a => a.Question).ThenInclude(a=>a.Options)
+                    .SingleAsync(a => a.Id == answerId)
+                ;
+            if (answer == null) return NotFound();
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            //проверить что пользоавтель может проходить тест
+            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && tr.CompletedByUser == user) == 0)
+            {
+                return NotFound();
+            }
+
+            //TODO ошибка
+            // проверить что опшнsы принадлежит к вопросу
+            foreach (var id in model.CheckedOptionIds)
+            {
+                if (!answer.Question.Options.Exists(o=>o.Id==id))
+                {
+                    return BadRequest();
+                }
+            }
+            //создать
+            if (answer.AnswerOptions == null)
+            {
+                foreach (var option in answer.Question.Options )
+                {
+                    _context.AnswerOptions.Add(new AnswerOption
+                    {
+                        Answer = answer,
+                        AnswerId = answerId,
+                        Option = option,
+                        OptionId = option.Id,
+                        Checked = model.CheckedOptionIds.Contains(option.Id)
+                    });
+                } 
+                await _context.SaveChangesAsync();
+            }
+            // обновить
+            else
+            {
+                foreach (var answerOption in answer.AnswerOptions )
+                {
+                    answerOption.Checked = model.CheckedOptionIds.Contains(answerOption.OptionId);
+                    _context.AnswerOptions.Update(answerOption);
+                }
+                await _context.SaveChangesAsync();
+            }
+            _context.Answers.Update(answer);
+            await _context.SaveChangesAsync();
+            return new JsonResult("");
+        }
+        
         [Authorize]
         [HttpPost]
         [Route("/TextAnswer/{answerId}/")]
@@ -190,68 +262,8 @@ namespace WebApplication3.Controllers
             await _context.SaveChangesAsync();
             return new JsonResult("");
         }
-
-        [Authorize]
-        [HttpPost]
-        [Route("/MultiChoiceAnswer/{answerId}/")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> MultiChoiceAnswer(int answerId, [FromBody]MultiChoiceAnswerViewModel model)
-        {
-
-            var answer = await _context.MultiChoiceAnswers
-                    .Include(a => a.TestResult)
-                    .Include(a => a.Question)
-                    .Include(a => a.AnswerOptions)
-                    .SingleAsync(a => a.Id == answerId)
-                ;
-            if (answer == null) return NotFound();
-            var user = await _userManager.GetUserAsync(HttpContext.User);
-            //проверить что пользоавтель может проходить тест
-            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && tr.CompletedByUser == user) == 0)
-            {
-                return NotFound();
-            }
-            //обновление опшнов
-            var options = model.Options;
-            var optionsToCreate = new List<AnswerOptionViewModel>();
-            var otherOptions = new List<AnswerOptionViewModel>();
-            var optionsToDelete = new List<AnswerOption>();
-
-
-            foreach (var option in options)
-            {
-                if (option.Id == null) optionsToCreate.Add(option);
-                else otherOptions.Add(option);
-            }
-
-            List<int?> optionsIds = otherOptions.Select(o => o.Id).ToList();
-            
-            optionsToDelete = answer.AnswerOptions.Where(o => !optionsIds.Contains(o.Id)).ToList();
-
-            foreach (var option in optionsToDelete)
-            {
-                _context.AnswerOptions.Remove(option);
-            }
-
-            await _context.SaveChangesAsync();
-
-            foreach (var option in optionsToCreate)
-            {
-                var optionC = new AnswerOption { OptionId = option.OptionId, Answer = answer };
-                var optionQ = await _context.Options.SingleAsync(o => o.Id == option.OptionId);
-                // проверить что опшн принадлежит к вопросу
-                if (!answer.Question.Options.Contains(optionQ))
-                {
-                    return BadRequest();
-                }
-                _context.AnswerOptions.Add(optionC);
-            }
-            await _context.SaveChangesAsync();
-
-            _context.Answers.Update(answer);
-            await _context.SaveChangesAsync();
-            return new JsonResult("");
-        }
         #endregion
+
+        
     }
 }

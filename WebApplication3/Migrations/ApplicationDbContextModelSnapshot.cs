@@ -151,15 +151,22 @@ namespace WebApplication3.Migrations
 
             modelBuilder.Entity("WebApplication3.Models.AnswerOption", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
                     b.Property<int>("AnswerId");
+
+                    b.Property<bool>("Checked");
 
                     b.Property<int>("OptionId");
 
-                    b.HasKey("AnswerId", "OptionId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnswerId");
 
                     b.HasIndex("OptionId");
 
-                    b.ToTable("AnswerOption");
+                    b.ToTable("AnswerOptions");
                 });
 
             modelBuilder.Entity("WebApplication3.Models.DragAndDropAnswerOption", b =>

@@ -208,15 +208,18 @@ namespace WebApplication3.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AnswerOption",
+                name: "AnswerOptions",
                 columns: table => new
                 {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
                     AnswerId = table.Column<int>(nullable: false),
-                    OptionId = table.Column<int>(nullable: false)
+                    OptionId = table.Column<int>(nullable: false),
+                    Checked = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AnswerOption", x => new { x.AnswerId, x.OptionId });
+                    table.PrimaryKey("PK_AnswerOptions", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -320,8 +323,13 @@ namespace WebApplication3.Migrations
                 column: "OptionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AnswerOption_OptionId",
-                table: "AnswerOption",
+                name: "IX_AnswerOptions_AnswerId",
+                table: "AnswerOptions",
+                column: "AnswerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AnswerOptions_OptionId",
+                table: "AnswerOptions",
                 column: "OptionId");
 
             migrationBuilder.CreateIndex(
@@ -402,16 +410,16 @@ namespace WebApplication3.Migrations
                 unique: true);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_AnswerOption_Option_OptionId",
-                table: "AnswerOption",
+                name: "FK_AnswerOptions_Option_OptionId",
+                table: "AnswerOptions",
                 column: "OptionId",
                 principalTable: "Option",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_AnswerOption_Answer_AnswerId",
-                table: "AnswerOption",
+                name: "FK_AnswerOptions_Answer_AnswerId",
+                table: "AnswerOptions",
                 column: "AnswerId",
                 principalTable: "Answer",
                 principalColumn: "Id",
@@ -465,7 +473,7 @@ namespace WebApplication3.Migrations
                 table: "Option");
 
             migrationBuilder.DropTable(
-                name: "AnswerOption");
+                name: "AnswerOptions");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");

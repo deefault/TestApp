@@ -525,7 +525,7 @@ namespace WebApplication3.Controllers
                     await _context.SaveChangesAsync();
                     ts.Commit();
                 }
-
+  
                 var redirectUrl = Url.Action("Details", "Test", new { id = test.Id });
                 return new JsonResult(redirectUrl);
             }

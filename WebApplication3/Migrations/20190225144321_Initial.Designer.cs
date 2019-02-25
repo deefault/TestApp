@@ -9,7 +9,7 @@ using WebApplication3.Data;
 namespace WebApplication3.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190217052049_Initial")]
+    [Migration("20190225144321_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -153,15 +153,22 @@ namespace WebApplication3.Migrations
 
             modelBuilder.Entity("WebApplication3.Models.AnswerOption", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
                     b.Property<int>("AnswerId");
+
+                    b.Property<bool>("Checked");
 
                     b.Property<int>("OptionId");
 
-                    b.HasKey("AnswerId", "OptionId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnswerId");
 
                     b.HasIndex("OptionId");
 
-                    b.ToTable("AnswerOption");
+                    b.ToTable("AnswerOptions");
                 });
 
             modelBuilder.Entity("WebApplication3.Models.DragAndDropAnswerOption", b =>

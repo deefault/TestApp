@@ -139,6 +139,28 @@ namespace WebApplication3.Controllers
             ViewBag.checkedOptionsIds = checkedOptionsIds;
             return PartialView("_LoadMultiChoiceAnswer", answer);
         }
+
+        [Authorize]
+        [HttpGet]
+        [Route("/DragAndDropAnswer/{answerId}")]
+        public async Task<IActionResult> LoadDragAndDropAnswer(int answerId)
+        {
+            var answer = await _context.DragAndDropAnswers
+                    .Include(a => a.TestResult)
+                    .Include(a => a.DragAndDropAnswerOptions)
+                    .Include(a => a.Question)
+                        .ThenInclude(q => q.Options)
+                .SingleAsync(a => a.Id == answerId)
+                ;
+            Shuffle(answer.Question.Options);
+            if (answer == null) return NotFound();
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && tr.CompletedByUser == user) == 0)
+            {
+                return NotFound();
+            }
+            return PartialView("_LoadDragAndDropAnswer", answer);
+        }
         #endregion
 
         #region POST
@@ -261,6 +283,86 @@ namespace WebApplication3.Controllers
             _context.Answers.Update(answer);
             await _context.SaveChangesAsync();
             return new JsonResult("");
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("/DragAndDropAnswer/{answerId}/")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DragAndDropAnswer(int answerId, [FromBody]DragAndDropAnswerViewModel model)
+        {
+
+            var answer = await _context.DragAndDropAnswers
+                    .Include(a => a.TestResult)
+                    .Include(a => a.Question)
+                    .Include(a => a.DragAndDropAnswerOptions)
+                    .SingleAsync(a => a.Id == answerId)
+                ;
+            if (answer == null) return NotFound();
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            //проверить что пользоавтель может проходить тест
+            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && tr.CompletedByUser == user) == 0)
+            {
+                return NotFound();
+            }
+            foreach (var option in model.Options)
+            {
+                var optionQ = await _context.Options.SingleAsync(o => o.Id == option.OptionId);
+                // проверить что опшн принадлежит к вопросу
+                if (!answer.Question.Options.Contains(optionQ))
+                {
+                    return BadRequest();
+                }
+            }
+            if (answer.DragAndDropAnswerOptions.Count == 0)
+            {
+                int i = 0;
+                foreach (var option in model.Options)
+                {
+                    var rightOrder = answer.Question.Options.OrderBy(o => o.Order).ToList();
+                    var rightOption = rightOrder[i++];
+                    _context.DragAndDropAnswerOptions.Add(new DragAndDropAnswerOption
+                    {
+                        Answer = answer,
+                        AnswerId = answerId,
+                        RightOption = rightOption,
+                        OptionId = option.OptionId,
+                        RightOptionId = rightOption.Id,
+                        ChosenOrder = option.ChosenOrder
+                    });
+                }
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                var rightOrder = answer.Question.Options.OrderBy(o => o.Order).ToList();
+                foreach (var option in answer.DragAndDropAnswerOptions)
+                {
+                    option.ChosenOrder = model.Options.Single(o => o.OptionId == option.OptionId).ChosenOrder;
+                    option.RightOption = rightOrder[option.ChosenOrder - 1];
+                    option.RightOptionId = option.RightOption.Id;
+                }
+            }
+            _context.Answers.Update(answer);
+            await _context.SaveChangesAsync();
+            return new JsonResult("");
+        }
+        #endregion
+
+        #region Вспомогательные методы
+        private static Random rng = new Random();
+
+        public static void Shuffle<T>(List<T> list)
+        {
+            int n = list.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = rng.Next(n + 1);
+                T value = list[k];
+                list[k] = list[n];
+                list[n] = value;
+            }
         }
         #endregion
 

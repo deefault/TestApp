@@ -43,10 +43,14 @@ namespace WebApplication3.Models
 
     public class DragAndDropAnswerOption
     {
+        public int AnswerId { get; set; }
+        public DragAndDropAnswer Answer { get; set; }
+        public int OptionId { get; set; }
         public int Id { get; set; }
-        [Required]
         public Option RightOption { get; set; }
+        public int RightOptionId { get; set; }
         public int ChosenOrder { get; set; }
+        
     }
 
     public class AnswerOption

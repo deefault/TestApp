@@ -58,16 +58,37 @@ namespace WebApplication3.Controllers
         public async Task<IActionResult> Answer(int testResultId, ushort answerOrder)
         {
             var testResult = await _context.TestResults
-                .Include(tr=> tr.Answers)
-            .SingleAsync(tr=>tr.Id == testResultId);
+                .Include(tr => tr.Answers)
+            .SingleAsync(tr => tr.Id == testResultId);
             if (testResult == null) return NotFound();
-            var answers = testResult.Answers.OrderBy(a=>a.Order).ToList();
-            
-            return View("Answer",answers);
+            var answers = testResult.Answers.OrderBy(a => a.Order).ToList();
+
+            return View("Answer", answers);
         }
         #endregion
 
         #region GET
+        [Authorize]
+        [HttpGet]
+        [Route("/SingleChoiceAnswer/{answerId}")]
+        public async Task<IActionResult> LoadSingleChoiceAnswer(int answerId)
+        {
+            var answer = await _context.SingleChoiceAnswers
+                    .Include(a => a.TestResult)
+                    .Include(a => a.Question)
+                        .ThenInclude(q => q.Options)
+                .SingleAsync(a => a.Id == answerId)
+                ;
+            if (answer == null) return NotFound();
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && tr.CompletedByUser == user) == 0)
+            {
+                return NotFound();
+            }
+
+            return PartialView("_LoadSingleChoiceAnswer", answer);
+        }
+
         [Authorize]
         [HttpGet]
         [Route("/TextAnswer/{answerId}")]
@@ -90,23 +111,23 @@ namespace WebApplication3.Controllers
 
         [Authorize]
         [HttpGet]
-        [Route("/SingleChoiceAnswer/{answerId}")]
-        public async Task<IActionResult> LoadSingleChoiceAnswer(int answerId)
+        [Route("/MultiChoiceAnswer/{answerId}")]
+        public async Task<IActionResult> LoadMultiChoiceAnswer(int answerId)
         {
-            var answer = await _context.SingleChoiceAnswers
-                    .Include(a=> a.TestResult)
-                    .Include(a=>a.Question)
-                        .ThenInclude(q=>q.Options)
-                .SingleAsync(a=> a.Id == answerId)
+            var answer = await _context.MultiChoiceAnswers
+                    .Include(a => a.TestResult)
+                    .Include(a => a.AnswerOptions)
+                    .Include(a => a.Question)
+                        .ThenInclude(q => q.Options)
+                .SingleAsync(a => a.Id == answerId)
                 ;
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            if (_context.TestResults.Count(tr=>tr.Id== answer.TestResult.Id && tr.CompletedByUser==user) == 0)
+            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && tr.CompletedByUser == user) == 0)
             {
                 return NotFound();
             }
-
-            return PartialView("_LoadSingleChoiceAnswer",answer);
+            return PartialView("_LoadMultiChoiceAnswer", answer);
         }
         #endregion
 
@@ -117,21 +138,21 @@ namespace WebApplication3.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SingleChoiceAnswer(int answerId, [FromBody]SingleChoiceAnswerViewModel model)
         {
-            
+
             var answer = await _context.SingleChoiceAnswers
-                    .Include(a=> a.TestResult)
-                    .Include(a=>a.Question)
-                    .SingleAsync(a=> a.Id == answerId)
+                    .Include(a => a.TestResult)
+                    .Include(a => a.Question)
+                    .SingleAsync(a => a.Id == answerId)
                 ;
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
             //проверить что пользоавтель может проходить тест
-            if (_context.TestResults.Count(tr=>tr.Id== answer.TestResult.Id && tr.CompletedByUser==user) == 0)
+            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && tr.CompletedByUser == user) == 0)
             {
                 return NotFound();
             }
 
-            var option = await _context.Options.SingleAsync(o=>o.Id== model.OptionId);
+            var option = await _context.Options.SingleAsync(o => o.Id == model.OptionId);
             // проверить что опшн принадлежит к вопросу
             if (!answer.Question.Options.Contains(option))
             {
@@ -165,6 +186,68 @@ namespace WebApplication3.Controllers
             }
 
             answer.Text = model.Text;
+            _context.Answers.Update(answer);
+            await _context.SaveChangesAsync();
+            return new JsonResult("");
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("/MultiChoiceAnswer/{answerId}/")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MultiChoiceAnswer(int answerId, [FromBody]MultiChoiceAnswerViewModel model)
+        {
+
+            var answer = await _context.MultiChoiceAnswers
+                    .Include(a => a.TestResult)
+                    .Include(a => a.Question)
+                    .Include(a => a.AnswerOptions)
+                    .SingleAsync(a => a.Id == answerId)
+                ;
+            if (answer == null) return NotFound();
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            //проверить что пользоавтель может проходить тест
+            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && tr.CompletedByUser == user) == 0)
+            {
+                return NotFound();
+            }
+            //обновление опшнов
+            var options = model.Options;
+            var optionsToCreate = new List<AnswerOptionViewModel>();
+            var otherOptions = new List<AnswerOptionViewModel>();
+            var optionsToDelete = new List<AnswerOption>();
+
+
+            foreach (var option in options)
+            {
+                if (option.Id == null) optionsToCreate.Add(option);
+                else otherOptions.Add(option);
+            }
+
+            List<int?> optionsIds = otherOptions.Select(o => o.Id).ToList();
+            
+            optionsToDelete = answer.AnswerOptions.Where(o => !optionsIds.Contains(o.Id)).ToList();
+
+            foreach (var option in optionsToDelete)
+            {
+                _context.AnswerOptions.Remove(option);
+            }
+
+            await _context.SaveChangesAsync();
+
+            foreach (var option in optionsToCreate)
+            {
+                var optionC = new AnswerOption { OptionId = option.OptionId, Answer = answer };
+                var optionQ = await _context.Options.SingleAsync(o => o.Id == option.OptionId);
+                // проверить что опшн принадлежит к вопросу
+                if (!answer.Question.Options.Contains(optionQ))
+                {
+                    return BadRequest();
+                }
+                _context.AnswerOptions.Add(optionC);
+            }
+            await _context.SaveChangesAsync();
+
             _context.Answers.Update(answer);
             await _context.SaveChangesAsync();
             return new JsonResult("");

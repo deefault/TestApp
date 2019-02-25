@@ -11,14 +11,7 @@
                 <tbody id="item-table__body">
                     <tr class="item-table__row">
                         <td class="item-table__cell">
-                            @if (Model.Text != null)
-                            {
-                                <input name="option" id="Text" type="text" class="item__text-field" value="@(Model.Text)">
-                            }
-                            else
-                            {
-                                <input name="option" id="Text" type="text" class="item__text-field" placeholder="Ответ">
-                            }
+                            <input name="option" id="Text" type="text" class="item__text-field" @((Model.Text != null) ? "value=" + Model.Text : "") placeholder="Ответ">
                         </td>
                     </tr>
                 </tbody>

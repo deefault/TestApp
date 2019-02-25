@@ -1,0 +1,65 @@
+﻿@model DragAndDropAnswer
+
+<form method="post">
+    <div>
+        <h4>@Model.Question.Title</h4>
+    </div>
+    <input type="hidden" value="@Model.Id">
+    <fieldset class="form-group row" id="options">
+        <div class="col-sm-10">
+            <table class="item-table">
+                <tbody id="item-table__body">
+                    @{
+                        if (Model.DragAndDropAnswerOptions.Count != 0)
+                        {
+                            var dndOptions = Model.DragAndDropAnswerOptions.OrderBy(o => o.ChosenOrder).ToList();
+                            foreach (var option in dndOptions)
+                            {
+                                <tr class="item-table__row">
+                                    <td class="drag-handler"></td>
+                                    <td class="item-table__cell">
+                                        <label name="option" class="form-check-label" option-id="@Model.Question.Options.Single(o => o.Id == option.OptionId).Id">
+                                            @(Model.Question.Options.Single(o => o.Id == option.OptionId).Text)
+                                        </label>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            foreach (var option in Model.Question.Options)
+                            {
+                                <tr class="item-table__row">
+                                    <td class="drag-handler"></td>
+                                    <td class="item-table__cell">
+                                        <label name="option" class="form-check-label" option-id="@option.Id">
+                                            @(option.Text)
+                                        </label>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        }
+                </tbody>
+            </table>
+        </div>
+    </fieldset>
+    <style>
+        .item-table__row {
+            padding: 3px; /* Поля вокруг содержимого таблицы */
+            border: 1px solid #DDD; /* Параметры рамки */
+        }
+    </style>
+</form>
+<script>
+    $(function () {
+        new Sortable(
+            $('#item-table__body')[0], {
+                animation: 150,
+                scroll: true,
+                handle: '.drag-handler',
+            }
+        );
+        console.log($('#item-table__body')[0]);
+    });
+</script>

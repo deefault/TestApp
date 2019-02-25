@@ -164,8 +164,17 @@ function submitAnswer() {
         data.Text = $("input[name='option']").val();
     }
     else if (type == "DragAndDropAnswer") {
-
-    } else throw new exception("Not valid answer type!s");
+        var data = {};
+        data.Options = [];
+        var options = $("label[name='option']");
+        for (i = 0; i < options.length; i++) {
+            var o = {};
+            o.OptionId = $(options[i]).attr("option-id");
+            o.ChosenOrder = "" + i - -1;
+            data.Options.push(o);
+        }
+    }
+    else throw new exception("Not valid answer type!s");
 
     console.log(data);
     // запрос

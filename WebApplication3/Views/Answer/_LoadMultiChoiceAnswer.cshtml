@@ -10,11 +10,9 @@
             <table class="item-table">
                 <tbody id="item-table__body">
                     @{
-                        bool flag = false;
                         List<int> Ids = new List<int>();
                         if (Model.AnswerOptions != null)
                         {
-                            flag = true;
                             foreach (var a in Model.AnswerOptions)
                             {
                                 Ids.Add(a.OptionId);
@@ -23,28 +21,14 @@
                     }
                     @foreach (var option in Model.Question.Options)
                     {
-                        if (flag)
-                        {
-                            <tr class="item-table__row">
-                                <td class="item-table__cell">
-                                    <label class="form-check-label">
-                                        <input name="option" type="checkbox" option-id="@option.Id" group="Options" @((Ids.Contains(option.Id)) ? "checked" : "" )>
-                                        @option.Text
-                                    </label>
-                                </td>
-                            </tr>
-                        }
-                        else
-                        {
-                            <tr class="item-table__row">
-                                <td class="item-table__cell">
-                                    <label class="form-check-label">
-                                        <input name="option" type="checkbox" option-id="@option.Id" group="options">
-                                        @option.Text
-                                    </label>
-                                </td>
-                            </tr>
-                        }
+                        <tr class="item-table__row">
+                            <td class="item-table__cell">
+                                <label class="form-check-label">
+                                    <input name="option" type="checkbox" option-id="@option.Id" group="Options" @((Ids.Contains(option.Id)) ? "checked" : "" )>
+                                    @option.Text
+                                </label>
+                            </td>
+                        </tr>
                     }
                 </tbody>
             </table>

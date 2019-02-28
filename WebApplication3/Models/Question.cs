@@ -24,6 +24,8 @@ namespace WebApplication3.Models
         
         public List<Option> Options { get; set; }
         
+        public int Score { get; set; }
+        
         public enum QuestionTypeEnum
         {
             [Display(Name = "С одним правильным ответом")]

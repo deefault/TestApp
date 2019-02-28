@@ -65,15 +65,15 @@ namespace WebApplication3.Controllers
             switch (type)
             {
                 case (int)Question.QuestionTypeEnum.SingleChoiceQuestion:
-                    return View("AddSingleChoiceQuestion");
+                    return View("AddSingleChoiceQuestion",new AddSingleChoiceQuestionViewModel());
                 case (int)Question.QuestionTypeEnum.MultiChoiceQuestion:
-                    return View("AddMultiChoiceQuestion");
+                    return View("AddMultiChoiceQuestion",new AddMultiChoiceQuestionViewModel());
                 case (int)Question.QuestionTypeEnum.TextQuestion:
-                    return View("AddTextQuestion");
+                    return View("AddTextQuestion",new AddTextQuestionViewModel());
                 case (int)Question.QuestionTypeEnum.DragAndDropQuestion:
-                    return View("AddDragAndDropQuestion");
+                    return View("AddDragAndDropQuestion",new AddDragAndDropQuestionViewModel());
                 default:
-                    return View("AddSingleChoiceQuestion");
+                    return View("AddSingleChoiceQuestion",new AddSingleChoiceQuestionViewModel());
             }
         }
         #endregion
@@ -108,7 +108,8 @@ namespace WebApplication3.Controllers
                     {
                         Title = model.Title,
                         QuestionType = Enum.GetName(typeof(Question.QuestionTypeEnum), 1),
-                        Test = test
+                        Test = test,
+                        Score = model.Score
                     };
                     //создать в базе вопрос
                     var questionCreated = (await _context.AddAsync(question)).Entity;
@@ -172,7 +173,8 @@ namespace WebApplication3.Controllers
                     {
                         Title = model.Title,
                         QuestionType = Enum.GetName(typeof(Question.QuestionTypeEnum), 2),
-                        Test = test
+                        Test = test,
+                        Score = model.Score
                     };
                     //создать в базе вопрос
                     var questionCreated = (await _context.AddAsync(question)).Entity;
@@ -233,7 +235,8 @@ namespace WebApplication3.Controllers
                     {
                         Title = model.Title,
                         QuestionType = Enum.GetName(typeof(Question.QuestionTypeEnum), 4),
-                        Test = test
+                        Test = test,
+                        Score = model.Score
                     };
                     //создать в базе вопрос
                     var questionCreated = (await _context.Questions.AddAsync(question)).Entity;
@@ -296,7 +299,8 @@ namespace WebApplication3.Controllers
                     {
                         Title = model.Title,
                         QuestionType = Enum.GetName(typeof(Question.QuestionTypeEnum), 3),
-                        Test = test
+                        Test = test,
+                        Score = model.Score
                     };
                     //создать в базе вопрос
                     var questionCreated = (await _context.AddAsync(question)).Entity;
@@ -402,6 +406,7 @@ namespace WebApplication3.Controllers
                     // обновить вопрос и применить изменения
                     question.RightAnswer = question.Options.Single(o => o.IsRight);
                     question.Title = model.Title;
+                    question.Score = model.Score;
 
                     _context.Questions.Update(question);
                     await _context.SaveChangesAsync();
@@ -461,7 +466,7 @@ namespace WebApplication3.Controllers
                     UpdateQuestionOptions(model.Options, question);
                     // обновить вопрос и применить изменения
                     question.Title = model.Title;
-
+                    question.Score = model.Score;
                     _context.Questions.Update(question);
                     await _context.SaveChangesAsync();
                     ts.Commit();
@@ -520,7 +525,7 @@ namespace WebApplication3.Controllers
                     // обновить вопрос и применить изменения
                     question.TextRightAnswer = question.Options.Single().Text;
                     question.Title = model.Title;
-
+                    question.Score = model.Score;
                     _context.Questions.Update(question);
                     await _context.SaveChangesAsync();
                     ts.Commit();
@@ -578,7 +583,7 @@ namespace WebApplication3.Controllers
                     UpdateDragAndDropQuestionOptions(model.Options, question);
                     // обновить вопрос и применить изменения
                     question.Title = model.Title;
-
+                    question.Score = model.Score;
                     _context.Questions.Update(question);
                     await _context.SaveChangesAsync();
                     ts.Commit();

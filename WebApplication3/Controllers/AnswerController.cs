@@ -206,6 +206,7 @@ namespace WebApplication3.Controllers
         public async Task<IActionResult> MultiChoiceAnswer(int answerId, [FromBody]MultiChoiceAnswerViewModel model)
         {
 
+           
             var answer = await _context.MultiChoiceAnswers
                     .Include(a => a.TestResult).Include(a=>a.AnswerOptions)
                     .Include(a => a.Question).ThenInclude(a=>a.Options)

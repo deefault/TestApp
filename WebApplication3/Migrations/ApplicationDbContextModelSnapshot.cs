@@ -217,6 +217,10 @@ namespace WebApplication3.Migrations
                         .HasColumnName("question_type")
                         .HasMaxLength(50);
 
+                    b.Property<int>("Score")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(1);
+
                     b.Property<int>("TestId");
 
                     b.Property<string>("Title")

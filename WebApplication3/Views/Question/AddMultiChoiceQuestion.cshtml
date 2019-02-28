@@ -1,5 +1,7 @@
-﻿@using Microsoft.AspNetCore.Routing
-@model WebApplication3.Models.QuestionViewModels.AddSingleChoiceQuestionViewModel
+﻿@using Microsoft.AspNetCore.Mvc
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using Microsoft.AspNetCore.Routing
+@model WebApplication3.Models.QuestionViewModels.AddMultiChoiceQuestionViewModel
 
 @{
     ViewBag.Title = "Добавить вопрос";
@@ -11,7 +13,7 @@
     
         <div class="form-group" id="fields">
             <div class="">
-                <form asp-controller="Question" asp-action="AddSingleChoiceQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
+                <form asp-controller="Question" asp-action="AddMultiChoiceQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
                     <h4>Добавить вопрос с выбором нескольких правильных ответов</h4>
                     <hr />
                     <ul class="text-danger" id="validation-summary"></ul>
@@ -23,6 +25,14 @@
                             <span asp-validation-for="Title" class="text-danger"></span>
                         </div>
                     </div>
+                    <div class="form-group row">
+                        <label asp-for="Score" class="col-md-2 col-lg-2"></label>
+                        <div class="col-md-10 col-lg-4">
+                            <input asp-for="Score" class="form-control" />
+                            <span asp-validation-for="Score" class="text-danger"></span>
+                        </div>
+                    </div>
+                    
                     <div class="items">
                         <table class="item-table">
                             <tbody id="item-table__body">

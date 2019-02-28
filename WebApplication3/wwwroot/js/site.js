@@ -99,9 +99,7 @@ function addById() {
 }
 // #endregion
 
-// #rChe
-// egion Answer
-
+// #region Answer
 function loadAnswer() {
     var type = getActiveAnswerType();
     var id = getActiveAnswerId();
@@ -155,7 +153,6 @@ function submitAnswer() {
             var o = {};
             o.OptionId = $(options[i]).attr("option-id");
             checked.push(o.OptionId)
-            
         }
         data.checkedOptionIds = checked;
     }

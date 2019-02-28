@@ -207,19 +207,17 @@ namespace WebApplication3.Controllers
             {
                 return View(test);
             }
-            else
-            {
-                var testResult = await _context.TestResults.Where(r => r.Test == test || r.CompletedByUser == user).FirstAsync();
-                // у пользователя отсутствует тест
-                if (testResult == null)
-                {
-                    // добавляем тест к пользователю
-                    return RedirectToAction("AddTestToUser", new { testId = test.Id, userId = user.Id });
-                }
 
-                ViewData["testResult"] = testResult;
-                return View(test);
+            var testResult = await _context.TestResults.Where(r => r.Test == test && r.CompletedByUser == user).FirstAsync();
+            // у пользователя отсутствует тест
+            if (testResult == null)
+            {
+                // добавляем тест к пользователю
+                return RedirectToAction("AddTestToUser", new { testId = test.Id, userId = user.Id });
             }
+
+            ViewData["testResult"] = testResult;
+            return View(test);
         }
         #endregion
 
@@ -314,6 +312,67 @@ namespace WebApplication3.Controllers
             // TODO: redirect to first answer (question)
             //throw new NotImplementedException();
             return RedirectToAction("Answer", "Answer", new {testResultId=testResult.Id, answerOrder=1});
+        }
+
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        [Authorize]
+        [Route("/Test/Result/{testResultId}/Finish/")]
+        public async Task<IActionResult> FinishTest(int testResultId)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var testResult = await _context.TestResults.SingleAsync(tr => tr.Id == testResultId);
+            if (testResult.CompletedByUser != user) return BadRequest();
+            if (testResult.IsCompleted) return BadRequest();
+            testResult.IsCompleted = true;
+            testResult.CompletedOn = DateTime.UtcNow;
+            _context.Update(testResult);
+            
+            //var questions = testResult.Test.Questions.ToList();
+            var answers = _context.Answers.Where(a => a.TestResult == testResult);
+            
+            foreach (var answer in answers)
+            {
+                if (answer is SingleChoiceAnswer singleChoiceAnswer)
+                {
+                    var question = 
+                        await _context.SingleChoiceQuestions
+                            .SingleAsync(q=>q.Id == singleChoiceAnswer.Question.Id);
+                    singleChoiceAnswer.Score = (singleChoiceAnswer.Option == question.RightAnswer) ? question.Score : 0;
+
+                    _context.SingleChoiceAnswers.Update(singleChoiceAnswer);
+                }
+                else if (answer is MultiChoiceAnswer multiChoiceAnswer)
+                {
+                    var question = await _context.MultiChoiceQuestions
+                        .SingleAsync(q=>q.Id == multiChoiceAnswer.Question.Id);
+                    
+                    // TODO: Score
+                    int counter=0;
+                    multiChoiceAnswer.Score = 1;
+                    foreach (var answerOption in multiChoiceAnswer.AnswerOptions)
+                    {
+                        if (answerOption.Checked != question.Options.Single(o=>o.Id == answerOption.OptionId).IsRight)
+                        {
+                            multiChoiceAnswer.Score = 0;
+                            break;
+                        }
+                    }
+                    
+
+                    _context.MultiChoiceAnswers.Update(multiChoiceAnswer);
+                }
+                else if (answer is TextAnswer)
+                {
+                    
+                }
+                else if (answer is DragAndDropAnswer)
+                {
+                    
+                }
+            }
+            //await _context.SaveChangesAsync();
+            throw new NotImplementedException();
         }
     }
     #endregion

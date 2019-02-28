@@ -40,6 +40,7 @@ namespace WebApplication3.Data
                 q.ToTable("Question");
                 q.Property(e => e.QuestionType)
                     .HasMaxLength(50).HasColumnName("question_type");
+                q.Property(p => p.Score).HasDefaultValue(1);
             });
             builder.Entity<MultiChoiceQuestion>().ToTable("MultiChoiceQuestion");
             builder.Entity<SingleChoiceQuestion>().ToTable("SingleChoiceQuestion");

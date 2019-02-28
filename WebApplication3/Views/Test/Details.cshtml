@@ -8,11 +8,9 @@
     ViewBag.Title = Model.Name;
     Layout = "_Layout";
 }
-@if (User.Identity.IsAuthenticated)
-{
 
     // If user created test
-    if (Model.CreatedBy.Id == ((User) ViewData["user"]).Id)
+    @if (Model.CreatedBy.Id == ((User) ViewData["user"]).Id)
     {
         <div class="align-content-center">
             <h2>@Model.Name</h2>
@@ -115,7 +113,7 @@
         }
 
     }
-}
+
 
 <!-- Error Modal -->
 <div id="errorModal" class="modal fade" role="dialog">

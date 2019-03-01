@@ -25,9 +25,9 @@ namespace WebApplication3.TParser
                 throw new Exception(e.Message);
             }
         }
-        private static string ConsumeTag(Queue<string> tokens, string desired)
+        private static string Consume(Queue<string> tokens, string desired)
         {
-            string token = tokens.Peek();
+            string token = tokens.Peek().ToLower();
             if (token == desired)
             {
                 return tokens.Dequeue();
@@ -37,11 +37,11 @@ namespace WebApplication3.TParser
         }
         private static int ConsumeType(Queue<string> tokens)
         {
-            var token = (int)_types[tokens.Peek()];
-            if (token != 0)
+            int? token = (int?)_types[tokens.Peek()];
+            if (token != null)
             {
                 tokens.Dequeue();
-                return token;
+                return (int)token;
             }
             throw new Exception(String.Format("Expected: {0}; Found: {1}", "QuestionType", tokens.Peek()));
 
@@ -60,21 +60,23 @@ namespace WebApplication3.TParser
         {
             TestData testData = new TestData();
             var test = new Test();
-            ConsumeTag(tokens, "<TEST>");
+            Consume(tokens, "test");
+            Consume(tokens, "{");
             test.Name = ParseText(tokens);
             test.IsEnabled = ParseFlag(tokens);
-            while (tokens.Peek() == "<QUESTION>")
+            while (tokens.Peek() == "question")
             {
                 ParseQuestion(tokens, test, testData);
             }
-            ConsumeTag(tokens, "</TEST>");
+            Consume(tokens, "}");
             testData.Test = test;
             return testData;
         }
         private static void ParseQuestion(Queue<string> tokens, Test test, TestData testData)
         {
             Question question;
-            ConsumeTag(tokens, "<QUESTION>");
+            Consume(tokens, "question");
+            Consume(tokens, "{");
             var type = ParseType(tokens);
             switch (type)
             {
@@ -97,41 +99,42 @@ namespace WebApplication3.TParser
             question.Test = test;
             question.Title = ParseText(tokens);
             question.QuestionType = Enum.GetName(typeof(Question.QuestionTypeEnum), type);
-            while (tokens.Peek() == "<OPTION>")
+            while (tokens.Peek() == "option")
             {
                 ParseOption(tokens, question, testData);
             }
-            ConsumeTag(tokens, "</QUESTION>");
+            Consume(tokens, "}");
             testData.Questions.Add(question);
         }
         private static void ParseOption(Queue<string> tokens, Question question, TestData testData)
         {
             Option option = new Option { Question = question };
-            ConsumeTag(tokens, "<OPTION>");
+            Consume(tokens, "option");
+            Consume(tokens, "{");
             option.Text = ParseText(tokens);
             option.IsRight = ParseFlag(tokens);
-            ConsumeTag(tokens, "</OPTION>");
+            Consume(tokens, "}");
             testData.Options.Add(option);
         }
         private static string ParseText(Queue<string> tokens)
         {
-            ConsumeTag(tokens, "<TEXT>");
+            Consume(tokens, "text");
+            Consume(tokens, "=");
             string text = tokens.Dequeue();
-            ConsumeTag(tokens, "</TEXT>");
             return text;
         }
         private static bool ParseFlag(Queue<string> tokens)
         {
-            ConsumeTag(tokens, "<FLAG>");
+            Consume(tokens, "flag");
+            Consume(tokens, "=");
             bool flag = ConsumeFlag(tokens);
-            ConsumeTag(tokens, "</FLAG>");
             return flag;
         }
         private static int ParseType(Queue<string> tokens)
         {
-            ConsumeTag(tokens, "<TYPE>");
+            Consume(tokens, "type");
+            Consume(tokens, "=");
             var type = ConsumeType(tokens);
-            ConsumeTag(tokens, "</TYPE>");
             return type;
         }
     }

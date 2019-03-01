@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -17,6 +18,8 @@ using Newtonsoft.Json;
 using WebApplication3.Data;
 using WebApplication3.Models;
 using WebApplication3.Models.TestViewModels;
+using WebApplication3.TParser;
+using Microsoft.AspNetCore.Http;
 using StatusCodes = Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace WebApplication3.Controllers
@@ -86,6 +89,49 @@ namespace WebApplication3.Controllers
                 return RedirectToAction("Details", new { id = test.Id });
             }
             return View(model);
+        }
+
+        [HttpGet]
+        [Route("/Tests/AddFromFile/")]
+        public IActionResult AddFromFile()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("/Tests/AddFromFile/")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddFromFile(IFormFile uploadedFile)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            // get a stream
+            var stream = uploadedFile.OpenReadStream();
+            TestData testData = Parser.Parse(Tokenizer.Tokenize(new StreamReader(stream)));
+            testData.Test.CreatedBy = user;
+            await _context.Tests.AddAsync(testData.Test);
+            foreach (var q in testData.Questions)
+            {
+                await _context.Questions.AddAsync(q);
+            }
+            foreach (var o in testData.Options)
+            {
+                await _context.Options.AddAsync(o);
+            }
+            // Добавить тест к пользователю, который его создал (чтобы он тоже мог проходить его)
+            TestResult testResult = new TestResult
+            {
+                IsCompleted = false,
+                Test = testData.Test,
+                CompletedByUser = user,
+                //TotalQuestions = (uint)test.Questions.Count()
+            };
+            user.TestResults.Add(testResult);
+
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Details", new { id = testData.Test.Id });
+            
         }
 
         [HttpPost]
@@ -181,10 +227,10 @@ namespace WebApplication3.Controllers
         public async Task<IActionResult> Tests()
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var createdTests = _context.Tests.Where(t=>t.CreatedBy.Id == user.Id).ToList();
+            var createdTests = _context.Tests.Where(t => t.CreatedBy.Id == user.Id).ToList();
             //if (createdTests == null) //return View(new ICollection<Test>);
             return View(createdTests);
-            
+
         }
         #endregion
 
@@ -228,8 +274,8 @@ namespace WebApplication3.Controllers
         public async Task<IActionResult> TestResults()
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var tests = _context.TestResults.Where(t=>t.CompletedByUser == user)
-                .Include(a=>a.Test).ThenInclude(b=>b.CreatedBy).ToList();
+            var tests = _context.TestResults.Where(t => t.CompletedByUser == user)
+                .Include(a => a.Test).ThenInclude(b => b.CreatedBy).ToList();
             return View(tests);
         }
         #endregion
@@ -242,7 +288,7 @@ namespace WebApplication3.Controllers
         {
             ViewBag.IsStarted = false;
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var testResult = await _context.TestResults.Include(t=>t.Test)
+            var testResult = await _context.TestResults.Include(t => t.Test)
                 .SingleAsync(tr => tr.Id == testResultId && tr.CompletedByUser == user);
             if (testResult == null) return NotFound();
             if (!testResult.Test.IsEnabled) return Forbid();
@@ -250,13 +296,13 @@ namespace WebApplication3.Controllers
             {
                 ViewBag.IsStarted = true;
             }
-            
+
             ViewBag.UserId = user.Id;
-            ViewBag.QuestionsCount = _context.Questions.Count(q => q.Test==testResult.Test);
+            ViewBag.QuestionsCount = _context.Questions.Count(q => q.Test == testResult.Test);
             return View(testResult);
         }
-        
-        // POST 
+
+        // POST
         [Authorize]
         [HttpPost]
         [Route("/[controller]/Result/{testResultId}/Start/")]
@@ -266,7 +312,7 @@ namespace WebApplication3.Controllers
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var testResult = await _context.TestResults
                 .Include(tr => tr.Test)
-                    .ThenInclude(t=>t.Questions)
+                    .ThenInclude(t => t.Questions)
                 .SingleAsync(t => t.Id == testResultId);
             if (testResult == null) return NotFound();
             if (!testResult.Test.IsEnabled) return Forbid();
@@ -274,7 +320,7 @@ namespace WebApplication3.Controllers
             if (questions.Count == 0) return NotFound();
             if (_context.Answers.Any(a => a.TestResult == testResult))
             {
-                return RedirectToAction("Answer", "Answer", new {testResultId=testResult.Id, answerOrder=1});
+                return RedirectToAction("Answer", "Answer", new { testResultId = testResult.Id, answerOrder = 1 });
             }
             List<Answer> answers = new List<Answer>();
             Answer answer = null;
@@ -284,8 +330,8 @@ namespace WebApplication3.Controllers
                 switch (question.QuestionType)
                 {
                     case "SingleChoiceQuestion":
-                       answer = new SingleChoiceAnswer();
-                       break;
+                        answer = new SingleChoiceAnswer();
+                        break;
                     case "MultiChoiceQuestion":
                         answer = new MultiChoiceAnswer();
                         break;
@@ -294,9 +340,9 @@ namespace WebApplication3.Controllers
                         break;
                     case "DragAndDropQuestion":
                         answer = new DragAndDropAnswer();
-                        break;                            
+                        break;
                 }
-                if (answer == null) throw new NullReferenceException();;
+                if (answer == null) throw new NullReferenceException(); ;
                 answer.Question = question;
                 answer.Score = 0;
                 answer.TestResult = testResult;
@@ -307,11 +353,11 @@ namespace WebApplication3.Controllers
                 order++;
             }
             // answers.Shuffle()
-           
-            
+
+
             // TODO: redirect to first answer (question)
             //throw new NotImplementedException();
-            return RedirectToAction("Answer", "Answer", new {testResultId=testResult.Id, answerOrder=1});
+            return RedirectToAction("Answer", "Answer", new { testResultId = testResult.Id, answerOrder = 1 });
         }
 
         [ValidateAntiForgeryToken]
@@ -327,17 +373,17 @@ namespace WebApplication3.Controllers
             testResult.IsCompleted = true;
             testResult.CompletedOn = DateTime.UtcNow;
             _context.Update(testResult);
-            
+
             //var questions = testResult.Test.Questions.ToList();
             var answers = _context.Answers.Where(a => a.TestResult == testResult);
-            
+
             foreach (var answer in answers)
             {
                 if (answer is SingleChoiceAnswer singleChoiceAnswer)
                 {
-                    var question = 
+                    var question =
                         await _context.SingleChoiceQuestions
-                            .SingleAsync(q=>q.Id == singleChoiceAnswer.Question.Id);
+                            .SingleAsync(q => q.Id == singleChoiceAnswer.Question.Id);
                     singleChoiceAnswer.Score = (singleChoiceAnswer.Option == question.RightAnswer) ? question.Score : 0;
 
                     _context.SingleChoiceAnswers.Update(singleChoiceAnswer);
@@ -345,30 +391,30 @@ namespace WebApplication3.Controllers
                 else if (answer is MultiChoiceAnswer multiChoiceAnswer)
                 {
                     var question = await _context.MultiChoiceQuestions
-                        .SingleAsync(q=>q.Id == multiChoiceAnswer.Question.Id);
-                    
+                        .SingleAsync(q => q.Id == multiChoiceAnswer.Question.Id);
+
                     // TODO: Score
-                    int counter=0;
+                    int counter = 0;
                     multiChoiceAnswer.Score = 1;
                     foreach (var answerOption in multiChoiceAnswer.AnswerOptions)
                     {
-                        if (answerOption.Checked != question.Options.Single(o=>o.Id == answerOption.OptionId).IsRight)
+                        if (answerOption.Checked != question.Options.Single(o => o.Id == answerOption.OptionId).IsRight)
                         {
                             multiChoiceAnswer.Score = 0;
                             break;
                         }
                     }
-                    
+
 
                     _context.MultiChoiceAnswers.Update(multiChoiceAnswer);
                 }
                 else if (answer is TextAnswer)
                 {
-                    
+
                 }
                 else if (answer is DragAndDropAnswer)
                 {
-                    
+
                 }
             }
             //await _context.SaveChangesAsync();

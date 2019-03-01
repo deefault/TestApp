@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 
-namespace WebApplication3.Parser
+namespace WebApplication3.TParser
 {
     class Tokenizer
     {
         private static CharStream _cs;
-        public static Queue<string> Tokenize(StreamReader _reader)
+        public static Queue<string> Tokenize(StreamReader reader)
         {
-            _cs = new CharStream(_reader);
+            _cs = new CharStream(reader);
             try
             {
                 SkipSpaces();

@@ -36,7 +36,7 @@ namespace WebApplication3
                         services.GetRequiredService<UserManager<User>>(), 
                         services.GetRequiredService<SignInManager<User>>(), 
                         services.GetRequiredService<ILogger<DbInitializer>>());
-                    //dbInit.InitializeNew();
+                    dbInit.InitializeNew();
                 }
                 catch (Exception ex)
                 {

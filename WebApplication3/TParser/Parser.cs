@@ -15,15 +15,15 @@ namespace WebApplication3.TParser
             _types["MultiChoiceQuestion"] = 2;
             _types["TextQuestion"] = 3;
             _types["DragAndDropQuestion"] = 4;
-            //try
-            //{
+            try
+            {
                 TestData testData = ParseTest(tokens);
                 return testData;
-            //}
-            //catch (Exception e)
-            //{
-            //    throw new Exception(e.Message);
-            //}
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
         private static string ConsumeTag(Queue<string> tokens, string desired)
         {

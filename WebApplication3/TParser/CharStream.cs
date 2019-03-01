@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace WebApplication3.Parser
+namespace WebApplication3.TParser
 {
     public class CharStream
     {

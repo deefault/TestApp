@@ -3,27 +3,27 @@ using System.Collections.Generic;
 using System;
 using WebApplication3.Models;
 
-namespace WebApplication3.Parser
+namespace WebApplication3.TParser
 {
     class Parser
     {
         private static Hashtable _types;
-        public static void Parse(Queue<string> tokens)
+        public static TestData Parse(Queue<string> tokens)
         {
             _types = Hashtable.Synchronized(new Hashtable());
             _types["SingleChoiceQuestion"] = 1;
             _types["MultiChoiceQuestion"] = 2;
             _types["TextQuestion"] = 3;
             _types["DragAndDropQuestion"] = 4;
-            try
-            {
-                ParseTest(tokens);
-            }
-
-            catch (Exception e)
-            {
-                throw new Exception(e.Message);
-            }
+            //try
+            //{
+                TestData testData = ParseTest(tokens);
+                return testData;
+            //}
+            //catch (Exception e)
+            //{
+            //    throw new Exception(e.Message);
+            //}
         }
         private static string ConsumeTag(Queue<string> tokens, string desired)
         {
@@ -32,10 +32,8 @@ namespace WebApplication3.Parser
             {
                 return tokens.Dequeue();
             }
-            else
-            {
-                throw new Exception(String.Format("Expected: {0}; Found: {1}", desired, token));
-            }
+            throw new Exception(String.Format("Expected: {0}; Found: {1}", desired, token));
+
         }
         private static int ConsumeType(Queue<string> tokens)
         {
@@ -45,36 +43,35 @@ namespace WebApplication3.Parser
                 tokens.Dequeue();
                 return token;
             }
-            else
-            {
-                throw new Exception(String.Format("Expected: {0}; Found: {1}", "QuestionType", tokens.Peek()));
-            }
+            throw new Exception(String.Format("Expected: {0}; Found: {1}", "QuestionType", tokens.Peek()));
+
         }
         private static bool ConsumeFlag(Queue<string> tokens)
         {
             bool flag = Boolean.TryParse(tokens.Peek(), out bool tmp);
             if (flag)
             {
+                tokens.Dequeue();
                 return tmp;
             }
-            else
-            {
-                throw new Exception(String.Format("Expected: {0}; Found: {1}", "Boolean", tokens.Peek()));
-            }
+            throw new Exception(String.Format("Expected: {0}; Found: {1}", "Boolean", tokens.Peek()));
         }
-        private static void ParseTest(Queue<string> tokens)
+        private static TestData ParseTest(Queue<string> tokens)
         {
+            TestData testData = new TestData();
             var test = new Test();
             ConsumeTag(tokens, "<TEST>");
             test.Name = ParseText(tokens);
             test.IsEnabled = ParseFlag(tokens);
-            ConsumeTag(tokens, "</TEST>");
             while (tokens.Peek() == "<QUESTION>")
             {
-                ParseQuestion(tokens, test);
+                ParseQuestion(tokens, test, testData);
             }
+            ConsumeTag(tokens, "</TEST>");
+            testData.Test = test;
+            return testData;
         }
-        private static void ParseQuestion(Queue<string> tokens, Test test)
+        private static void ParseQuestion(Queue<string> tokens, Test test, TestData testData)
         {
             Question question;
             ConsumeTag(tokens, "<QUESTION>");
@@ -102,17 +99,19 @@ namespace WebApplication3.Parser
             question.QuestionType = Enum.GetName(typeof(Question.QuestionTypeEnum), type);
             while (tokens.Peek() == "<OPTION>")
             {
-                ParseOption(tokens, question);
+                ParseOption(tokens, question, testData);
             }
             ConsumeTag(tokens, "</QUESTION>");
+            testData.Questions.Add(question);
         }
-        private static void ParseOption(Queue<string> tokens, Question question)
+        private static void ParseOption(Queue<string> tokens, Question question, TestData testData)
         {
             Option option = new Option { Question = question };
             ConsumeTag(tokens, "<OPTION>");
             option.Text = ParseText(tokens);
             option.IsRight = ParseFlag(tokens);
             ConsumeTag(tokens, "</OPTION>");
+            testData.Options.Add(option);
         }
         private static string ParseText(Queue<string> tokens)
         {

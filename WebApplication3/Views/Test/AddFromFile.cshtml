@@ -7,7 +7,25 @@
 <form asp-controller="Test" enctype="multipart/form-data" asp-action="AddFromFile" asp-route-returnurl="/User/Tests/" method="post" class="form" role="form">
     <div class="form-group">
         <div class="col-md-10">
-            <p>Upload one file using this form:</p>
+            <details>
+                <summary>Пример</summary>
+                <pre>
+test {
+	text = Название теста
+	flag = Состояние (true/false)
+	question {
+		type = Тип вопроса (single/multi/text/dnd)
+		text = Текст вопроса
+		option {
+			text = Текст варианта ответа
+			flag = Состояние (true/false)
+		}
+	}
+}
+* - Только для single и multi
+
+                </pre>
+            </details>
             <input type="file" name="uploadedFile" />
         </div>
     </div>

@@ -11,10 +11,10 @@ namespace WebApplication3.TParser
         public static TestData Parse(Queue<string> tokens)
         {
             _types = Hashtable.Synchronized(new Hashtable());
-            _types["SingleChoiceQuestion"] = 1;
-            _types["MultiChoiceQuestion"] = 2;
-            _types["TextQuestion"] = 3;
-            _types["DragAndDropQuestion"] = 4;
+            _types["single"] = 1;
+            _types["multi"] = 2;
+            _types["text"] = 3;
+            _types["dnd"] = 4;
             try
             {
                 TestData testData = ParseTest(tokens);
@@ -37,7 +37,7 @@ namespace WebApplication3.TParser
         }
         private static int ConsumeType(Queue<string> tokens)
         {
-            int? token = (int?)_types[tokens.Peek()];
+            int? token = (int?)_types[tokens.Peek().ToLower()];
             if (token != null)
             {
                 tokens.Dequeue();

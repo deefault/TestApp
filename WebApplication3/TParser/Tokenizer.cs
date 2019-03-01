@@ -24,41 +24,47 @@ namespace WebApplication3.TParser
 
             bool capturing = false;
             StringBuilder capturedText = new StringBuilder("");
-
             while (_cs.InBounds())
             {
                 char c = _cs.Dequeue();
 
-                if (c == '<')
+                if (c == '\n')
+                {
+                    tokens.Enqueue(capturedText.ToString().Trim());
+                    SkipSpaces();
+                    capturedText = new StringBuilder("");
+                    capturing = false;
+                    continue;
+                }
+                else if (c == '=')
+                {
+                    tokens.Enqueue(capturedText.ToString().Trim());
+                    SkipSpaces();
+                    tokens.Enqueue(c.ToString());
+                    capturedText = new StringBuilder("");
+                    continue;
+                }
+                else if (c == '{')
                 {
                     if (capturing)
                     {
-                        tokens.Enqueue(capturedText.ToString());
+                        tokens.Enqueue(capturedText.ToString().Trim());
                         SkipSpaces();
+                        tokens.Enqueue(c.ToString());
+                        capturedText = new StringBuilder("");
+                        capturing = false;
+                        continue;
                     }
                     else
                     {
                         capturing = true;
                     }
-
-                    capturedText = new StringBuilder("");
                 }
-                else if (c == '>')
+                else
                 {
-                    capturing = false;
-                    capturedText.Append(c);
-                    tokens.Enqueue(capturedText.ToString());
-                    SkipSpaces();
-                }
-                else if (!capturing)
-                {
-                    capturedText = new StringBuilder("");
                     capturing = true;
                 }
-                if (capturing)
-                {
-                    capturedText.Append(c);
-                }
+                capturedText.Append(c);
             }
             return tokens;
         }

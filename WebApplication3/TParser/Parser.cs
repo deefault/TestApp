@@ -99,20 +99,33 @@ namespace WebApplication3.TParser
             question.Test = test;
             question.Title = ParseText(tokens);
             question.QuestionType = Enum.GetName(typeof(Question.QuestionTypeEnum), type);
-            while (tokens.Peek() == "option")
+            int i = 1, checkedCount = 0;
+            if (question is TextQuestion)
+                ParseOption(tokens, question, testData, i++, ref checkedCount);
+            else
             {
-                ParseOption(tokens, question, testData);
+                while (tokens.Peek() == "option")
+                {
+                    ParseOption(tokens, question, testData, i++, ref checkedCount);
+                }
+                if (question is SingleChoiceQuestion && checkedCount != 1)
+                    throw new Exception("В данном типе вопроса нужно отметить один ответ.");
+                else if (question is MultiChoiceQuestion && checkedCount < 1)
+                    throw new Exception("В данном типе вопроса нужно отметить хотя бы один ответ.");
             }
             Consume(tokens, "}");
             testData.Questions.Add(question);
         }
-        private static void ParseOption(Queue<string> tokens, Question question, TestData testData)
+        private static void ParseOption(Queue<string> tokens, Question question, TestData testData, int i, ref int checkedCount)
         {
             Option option = new Option { Question = question };
             Consume(tokens, "option");
             Consume(tokens, "{");
             option.Text = ParseText(tokens);
-            option.IsRight = ParseFlag(tokens);
+            if (question is SingleChoiceQuestion || question is MultiChoiceQuestion)
+                option.IsRight = ParseFlag(tokens);
+            else if (question is DragAndDropQuestion)
+                option.Order = i;
             Consume(tokens, "}");
             testData.Options.Add(option);
         }

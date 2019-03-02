@@ -66,12 +66,12 @@ namespace WebApplication3.Controllers
         [Authorize]
         [Route("/Tests/Add/")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Add(AddTestViewModel model)
+        public async Task<IActionResult> Add(AddTestModel model)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
             if (ModelState.IsValid)
             {
-                var test = new Test { Name = model.Name, CreatedBy = user, IsEnabled = model.IsEnabled };
+                var test = new Test { Name = model.Model2.Name, CreatedBy = user, IsEnabled = model.Model2.IsEnabled };
                 await _context.Tests.AddAsync(test);
 
                 // Добавить тест к пользователю, который его создал (чтобы он тоже мог проходить его)
@@ -236,7 +236,10 @@ namespace WebApplication3.Controllers
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var createdTests = _context.Tests.Where(t => t.CreatedBy.Id == user.Id).ToList();
             //if (createdTests == null) //return View(new ICollection<Test>);
-            return View(createdTests);
+            AddTestModel addTestModel = new AddTestModel();
+            addTestModel.Model1 = createdTests;
+            addTestModel.Model2 = new AddTestViewModel();
+            return View(addTestModel);
 
         }
         #endregion
@@ -484,6 +487,6 @@ namespace WebApplication3.Controllers
             //throw new NotImplementedException();
             return RedirectToAction("TestResults");
         }
+        #endregion
     }
-    #endregion
 }

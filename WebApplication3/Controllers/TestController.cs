@@ -482,7 +482,7 @@ namespace WebApplication3.Controllers
             _context.Update(testResult);
             await _context.SaveChangesAsync();
             //throw new NotImplementedException();
-            return RedirectToAction("Results","Tests");
+            return RedirectToAction("TestResults");
         }
     }
     #endregion

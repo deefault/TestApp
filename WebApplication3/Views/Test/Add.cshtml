@@ -1,4 +1,5 @@
-﻿@model WebApplication3.Models.TestViewModels.AddTestViewModel
+﻿@using System;
+@model AddTestModel
 
 @{
     ViewBag.Title = "Добавить Тест";
@@ -11,20 +12,20 @@
     <hr />
     <div asp-validation-summary="All" class="text-danger"></div>
     <div class="form-group row">
-        <label asp-for="Name" class="col-md-2 control-label"></label>
+        <label asp-for="Model2.Name" class="col-md-2 control-label"></label>
         <div class="col-md-10">
-            <input asp-for="Name" class="form-control" />
-            <span asp-validation-for="Name" class="text-danger"></span>
+            <input asp-for="Model2.Name" class="form-control" />
+            <span asp-validation-for="Model2.Name" class="text-danger"></span>
         </div>
     </div>
     <div class="form-group row">
-        <label asp-for="IsEnabled" class="col-md-2 control-label"></label>
+        <label asp-for="Model2.IsEnabled" class="col-md-2 control-label"></label>
         <div class="col-md-10">
-            <input asp-for="IsEnabled" type="checkbox" class="checkbox" />Тест Включен?
-            <span asp-validation-for="IsEnabled" class="text-danger"></span>
+            <input asp-for="Model2.IsEnabled" type="checkbox" class="checkbox" />Тест Включен?
+            <span asp-validation-for="Model2.IsEnabled" class="text-danger"></span>
         </div>
     </div>
-    
+
     <div class="form-group row">
         <div class="col-md-offset-2 col-md-10">
             <button type="submit" class="btn btn-primary">Добавить</button>

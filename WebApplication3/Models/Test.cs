@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using WebApplication3.Models.TestViewModels;
 
 namespace WebApplication3.Models
 {
@@ -36,5 +37,10 @@ namespace WebApplication3.Models
         }
         
         
+    }
+    public class AddTestModel
+    {
+        public List<Test> Model1 { get; set; }
+        public AddTestViewModel Model2 { get; set; }
     }
 }

@@ -1,5 +1,5 @@
-@using Microsoft.EntityFrameworkCore
-@model System.Collections.Generic.List<WebApplication3.Models.Test>
+@using System;
+@model AddTestModel
 
 @{
     ViewBag.Title = "Тесты";
@@ -26,7 +26,7 @@ else
                 <th>Включен?</th>
                 <th>Создан</th>
             </tr>
-            @foreach (var item in Model)
+            @foreach (var item in Model.Model1)
             {
                 <tr>
                     <td>
@@ -53,9 +53,48 @@ else
         </table>
     </dd>
 }
-<a asp-controller="Test" asp-action="Add" method="get"><button class="btn btn-info">Добавить тест</button></a>
+<a asp-controller="Test" asp-action="Add" method="get">@*<button class="btn btn-info">Добавить тест</button>*@</a>
 <button class="btn btn-info"
-        data-toggle="collapse" data-target=".multi-collapse"
+        data-toggle="collapse" data-target="#addFormCollapse"
+        aria-expanded="false" aria-controls="addFormCollapse">
+    Добавить тест
+</button>
+<div class="row">
+    <div class="col">
+        <div class="collapse multi-collapse" id="addFormCollapse">
+            <div class="card card-body">
+                <form asp-controller="Test" asp-action="Add" asp-route-returnurl="/User/Tests/" method="post" class="form" role="form">
+                    <h4>Добавить тест</h4>
+                    <hr />
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <div class="form-group row">
+                        <label asp-for="Model2.Name" class="col-md-2 control-label"></label>
+                        <div class="col-md-10">
+                            <input asp-for="Model2.Name" class="form-control" />
+                            <span asp-validation-for="Model2.Name" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label asp-for="Model2.IsEnabled" class="col-md-2 control-label"></label>
+                        <div class="col-md-10">
+                            <input asp-for="Model2.IsEnabled" type="checkbox" class="checkbox" />Тест Включен?
+                            <span asp-validation-for="Model2.IsEnabled" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-md-offset-2 col-md-10">
+                            <button type="submit" class="btn btn-primary">Добавить</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button class="btn btn-info"
+        data-toggle="collapse" data-target="#addFromFileFormCollapse"
         aria-expanded="false" aria-controls="addFromFileFormCollapse">
     Добавить тест из файла
 </button>
@@ -85,11 +124,11 @@ test {
 * - Только для single и multi
                 </pre>
                             </details>
-            
+
                             <input type="file" name="uploadedFile" />
                         </div>
                     </div>
-    
+
                     <div class="form-group row">
                         <div class="col-md-offset-2 col-md-10">
                             <button type="submit" value="Upload" class="btn btn-primary">Загрузить</button>
@@ -100,3 +139,6 @@ test {
         </div>
     </div>
 </div>
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

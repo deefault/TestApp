@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System;
 using WebApplication3.Models;
+using System.Linq;
 
 namespace WebApplication3.TParser
 {
@@ -109,7 +110,9 @@ namespace WebApplication3.TParser
                     ParseOption(tokens, question, testData, i++, ref checkedCount);
                 }
                 if (question is SingleChoiceQuestion && checkedCount != 1)
-                    throw new Exception("В данном типе вопроса нужно отметить один ответ.");
+                {
+                        throw new Exception("В данном типе вопроса нужно отметить один ответ.");
+                }
                 else if (question is MultiChoiceQuestion && checkedCount < 1)
                     throw new Exception("В данном типе вопроса нужно отметить хотя бы один ответ.");
             }
@@ -123,9 +126,15 @@ namespace WebApplication3.TParser
             Consume(tokens, "{");
             option.Text = ParseText(tokens);
             if (question is SingleChoiceQuestion || question is MultiChoiceQuestion)
+            {
                 option.IsRight = ParseFlag(tokens);
+                if (option.IsRight)
+                    checkedCount++;
+            }
             else if (question is DragAndDropQuestion)
                 option.Order = i;
+            else
+                (question as TextQuestion).TextRightAnswer = option.Text;
             Consume(tokens, "}");
             testData.Options.Add(option);
         }

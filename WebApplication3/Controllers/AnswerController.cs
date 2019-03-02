@@ -248,7 +248,7 @@ namespace WebApplication3.Controllers
             // обновить
             else
             {
-                foreach (var answerOption in answer.AnswerOptions )
+                foreach (var answerOption in answer.AnswerOptions)
                 {
                     answerOption.Checked = model.CheckedOptionIds.Contains(answerOption.OptionId);
                     _context.AnswerOptions.Update(answerOption);

@@ -57,6 +57,16 @@ namespace WebApplication3.TParser
             }
             throw new Exception(String.Format("Expected: {0}; Found: {1}", "Boolean", tokens.Peek()));
         }
+        private static int ConsumeScore(Queue<string> tokens)
+        {
+            bool flag = Int32.TryParse(tokens.Peek(), out int tmp);
+            if (flag)
+            {
+                tokens.Dequeue();
+                return tmp;
+            }
+            throw new Exception(String.Format("Expected: {0}; Found: {1}", "Int32", tokens.Peek()));
+        }
         private static TestData ParseTest(Queue<string> tokens)
         {
             TestData testData = new TestData();
@@ -99,6 +109,7 @@ namespace WebApplication3.TParser
             }
             question.Test = test;
             question.Title = ParseText(tokens);
+            question.Score = ParseScore(tokens);
             question.QuestionType = Enum.GetName(typeof(Question.QuestionTypeEnum), type);
             int i = 1, checkedCount = 0;
             if (question is TextQuestion)
@@ -151,6 +162,13 @@ namespace WebApplication3.TParser
             Consume(tokens, "=");
             bool flag = ConsumeFlag(tokens);
             return flag;
+        }
+        private static int ParseScore(Queue<string> tokens)
+        {
+            Consume(tokens, "score");
+            Consume(tokens, "=");
+            int score = ConsumeScore(tokens);
+            return score;
         }
         private static int ParseType(Queue<string> tokens)
         {

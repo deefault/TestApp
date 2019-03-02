@@ -285,9 +285,21 @@ namespace WebApplication3.Controllers
                 .Include(a => a.Test).ThenInclude(b => b.CreatedBy).ToList();
             return View(tests);
         }
+        [HttpGet]
+        [Authorize]
+        [Route("/[controller]/Result/{testResultId}/Details/")]
+        public async Task<IActionResult> TRDetails(int testResultId)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var testResult = await _context.TestResults.Include(tr => tr.Test)
+                .SingleAsync(tr => tr.Id == testResultId && tr.CompletedByUser == user);
+            if (testResult == null) return NotFound();
+            if (!testResult.Test.IsEnabled || !testResult.IsCompleted) return Forbid();
+            return View(testResult);
+        }
         #endregion
 
-        #region Старт
+        #region Прохождение
         [Authorize]
         [HttpGet]
         [Route("/[controller]/Result/{testResultId}/Start/")]
@@ -388,8 +400,8 @@ namespace WebApplication3.Controllers
                 if (answer is SingleChoiceAnswer)
                 {
                     var singleChoiceAnswer = await _context.SingleChoiceAnswers
-                        .Include(a => a.TestResult).Include(a => a.Question)
-                        .Include(a => a.Option).SingleAsync(a => a.Id == answer.Id);
+                        .Include(a => a.Question).Include(a => a.Option)
+                        .SingleAsync(a => a.Id == answer.Id);
                     var question = 
                         await _context.SingleChoiceQuestions
                             .SingleAsync(q => q.Id == singleChoiceAnswer.QuestionId);
@@ -407,8 +419,7 @@ namespace WebApplication3.Controllers
                 else if (answer is MultiChoiceAnswer)
                 {
                     var multiChoiceAnswer = await _context.MultiChoiceAnswers
-                        .Include(a => a.TestResult).Include(a => a.AnswerOptions)
-                        .Include(a => a.Question).ThenInclude(a => a.Options)
+                        .Include(a => a.AnswerOptions).Include(a => a.Question).ThenInclude(q => q.Options)
                         .SingleAsync(a => a.Id == answer.Id);
                     var question = 
                         await _context.MultiChoiceQuestions
@@ -449,9 +460,7 @@ namespace WebApplication3.Controllers
                 else if (answer is DragAndDropAnswer)
                 {
                     var dndAnswer = await _context.DragAndDropAnswers
-                    .Include(a => a.TestResult)
-                    .Include(a => a.Question)
-                    .Include(a => a.DragAndDropAnswerOptions)
+                    .Include(a => a.Question).Include(a => a.DragAndDropAnswerOptions)
                     .SingleAsync(a => a.Id == answer.Id);
                     var question = 
                         await _context.DragAndDropQuestions

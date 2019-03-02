@@ -65,6 +65,19 @@ namespace WebApplication3.Controllers
 
             return View("Answer", answers);
         }
+        [Authorize]
+        [HttpGet]
+        [Route("/{testResultId}/Results/Question/{answerOrder}/")]
+        public async Task<IActionResult> AnswerResults(int testResultId, ushort answerOrder)
+        {
+            var testResult = await _context.TestResults
+                .Include(tr => tr.Answers)
+            .SingleAsync(tr => tr.Id == testResultId);
+            if (testResult == null) return NotFound();
+            var answers = testResult.Answers.OrderBy(a => a.Order).ToList();
+
+            return View("AnswerResults", answers);
+        }
         #endregion
 
         #region GET

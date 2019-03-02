@@ -385,8 +385,11 @@ namespace WebApplication3.Controllers
             testResult.TotalQuestions = (uint)answers.Count();
             foreach (var answer in answers)
             {
-                if (answer is SingleChoiceAnswer singleChoiceAnswer)
+                if (answer is SingleChoiceAnswer)
                 {
+                    var singleChoiceAnswer = await _context.SingleChoiceAnswers
+                        .Include(a => a.TestResult).Include(a => a.Question)
+                        .Include(a => a.Option).SingleAsync(a => a.Id == answer.Id);
                     var question = 
                         await _context.SingleChoiceQuestions
                             .SingleAsync(q => q.Id == singleChoiceAnswer.QuestionId);

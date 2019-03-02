@@ -114,6 +114,11 @@ function loadAnswer() {
         success: function (response) {
             //заменить html код формой внутри div
             $("#formDiv").html(response);
+            // change question # in url
+            var stateUrl = window.location.pathname.split("/");
+            stateUrl[stateUrl.length-1] = id;
+            var stateObj = {id:id,type:type,actionUrl:actionUrl}; 
+            window.history.pushState(stateObj,"Вопрос " + id, stateUrl.join("/"));
         },
         error: function (xhr, textStatus, errorThrown) {
             console.log(xhr.responseJSON);

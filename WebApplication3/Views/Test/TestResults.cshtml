@@ -74,7 +74,7 @@ else
                         @item.CompletedOn
                     </td>
                     <td>
-                        @(item.RightAnswersCount/item.TotalQuestions)
+                        @(item.RightAnswersCount * 100 / item.TotalQuestions)%
                     </td>
                 </tr>
             }

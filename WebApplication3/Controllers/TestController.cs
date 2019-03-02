@@ -349,7 +349,7 @@ namespace WebApplication3.Controllers
                         answer = new DragAndDropAnswer();
                         break;
                 }
-                if (answer == null) throw new NullReferenceException(); ;
+                if (answer == null) throw new NullReferenceException();
                 answer.Question = question;
                 answer.Score = 0;
                 answer.TestResult = testResult;
@@ -379,35 +379,48 @@ namespace WebApplication3.Controllers
             if (testResult.IsCompleted) return BadRequest();
             testResult.IsCompleted = true;
             testResult.CompletedOn = DateTime.UtcNow;
-            _context.Update(testResult);
-
+            uint count = 0;
             //var questions = testResult.Test.Questions.ToList();
             var answers = _context.Answers.Where(a => a.TestResult == testResult);
-
+            testResult.TotalQuestions = (uint)answers.Count();
             foreach (var answer in answers)
             {
                 if (answer is SingleChoiceAnswer singleChoiceAnswer)
                 {
-                    var question =
+                    var question = 
                         await _context.SingleChoiceQuestions
-                            .SingleAsync(q => q.Id == singleChoiceAnswer.Question.Id);
-                    singleChoiceAnswer.Score = (singleChoiceAnswer.Option == question.RightAnswer) ? question.Score : 0;
+                            .SingleAsync(q => q.Id == singleChoiceAnswer.QuestionId);
+                    if (singleChoiceAnswer.Option == question.RightAnswer)
+                    {
+                        singleChoiceAnswer.Score = 1;
+                        count++;
+                    }
+                    else
+                        singleChoiceAnswer.Score = 0;
+                    //singleChoiceAnswer.Score = (singleChoiceAnswer.Option == question.RightAnswer) ? question.Score : 0;
 
                     _context.SingleChoiceAnswers.Update(singleChoiceAnswer);
                 }
-                else if (answer is MultiChoiceAnswer multiChoiceAnswer)
+                else if (answer is MultiChoiceAnswer)
                 {
-                    var question = await _context.MultiChoiceQuestions
-                        .SingleAsync(q => q.Id == multiChoiceAnswer.Question.Id);
+                    var multiChoiceAnswer = await _context.MultiChoiceAnswers
+                        .Include(a => a.TestResult).Include(a => a.AnswerOptions)
+                        .Include(a => a.Question).ThenInclude(a => a.Options)
+                        .SingleAsync(a => a.Id == answer.Id);
+                    var question = 
+                        await _context.MultiChoiceQuestions
+                            .SingleAsync(q => q.Id == multiChoiceAnswer.QuestionId);
 
                     // TODO: Score
-                    int counter = 0;
-                    multiChoiceAnswer.Score = 1;
+                    //int counter = 0;
+                    multiChoiceAnswer.Score = question.Score;
+                    count++;
                     foreach (var answerOption in multiChoiceAnswer.AnswerOptions)
                     {
                         if (answerOption.Checked != question.Options.Single(o => o.Id == answerOption.OptionId).IsRight)
                         {
                             multiChoiceAnswer.Score = 0;
+                            count--;
                             break;
                         }
                     }
@@ -415,17 +428,49 @@ namespace WebApplication3.Controllers
 
                     _context.MultiChoiceAnswers.Update(multiChoiceAnswer);
                 }
-                else if (answer is TextAnswer)
+                else if (answer is TextAnswer textAnswer)
                 {
-
+                    var question = 
+                        await _context.TextQuestions
+                            .SingleAsync(q => q.Id == textAnswer.QuestionId);
+                    if (textAnswer.Text == question.TextRightAnswer)
+                    {
+                        textAnswer.Score = question.Score;
+                        count++;
+                    }
+                    else
+                        textAnswer.Score = 0;
+                    //textAnswer.Score = (textAnswer.Text == question.TextRightAnswer) ? question.Score : 0;
+                    _context.TextAnswers.Update(textAnswer);
                 }
                 else if (answer is DragAndDropAnswer)
                 {
-
+                    var dndAnswer = await _context.DragAndDropAnswers
+                    .Include(a => a.TestResult)
+                    .Include(a => a.Question)
+                    .Include(a => a.DragAndDropAnswerOptions)
+                    .SingleAsync(a => a.Id == answer.Id);
+                    var question = 
+                        await _context.DragAndDropQuestions
+                            .SingleAsync(q => q.Id == dndAnswer.QuestionId);
+                    dndAnswer.Score = question.Score;
+                    count++;
+                    foreach (var dndOption in dndAnswer.DragAndDropAnswerOptions)
+                    {
+                        if (dndOption.RightOptionId != dndOption.OptionId)
+                        {
+                            dndAnswer.Score = 0;
+                            count--;
+                            break;
+                        }
+                    }
                 }
             }
-            //await _context.SaveChangesAsync();
-            throw new NotImplementedException();
+            testResult.RightAnswersCount = count;
+            _context.Update(testResult);
+            await _context.SaveChangesAsync();
+            //throw new NotImplementedException();
+            return RedirectToAction("Results","Tests");
         }
     }
     #endregion

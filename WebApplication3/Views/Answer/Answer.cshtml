@@ -25,7 +25,7 @@
         </li>
     </ul>
 </nav>
-<button class="btn btn-default" data-toggle="modal" data-target="#finishModal">Завершить</button>
+<button class="btn btn-default" data-toggle="modal" onclick='submitAnswer();' data-target="#finishModal">Завершить</button>
 
 <div class="modal fade" id="finishModal">
     <div class="modal-dialog" role="document">
@@ -40,13 +40,13 @@
                 <p>Вы уверены что вы хотите завершить тест?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" onclick='$("#finishForm").submit();'>Да</button>
+                <button type="button" class="btn btn-primary" onclick='submitAnswer(); $("#finishForm").submit();'>Да</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
             </div>
         </div>
     </div>
 </div>
-<form hidden="true" id="#finishForm" asp-controller="Test" asp-action="FinishTest"
+<form hidden="hidden" id="finishForm" asp-controller="Test" asp-action="FinishTest"
       asp-route-testResultId="@Model.First().TestResult.Id">
 </form>
 @section Scripts

@@ -110,25 +110,32 @@ namespace WebApplication3.Controllers
             TestData testData = Parser.Parse(Tokenizer.Tokenize(new StreamReader(stream)));
             testData.Test.CreatedBy = user;
             await _context.Tests.AddAsync(testData.Test);
-            foreach (var q in testData.Questions)
-            {
-                await _context.Questions.AddAsync(q);
-            }
-            foreach (var o in testData.Options)
-            {
-                await _context.Options.AddAsync(o);
-            }
-            // Добавить тест к пользователю, который его создал (чтобы он тоже мог проходить его)
             TestResult testResult = new TestResult
             {
                 IsCompleted = false,
                 Test = testData.Test,
                 CompletedByUser = user,
-                //TotalQuestions = (uint)test.Questions.Count()
             };
             user.TestResults.Add(testResult);
-
-
+            await _context.SaveChangesAsync();
+            foreach (var q in testData.Questions)
+            {
+                await _context.Questions.AddAsync(q);
+            }
+            await _context.SaveChangesAsync();
+            foreach (var o in testData.Options)
+            {
+                await _context.Options.AddAsync(o);
+                if (o.Question is SingleChoiceQuestion && o.IsRight)
+                {
+                    var questionCreated = _context.Questions.Single(q => q.Id == o.Question.Id) as SingleChoiceQuestion;
+                    questionCreated.RightAnswer = o;
+                    _context.Questions.Update(questionCreated);
+                }
+            }
+            
+            // Добавить тест к пользователю, который его создал (чтобы он тоже мог проходить его)
+            
             await _context.SaveChangesAsync();
             return RedirectToAction("Details", new { id = testData.Test.Id });
             

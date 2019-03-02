@@ -54,4 +54,49 @@ else
     </dd>
 }
 <a asp-controller="Test" asp-action="Add" method="get"><button class="btn btn-info">Добавить тест</button></a>
-<a asp-controller="Test" asp-action="AddFromFile" method="get"><button class="btn btn-info">Добавить тест из файла</button></a>
+<button class="btn btn-info"
+        data-toggle="collapse" data-target=".multi-collapse"
+        aria-expanded="false" aria-controls="addFromFileFormCollapse">
+    Добавить тест из файла
+</button>
+<div class="row">
+    <div class="col">
+        <div class="collapse multi-collapse" id="addFromFileFormCollapse">
+            <div class="card card-body">
+                <form asp-controller="Test" enctype="multipart/form-data" asp-action="AddFromFile" asp-route-returnurl="/User/Tests/" method="post" class="form" role="form">
+                    <div class="form-group">
+                        <div class="form-control-file col-md-10">
+                            <details>
+                                <summary>Пример</summary>
+                                <pre>
+test {
+	text = Название теста
+	flag = Состояние (true/false)
+	question {
+		type = Тип вопроса (single/multi/text/dnd)
+		text = Текст вопроса
+		score = Баллов за правильный ответ
+		option {
+			text = Текст варианта ответа
+			flag = Состояние (true/false)*
+		}
+	}
+}
+* - Только для single и multi
+                </pre>
+                            </details>
+            
+                            <input type="file" name="uploadedFile" />
+                        </div>
+                    </div>
+    
+                    <div class="form-group row">
+                        <div class="col-md-offset-2 col-md-10">
+                            <button type="submit" value="Upload" class="btn btn-primary">Загрузить</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

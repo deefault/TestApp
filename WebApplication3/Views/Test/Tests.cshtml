@@ -59,48 +59,14 @@ else
         aria-expanded="false" aria-controls="addFormCollapse">
     Добавить тест
 </button>
-<div class="row">
-    <div class="col">
-        <div class="collapse multi-collapse" id="addFormCollapse">
-            <div class="card card-body">
-                <form asp-controller="Test" asp-action="Add" asp-route-returnurl="/User/Tests/" method="post" class="form" role="form">
-                    <h4>Добавить тест</h4>
-                    <hr />
-                    <div asp-validation-summary="All" class="text-danger"></div>
-                    <div class="form-group row">
-                        <label asp-for="Model2.Name" class="col-md-2 control-label"></label>
-                        <div class="col-md-10">
-                            <input asp-for="Model2.Name" class="form-control" />
-                            <span asp-validation-for="Model2.Name" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label asp-for="Model2.IsEnabled" class="col-md-2 control-label"></label>
-                        <div class="col-md-10">
-                            <input asp-for="Model2.IsEnabled" type="checkbox" class="checkbox" />Тест Включен?
-                            <span asp-validation-for="Model2.IsEnabled" class="text-danger"></span>
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <div class="col-md-offset-2 col-md-10">
-                            <button type="submit" class="btn btn-primary">Добавить</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
 <button class="btn btn-info"
         data-toggle="collapse" data-target="#addFromFileFormCollapse"
-        aria-expanded="false" aria-controls="addFromFileFormCollapse">
+        aria-expanded="false" aria-controls="addFromFileFormCollapse" >
     Добавить тест из файла
 </button>
-<div class="row">
-    <div class="col">
-        <div class="collapse multi-collapse" id="addFromFileFormCollapse">
+<div class="panel panel-default" id="parent">
+    <div class="panel-heading">
+        <div class="collapse multi-collapse" data-parent="#parent" id="addFromFileFormCollapse">
             <div class="card card-body">
                 <form asp-controller="Test" enctype="multipart/form-data" asp-action="AddFromFile" asp-route-returnurl="/User/Tests/" method="post" class="form" role="form">
                     <div class="form-group">
@@ -132,6 +98,37 @@ test {
                     <div class="form-group row">
                         <div class="col-md-offset-2 col-md-10">
                             <button type="submit" value="Upload" class="btn btn-primary">Загрузить</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="panel-heading">
+        <div class="collapse multi-collapse" data-parent="#parent" id="addFormCollapse">
+            <div class="card card-body">
+                <form asp-controller="Test" asp-action="Add" asp-route-returnurl="/User/Tests/" method="post" class="form" role="form">
+                    <h4>Добавить тест</h4>
+                    <hr />
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <div class="form-group row">
+                        <label asp-for="Model2.Name" class="col-md-2 control-label"></label>
+                        <div class="col-md-10">
+                            <input asp-for="Model2.Name" class="form-control" />
+                            <span asp-validation-for="Model2.Name" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label asp-for="Model2.IsEnabled" class="col-md-2 control-label"></label>
+                        <div class="col-md-10">
+                            <input asp-for="Model2.IsEnabled" type="checkbox" class="checkbox" />Тест Включен?
+                            <span asp-validation-for="Model2.IsEnabled" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-md-offset-2 col-md-10">
+                            <button type="submit" class="btn btn-primary">Добавить</button>
                         </div>
                     </div>
                 </form>

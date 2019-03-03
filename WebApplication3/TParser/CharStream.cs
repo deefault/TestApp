@@ -49,16 +49,20 @@ namespace WebApplication3.TParser
         {
             char ch = Peek();
             _buffer = _UNDEF;
-            //if (ch == '\n')
-            //{
-            //    LexemLocation.rowNumber++;
-            //    LexemLocation.colNumber = 1;
-            //}
+            if (ch == '\n')
+            {
+                LexemLocation.RowNumber++;
+                //LexemLocation.colNumber = 1;
+            }
             //else
             //{
-            //    LexemLocation.colNumber++;
+                //LexemLocation.colNumber++;
             //}
             return ch;
         }
+    }
+    public class LexemLocation
+    {
+        public static int RowNumber { get; set; } = 1;
     }
 }

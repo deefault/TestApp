@@ -8,7 +8,7 @@ namespace WebApplication3.TParser
     class Tokenizer
     {
         private static CharStream _cs;
-        public static Queue<string> Tokenize(StreamReader reader)
+        public static Queue<Token> Tokenize(StreamReader reader)
         {
             _cs = new CharStream(reader);
             try
@@ -20,7 +20,7 @@ namespace WebApplication3.TParser
                 throw new Exception(e.Message);
             }
 
-            Queue<string> tokens = new Queue<string>();
+            Queue<Token> tokens = new Queue<Token>();
 
             bool capturing = false;
             StringBuilder capturedText = new StringBuilder("");
@@ -30,7 +30,7 @@ namespace WebApplication3.TParser
 
                 if (c == '\n')
                 {
-                    tokens.Enqueue(capturedText.ToString().Trim());
+                    tokens.Enqueue(new Token(capturedText.ToString().Trim(), LexemLocation.RowNumber));
                     SkipSpaces();
                     capturedText = new StringBuilder("");
                     capturing = false;
@@ -38,9 +38,9 @@ namespace WebApplication3.TParser
                 }
                 else if (c == '=')
                 {
-                    tokens.Enqueue(capturedText.ToString().Trim());
+                    tokens.Enqueue(new Token(capturedText.ToString().Trim(), LexemLocation.RowNumber));
                     SkipSpaces();
-                    tokens.Enqueue(c.ToString());
+                    tokens.Enqueue(new Token(c.ToString().Trim(), LexemLocation.RowNumber));
                     capturedText = new StringBuilder("");
                     continue;
                 }
@@ -48,9 +48,9 @@ namespace WebApplication3.TParser
                 {
                     if (capturing)
                     {
-                        tokens.Enqueue(capturedText.ToString().Trim());
+                        tokens.Enqueue(new Token(capturedText.ToString().Trim(), LexemLocation.RowNumber));
                         SkipSpaces();
-                        tokens.Enqueue(c.ToString());
+                        tokens.Enqueue(new Token(c.ToString().Trim(), LexemLocation.RowNumber));
                         capturedText = new StringBuilder("");
                         capturing = false;
                         continue;
@@ -66,6 +66,7 @@ namespace WebApplication3.TParser
                 }
                 capturedText.Append(c);
             }
+            LexemLocation.RowNumber = 1;
             return tokens;
         }
         private static void SkipSpaces()
@@ -80,5 +81,14 @@ namespace WebApplication3.TParser
             return (ch == ' ') || (ch == '\n') || (ch == '\t') || (ch == 10) || (ch == 13);
         }
     }
-
+    public class Token
+    {
+        public string Value { get; set; }
+        public int Row { get; set; }
+        public Token(string value, int row)
+        {
+            Value = value;
+            Row = row;
+        }
+    }
 }

@@ -71,23 +71,49 @@ namespace WebApplication3.TParser
         {
             TestData testData = new TestData();
             var test = new Test();
+            bool textParsed = false, flagParsed = false;
             Consume(tokens, "test");
             Consume(tokens, "{");
-            test.Name = ParseText(tokens);
-            test.IsEnabled = ParseFlag(tokens);
-            while (tokens.Peek() == "question")
-            {
-                ParseQuestion(tokens, test, testData);
-            }
+            while (tokens.Peek() != "}") 
+                switch (tokens.Peek())
+                {
+                    case ("text"):
+                        if (!textParsed)
+                            test.Name = ParseText(tokens);
+                        else
+                            throw new Exception("Text already parsed");
+                        textParsed = true;
+                        break;
+                    case ("flag"):
+                        if (!flagParsed)
+                            test.IsEnabled = ParseFlag(tokens);
+                        else
+                            throw new Exception("Flag already parsed");
+                        flagParsed = true;
+                        break;
+                    case ("question"):
+                        ParseQuestion(tokens, test, testData);
+                        break;
+                }
+            //test.Name = ParseText(tokens);
+            //test.IsEnabled = ParseFlag(tokens);
+            //while (tokens.Peek() == "question")
+            //{
+            //    ParseQuestion(tokens, test, testData);
+            //}
             Consume(tokens, "}");
             testData.Test = test;
+            if (!textParsed || !flagParsed)
+                throw new Exception("Заданы не все требуемые поля (Test)");
             return testData;
         }
         private static void ParseQuestion(Queue<string> tokens, Test test, TestData testData)
         {
             Question question;
+            bool textParsed = false, scoreParsed = false, optionParsed = false;
             Consume(tokens, "question");
             Consume(tokens, "{");
+            int i = 1, checkedCount = 0;
             var type = ParseType(tokens);
             switch (type)
             {
@@ -108,26 +134,59 @@ namespace WebApplication3.TParser
                     break;
             }
             question.Test = test;
-            question.Title = ParseText(tokens);
-            question.Score = ParseScore(tokens);
+            while (tokens.Peek() != "}")
+                switch (tokens.Peek())
+                {
+                    case ("text"):
+                        if (!textParsed)
+                            question.Title = ParseText(tokens);
+                        else
+                            throw new Exception("Text already parsed");
+                        textParsed = true;
+                        break;
+                    case ("score"):
+                        if (!scoreParsed)
+                            question.Score = ParseScore(tokens);
+                        else
+                            throw new Exception("Score already parsed");
+                        scoreParsed = true;
+                        break;
+                    case ("option"):
+                        if (question is TextQuestion)
+                            if (i == 1)
+                                ParseOption(tokens, question, testData, i++, ref checkedCount);
+                            else
+                                throw new Exception("TextQuestion поддерживает только один опшн");
+                        else
+                            ParseOption(tokens, question, testData, i++, ref checkedCount);
+                        optionParsed = true;
+                        break;
+                }
             question.QuestionType = Enum.GetName(typeof(Question.QuestionTypeEnum), type);
-            int i = 1, checkedCount = 0;
-            if (question is TextQuestion)
-                ParseOption(tokens, question, testData, i++, ref checkedCount);
-            else
+            //if (question is TextQuestion)
+            //    ParseOption(tokens, question, testData, i++, ref checkedCount);
+            //else
+            //{
+            //    while (tokens.Peek() == "option")
+            //    {
+            //        ParseOption(tokens, question, testData, i++, ref checkedCount);
+            //    }
+            //    if (question is SingleChoiceQuestion && checkedCount != 1)
+            //    {
+            //            throw new Exception("В данном типе вопроса нужно отметить один ответ.");
+            //    }
+            //    else if (question is MultiChoiceQuestion && checkedCount < 1)
+            //        throw new Exception("В данном типе вопроса нужно отметить хотя бы один ответ.");
+            //}
+            if (question is SingleChoiceQuestion && checkedCount != 1)
             {
-                while (tokens.Peek() == "option")
-                {
-                    ParseOption(tokens, question, testData, i++, ref checkedCount);
-                }
-                if (question is SingleChoiceQuestion && checkedCount != 1)
-                {
-                        throw new Exception("В данном типе вопроса нужно отметить один ответ.");
-                }
-                else if (question is MultiChoiceQuestion && checkedCount < 1)
-                    throw new Exception("В данном типе вопроса нужно отметить хотя бы один ответ.");
+                throw new Exception("В данном типе вопроса нужно отметить один ответ.");
             }
+            else if (question is MultiChoiceQuestion && checkedCount < 1)
+                throw new Exception("В данном типе вопроса нужно отметить хотя бы один ответ.");
             Consume(tokens, "}");
+            if (!textParsed || !scoreParsed || !optionParsed)
+                throw new Exception("Заданы не все требуемые поля (Quesiton)");
             testData.Questions.Add(question);
         }
         private static void ParseOption(Queue<string> tokens, Question question, TestData testData, int i, ref int checkedCount)

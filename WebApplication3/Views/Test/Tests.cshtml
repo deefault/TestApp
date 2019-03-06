@@ -1,5 +1,5 @@
-@using Microsoft.EntityFrameworkCore
-@model System.Collections.Generic.List<WebApplication3.Models.Test>
+@using System;
+@model AddTestModel
 
 @{
     ViewBag.Title = "Тесты";
@@ -9,7 +9,9 @@
 <h2>title</h2>
 @if (Model == null)
 {
-    <h3>Не найдено тестов</h3>
+    <div class="alert alert-warning" role="alert">
+        Вы пока еще не создали тестов
+    </div>
 }
 else
 {
@@ -20,10 +22,11 @@ else
         <table class="table">
             <tr>
                 <th>#</th>
-                <th>Test Name</th>
-                <th>Created By</th>
+                <th>Название</th>
+                <th>Включен?</th>
+                <th>Создан</th>
             </tr>
-            @foreach (var item in Model)
+            @foreach (var item in Model.Model1)
             {
                 <tr>
                     <td>
@@ -33,6 +36,16 @@ else
                         <a asp-action="Details" asp-route-id="@item.Id">@item.Name</a>
                     </td>
                     <td>
+                        @if (item.IsEnabled)
+                        {
+                            <span class="badge badge-success">Да</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-danger">Нет</span>
+                        }
+                    </td>
+                    <td>
                         @Html.DisplayFor(modelItem => item.CreatedBy.UserName)
                     </td>
                 </tr>
@@ -40,4 +53,87 @@ else
         </table>
     </dd>
 }
-<a asp-controller="Test" asp-action="Add" method="get"><button class="btn btn-default">Добавить тест</button></a>
+<a asp-controller="Test" asp-action="Add" method="get">@*<button class="btn btn-info">Добавить тест</button>*@</a>
+<button class="btn btn-info"
+        data-toggle="collapse" data-target="#addFormCollapse"
+        aria-expanded="false" aria-controls="addFormCollapse">
+    Добавить тест
+</button>
+<button class="btn btn-info"
+        data-toggle="collapse" data-target="#addFromFileFormCollapse"
+        aria-expanded="false" aria-controls="addFromFileFormCollapse" >
+    Добавить тест из файла
+</button>
+<div class="panel panel-default" id="parent">
+    <div class="panel-heading">
+        <div class="collapse multi-collapse" data-parent="#parent" id="addFromFileFormCollapse">
+            <div class="card card-body">
+                <form asp-controller="Test" enctype="multipart/form-data" asp-action="AddFromFile" asp-route-returnurl="/User/Tests/" method="post" class="form" role="form">
+                    <div class="form-group">
+                        <div class="form-control-file col-md-10">
+                            <details>
+                                <summary>Пример</summary>
+                                <pre>
+test {
+	text = Название теста
+	flag = Состояние (true/false)
+	question {
+		type = Тип вопроса (single/multi/text/dnd)
+		text = Текст вопроса
+		score = Баллов за правильный ответ
+		option {
+			text = Текст варианта ответа
+			flag = Состояние (true/false)*
+		}
+	}
+}
+* - Только для single и multi
+                </pre>
+                            </details>
+
+                            <input type="file" name="uploadedFile" />
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-md-offset-2 col-md-10">
+                            <button type="submit" value="Upload" class="btn btn-primary">Загрузить</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="panel-heading">
+        <div class="collapse multi-collapse" data-parent="#parent" id="addFormCollapse">
+            <div class="card card-body">
+                <form asp-controller="Test" asp-action="Add" asp-route-returnurl="/User/Tests/" method="post" class="form" role="form">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <div class="form-group row">
+                        <label asp-for="Model2.Name" class="col-md-2 control-label"></label>
+                        <div class="col-md-10">
+                            <input asp-for="Model2.Name" class="form-control" />
+                            <span asp-validation-for="Model2.Name" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label asp-for="Model2.IsEnabled" class="col-md-2 control-label"></label>
+                        <div class="col-md-10">
+                            <input asp-for="Model2.IsEnabled" type="checkbox" class="checkbox" />Тест Включен?
+                            <span asp-validation-for="Model2.IsEnabled" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-md-offset-2 col-md-10">
+                            <button type="submit" class="btn btn-primary">Добавить</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

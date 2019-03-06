@@ -1,0 +1,22 @@
+﻿@using WebApplication3.Models;
+@model TestResult
+
+@{
+    ViewBag.Title = "Начать тест";
+    Layout = "_Layout";
+    //TODO: поправить дизайн
+}
+    <div class="container">
+        <h2>@ViewBag.Title</h2>
+        <hr />
+        <p>Название теста: @Model.Test.Name</p>
+        <p>Вопросов: @Model.TotalQuestions</p>
+        @if (Model.IsCompleted)
+        {
+            <p>Процент выполнения: @(Model.RightAnswersCount * 100 / Model.TotalQuestions)%</p>
+            <a class="btn btn-primary" role="button"
+               href="@Url.Action("AnswerResults", "Answer", new {testResultId = Model.Id, answerOrder = 1})">
+                Просмотреть Тест
+            </a>
+        }
+    </div>

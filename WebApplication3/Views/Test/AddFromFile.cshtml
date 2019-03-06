@@ -1,0 +1,43 @@
+﻿@{
+    ViewBag.Title = "Добавить Тест";
+    Layout = "_Layout";
+}
+
+<h2>@ViewBag.Title</h2>
+<form asp-controller="Test" enctype="multipart/form-data" asp-action="AddFromFile" asp-route-returnurl="/User/Tests/" method="post" class="form" role="form">
+    <div class="form-group">
+        <div class="form-control-file col-md-10">
+            <details>
+                <summary>Пример</summary>
+                <pre>
+test {
+	text = Название теста
+	flag = Состояние (true/false)
+	question {
+		type = Тип вопроса (single/multi/text/dnd)
+		text = Текст вопроса
+		score = Баллов за правильный ответ
+		option {
+			text = Текст варианта ответа
+			flag = Состояние (true/false)*
+		}
+	}
+}
+* - Только для single и multi
+                </pre>
+            </details>
+            
+            <input type="file" name="uploadedFile" />
+        </div>
+    </div>
+    
+    <div class="form-group row">
+        <div class="col-md-offset-2 col-md-10">
+            <button type="submit" value="Upload" class="btn btn-primary">Добавить</button>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

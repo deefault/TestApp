@@ -44,7 +44,7 @@ namespace WebApplication3.Data
             _context.Database.EnsureDeleted();
             _context.Database.EnsureCreated();
             InitializeUsers();
-            InitializeTests();
+            //InitializeTests();
             
         }
 
@@ -53,7 +53,6 @@ namespace WebApplication3.Data
             var users = new User[]
             {
                 new User{UserName = "user1@example.com",Email = "user1@example.com"},
-                new User{UserName = "user2@example.com",Email = "user2@example.com"},
                 
             };
             
@@ -78,9 +77,7 @@ namespace WebApplication3.Data
         {
             var users = _context.Users.ToList();
             var test1 = new Test {CreatedBy = users[0],Name = "Test1",IsEnabled = true};
-            var test2 = new Test {CreatedBy = users[1],Name = "Test2",IsEnabled = true};
             _context.Tests.Add(test1);
-            _context.Tests.Add(test2);
             
             
             _context.SaveChanges();

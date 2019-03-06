@@ -24,11 +24,13 @@ namespace WebApplication3.Models
         
         public List<Option> Options { get; set; }
         
+        public int Score { get; set; }
+        
         public enum QuestionTypeEnum
         {
             [Display(Name = "С одним правильным ответом")]
             SingleChoiceQuestion=1,
-            [Display(Name = "С несколькими правильными ответоми")]
+            [Display(Name = "С несколькими правильными ответами")]
             MultiChoiceQuestion=2,
             [Display(Name = "С вводом текста")]
             TextQuestion=3,
@@ -71,5 +73,7 @@ namespace WebApplication3.Models
         public Question Question { get; set; }
         [Required]
         public int Order { get; set; }
+        
+        public ICollection<AnswerOption> AnswerOptions { get; set; }
     }
 }

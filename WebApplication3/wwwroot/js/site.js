@@ -3,17 +3,23 @@
 
 // Write your JavaScript code.
 
+// #region Question
 function getAddQuestionFormData() {
     var data = {};
     data.Options = [];
     data.Title = $("#Title").val();
     data.Score = $("#Score").val();
-    var options = $("#itemTableBody").children();
+    var options = $("#item-table__body").children();
     console.log(options);
     for (i = 0; i < options.length; i++) {
         var o = {};
-        o.Text = $(options[i]).find("#Text").val();
+        var optionInput = $(options[i]).find("#Text");
+        o.Text = optionInput.val();
+        if (optionInput.attr("option-id") != undefined) {
+            o.Id = optionInput.attr("option-id");
+        }
         o.IsRight = $(options[i]).find("#isRight").prop("checked");
+        o.Order = "" + i - -1;
         data.Options.push(o);
     }
     console.log(data);
@@ -21,60 +27,69 @@ function getAddQuestionFormData() {
 };
 
 function addFormErrors(errors) {
-    var form = $("form");
-    var ul = form.find("ul");
-    for (var i =0;i<errors.length;i++){
-        ul.append('<li>'+errors[i].errorMessage+'</li>');
+    var ul = $("#validation-summary");
+    for (var i = 0; i < errors.length; i++) {
+        ul.append('<li>' + errors[i].errorMessage + '</li>');
     }
 }
 
-function submitQuestion(actionUrl){
+function submitQuestion(actionUrl) {
     $.ajax({
         type: "POST",
         url: actionUrl,
-        beforeSend: function(xhr) {
+        beforeSend: function (xhr) {
             xhr.setRequestHeader("RequestVerificationToken",
                 $('input:hidden[name="__RequestVerificationToken"]').val());
         },
         data: JSON.stringify(getAddQuestionFormData()),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
-        success: function(response) {
+        success: function (response) {
             window.location.href = response;
         },
-        error: function(xhr, textStatus, errorThrown) {
+        error: function (xhr, textStatus, errorThrown) {
             //console.log(textStatus + ": Couldn't add control. " + errorThrown);
+            var ul = $("#validation-summary");
+            ul.empty();
+            if (xhr.status == 500) {
+                ul.append('<li>HTTP 500 Ошибка на стороне сервера</li>');
+            }
+            if (xhr.status == 404) {
+                ul.append('<li>HTTP 404 Ресурс не найден</li>');
+            }
             addFormErrors(xhr.responseJSON);
 
         },
     });
 }
+// #endregion
 
-$("#addByIdForm").submit(function(e) {
+// #region Test
+$("#addByIdForm").submit(function (e) {
     e.preventDefault();
     addById();
 });
 function addById() {
 
     var id = $("#testId").val();
-    // TODO     
+    // TODO
 
     $.ajax({
         type: "POST",
         url: "/User/Tests/AddTestToUserAjax/",
-        beforeSend: function(xhr) {
+        beforeSend: function (xhr) {
             xhr.setRequestHeader("RequestVerificationToken",
                 $('input:hidden[name="__RequestVerificationToken"]').val());
         },
         contentType: "application/x-www-form-urlencoded; charset=utf-8",
         data: $("#addByIdForm").serialize(),
-        success: function(response) {
+        success: function (response) {
             console.log(response);
             $("#modalSuccessText").text("Успешно!");
             $("#successModal").modal();
             location.reload();
         },
-        error: function(data) {
+        error: function (data) {
             console.log(data);
             $("#modalErrorText").text(JSON.stringify(data.responseJSON));
             $("#errorModal").modal();
@@ -82,3 +97,136 @@ function addById() {
     });
 
 }
+// #endregion
+
+// #region Answer
+function loadAnswer() {
+    var type = getActiveAnswerType();
+    var id = getActiveAnswerId();
+    var actionUrl = "/" + type + "/" + id + "/";
+
+    $.ajax({
+        cache: false,
+        method: "GET",
+        url: actionUrl,
+        dataType: "html",
+
+        success: function (response) {
+            //заменить html код формой внутри div
+            $("#formDiv").html(response);
+            // change question # in url
+            var stateUrl = window.location.pathname.split("/");
+            stateUrl[stateUrl.length-1] = id;
+            var stateObj = {id:id,type:type,actionUrl:actionUrl}; 
+            window.history.pushState(stateObj,"Вопрос " + id, stateUrl.join("/"));
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            console.log(xhr.responseJSON);
+        }
+    });
+}
+
+function getActiveAnswerId() {
+    var activeID = $($("li").filter($(".active"))[0])[0].getAttribute("btn-id");
+    return activeID;
+}
+
+function getActiveAnswerType() {
+    var activeType = $($("li").filter($(".active"))[0])[0].getAttribute("answer-type");
+    return activeType;
+}
+
+function getActiveAnswerOrder() {
+    return $("#" + getActiveAnswerId()).children()[0].text;
+}
+
+function submitAnswer() {
+    var id = getActiveAnswerId();
+    var type = getActiveAnswerType();
+    var actionUrl = "/" + type + "/" + id + "/";
+    // выбрать url и собрать data
+    if (type == "SingleChoiceAnswer") {
+        var data = {};
+        var option = $("input[name='option']:checked");
+        data.OptionId = option.attr("option-id");
+    }
+    else if (type == "MultiChoiceAnswer") {
+        var data = {};
+        var checked=[];
+        var options = $("input[name='option']:checked");
+        for (i = 0; i < options.length; i++) {
+            var o = {};
+            o.OptionId = $(options[i]).attr("option-id");
+            checked.push(o.OptionId)
+        }
+        data.checkedOptionIds = checked;
+    }
+    else if (type == "TextAnswer") {
+        var data = {};
+        data.Text = $("input[name='option']").val();
+    }
+    else if (type == "DragAndDropAnswer") {
+        var data = {};
+        data.Options = [];
+        var options = $("label[name='option']");
+        for (i = 0; i < options.length; i++) {
+            var o = {};
+            o.OptionId = $(options[i]).attr("option-id");
+            o.ChosenOrder = "" + i - -1;
+            data.Options.push(o);
+        }
+    }
+    else throw new exception("Not valid answer type!s");
+
+    console.log(data);
+    // запрос
+    $.ajax({
+        method: "POST",
+        url: actionUrl,
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("RequestVerificationToken",
+                $('input:hidden[name="__RequestVerificationToken"]').val());
+        },
+        contentType: "application/json",
+        data: JSON.stringify(data),
+        success: function (response) {
+            console.log(response);
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            //console.log(textStatus + ": Couldn't add control. " + errorThrown);
+            console.log(xhr);
+        },
+    });
+}
+function switchAnswer(e) {
+    if (e.target.parentElement.classList.contains("next-btn")) {
+        if (!e.target.parentElement.classList.contains("disabled")) {
+            var tmp = getActiveAnswerId() - -1;
+            $(".active").removeClass("active");
+            $("li[btn-id=" + tmp + "]").addClass("active");
+        }
+    }
+    else
+        if (e.target.parentElement.classList.contains("prev-btn")) {
+            if (!e.target.parentElement.classList.contains("disabled")) {
+                var tmp = getActiveAnswerId() - 1;
+                $(".active").removeClass("active");
+                $("li[btn-id=" + tmp + "]").addClass("active");
+            }
+        }
+        else
+            if (e.target.parentElement.classList.contains("num-btn")) {
+                $(".active").removeClass("active");
+                $("li[btn-id=" + e.target.parentElement.getAttribute("btn-id") + "]").addClass("active");
+            }
+    var activeId = getActiveAnswerId();
+    if (activeId == firstId)
+        $(".prev-btn").addClass("disabled");
+    else
+        $(".prev-btn").removeClass("disabled");
+    if (activeId == lastId)
+        $(".next-btn").addClass("disabled");
+    else
+        $(".next-btn").removeClass("disabled");
+}
+// #endregion

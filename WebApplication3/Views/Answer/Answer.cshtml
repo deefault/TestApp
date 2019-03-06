@@ -1,0 +1,80 @@
+﻿@model ICollection<Answer>
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+
+}
+<div id="formDiv" class="container">
+
+
+</div>
+<nav aria-label="...">
+    <ul class="pagination justify-content-center">
+        <li class="page-item disabled prev-btn">
+            <span class="page-link unselectable">Previous</span>
+        </li>
+        @foreach (var a in Model)
+        {
+            <li class="page-item num-btn" btn-id="@a.Id" answer-type="@a.AnswerType">
+                <a class="page-link unselectable">@a.Order</a>
+            </li>
+        }
+        <li class="page-item next-btn">
+            <span class="page-link unselectable">Next</span>
+        </li>
+    </ul>
+</nav>
+<button class="btn btn-default" data-toggle="modal" onclick='submitAnswer();' data-target="#finishModal">Завершить</button>
+
+<div class="modal fade" id="finishModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Завершить?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Вы уверены что вы хотите завершить тест?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick='$("#finishForm").submit();'>Да</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+            </div>
+        </div>
+    </div>
+</div>
+<form hidden="hidden" id="finishForm" asp-controller="Test" asp-action="FinishTest"
+      asp-route-testResultId="@Model.First().TestResult.Id">
+</form>
+@section Scripts
+    {
+    <script src="~/lib/Sortable/Sortable.js"></script>
+    <script type="text/javascript">
+        var firstId = $("nav ul").children().filter(".num-btn")[0].getAttribute("btn-id");
+        var lastId = $("nav ul").children().filter(".num-btn")[$("nav ul").children().filter(".num-btn").length - 1].getAttribute("btn-id");
+
+        $("li[btn-id=" + firstId + "]").addClass("active");
+
+        var activeId = getActiveAnswerId();
+
+        if (activeId == firstId)
+            $(".prev-btn").addClass("disabled");
+        else
+            $(".prev-btn").removeClass("disabled");
+        if (activeId == lastId)
+            $(".next-btn").addClass("disabled");
+        else
+            $(".next-btn").removeClass("disabled");
+
+        loadAnswer();
+
+        $("nav ul").on("click", function (e) {
+            submitAnswer();
+            switchAnswer(e);
+            loadAnswer();
+        });
+    </script>
+}

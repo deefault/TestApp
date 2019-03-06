@@ -1,8 +1,116 @@
-﻿@model WebApplication3.Models.Question
+﻿@using Microsoft.AspNetCore.Mvc
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using Microsoft.AspNetCore.Routing
+@model WebApplication3.Models.Question
 
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "Редактирование вопроса";
     Layout = "_Layout";
 }
 
-<h2>title</h2>
+
+
+<div class="container">
+
+        <div class="form-group" id="fields">
+            <div class="">
+                <form asp-controller="Question" asp-action="EditMultiChoiceQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
+                    <h4>Изменить вопрос с выбором одного правильного ответа</h4>
+                    <hr />
+                    <ul class="text-danger" id="validation-summary"></ul>
+                    @*<div asp-validation-summary="All" class="text-danger"></div>*@
+                    <div class="form-group row">
+                        <label asp-for="Title" class="col-md-2 col-lg-2"></label>
+                        <div class="col-md-10 col-lg-4">
+                            <input asp-for="Title" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label asp-for="Score" class="col-md-2 col-lg-2"></label>
+                        <div class="col-md-10 col-lg-4">
+                            <input asp-for="Score" class="form-control" />
+                            <span asp-validation-for="Score" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="items">
+                        <table class="item-table" id="options">
+                            <tbody id="item-table__body">
+                                @foreach (var o in Model.Options)
+                                {
+                                    <tr>
+                                        <td class="item-table__cell">
+                                            <input id="Text" option-id="@o.Id" asp-for="@o.Text" type="text" class="item__text-field" value="@(o.Text)">
+                                        </td>
+                                        <td class="item-table__cell" align="right">
+                                            <input @((o.IsRight) ? "checked" : "") class="form-check-inline" type="checkbox" name="isRight" id="isRight" />
+                                            <button class="item-table__del-row-btn">
+                                                <span class="glyphicon glyphicon-minus"></span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <div class="item-table__add-row">
+                            <span class="item-table__add-row-btn">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <script id="rowTemplate" type="text/template">
+                        <tr>
+                            <td class="item-table__cell">
+                                <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса">
+                            </td>
+                            <td class="item-table__cell" align="right">
+                                <input class="form-check-inline" type="checkbox" name="isRight" id="isRight" />
+                                <button class="item-table__del-row-btn">
+                                    <span class="glyphicon glyphicon-minus"></span>
+                                </button>
+                            </td>
+                        </tr>
+                    </script>
+
+                    <input type="hidden" value="@ViewContext.RouteData.Values["testId"]" asp-for="Test.Id" />
+
+                    <div class="form-group row">
+                        <div class="col-md-offset-2 col-md-10">
+                            <button type="submit" class="btn btn-primary">Сохранить</button>
+                        </div>
+                    </div>
+                </form>
+
+                <br>
+            </div>
+        </div>
+
+</div>
+
+@section Scripts {
+
+    <script>
+        $(function () {
+            $(document).on('click', '.item-table__add-row-btn', function (e) {
+                var $tableBody = $('#item-table__body');
+                var htmlString = $('#rowTemplate').html();
+                $tableBody.append(htmlString);
+                return false;
+            });
+
+            $(document).on('click', '.item-table__del-row-btn', function (e) {
+                var $el = $(e.currentTarget);
+                var $row = $el.closest('tr');
+                $row.remove();
+                return false;
+            });
+        });
+
+        $("form").submit(function(event) {
+            event.preventDefault();
+            submitQuestion('@Url.RouteUrl("EditMulti", new {testId = Context.GetRouteData().Values["testId"], questionId=Model.Id})');
+
+        });
+    </script>
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

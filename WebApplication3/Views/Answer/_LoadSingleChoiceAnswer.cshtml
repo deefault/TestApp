@@ -1,0 +1,47 @@
+﻿@model SingleChoiceAnswer
+
+<form method="post">
+    <div>
+        <h4>@Model.Question.Title</h4>
+    </div>
+    <input type="hidden" value="@Model.Id">
+    <fieldset class="form-group row" id="options">
+        <div class="col-sm-10">
+            <table class="item-table">
+                <tbody id="item-table__body">
+                    @foreach (var option in Model.Question.Options)
+                    {
+                        if (Model.Option != null)
+                        {
+                            <tr class="item-table__row">
+                                <td class="item-table__cell">
+                                    <label class="form-check-label">
+                                        <input name="option" type="radio" option-id="@option.Id" group="Options" @((Model.Option.Id == option.Id) ? "checked" : "" )>
+                                        @option.Text
+                                    </label>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr class="item-table__row">
+                                <td class="item-table__cell">
+                                    <label class="form-check-label">
+                                        <input name="option" type="radio" option-id="@option.Id" group="options">
+                                        @option.Text
+                                    </label>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </fieldset>
+<style>
+    .item-table__row {
+        padding: 3px; /* Поля вокруг содержимого таблицы */
+        border: 1px solid #DDD; /* Параметры рамки */
+    }
+</style>
+</form>

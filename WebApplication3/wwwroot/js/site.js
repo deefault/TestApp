@@ -110,7 +110,9 @@ function loadAnswer() {
         method: "GET",
         url: actionUrl,
         dataType: "html",
-
+        beforeSend: function (){
+            
+        },
         success: function (response) {
             //заменить html код формой внутри div
             $("#formDiv").html(response);
@@ -184,6 +186,7 @@ function submitAnswer() {
         method: "POST",
         url: actionUrl,
         beforeSend: function (xhr) {
+            $("#formDiv").html("<img src=\"/images/loading.gif\" class=\"img-responsive\"/>");
             xhr.setRequestHeader("RequestVerificationToken",
                 $('input:hidden[name="__RequestVerificationToken"]').val());
         },

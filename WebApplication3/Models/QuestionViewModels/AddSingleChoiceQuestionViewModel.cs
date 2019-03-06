@@ -10,13 +10,17 @@ using Newtonsoft.Json;
 
 namespace WebApplication3.Models.QuestionViewModels
 {
-    
+
     public class OptionViewModel
     {
         [Required]
         public string Text { get; set; }
         [Required]
         public bool IsRight { get; set; }
+
+        public int? Id { get; set; } = null;
+
+        public int Order { get; set; }
     }
 
 
@@ -25,7 +29,7 @@ namespace WebApplication3.Models.QuestionViewModels
         [Required]
         [OptionsValidation]
         public List<OptionViewModel> Options { get; set; }
-        
+
         public class OptionsValidationAttribute : ValidationAttribute
         {
             public OptionsValidationAttribute()
@@ -37,8 +41,8 @@ namespace WebApplication3.Models.QuestionViewModels
             {
                 var options = value as List<OptionViewModel>;
                 int countChecked = 0;
-                if (options == null)  return new ValidationResult("Минимум два варианта ответа в вопросе.");
-                if (options.Count < 2)  return new ValidationResult("Минимум два варианта ответа в вопросе.");
+                if (options == null) return new ValidationResult("Минимум два варианта ответа в вопросе.");
+                if (options.Count < 2) return new ValidationResult("Минимум два варианта ответа в вопросе.");
                 foreach (var option in options)
                 {
                     if (option.IsRight) countChecked++;
@@ -48,8 +52,8 @@ namespace WebApplication3.Models.QuestionViewModels
                     return new ValidationResult("В данном типе вопроса нужно отметить только один ответ.");
                 }
                 return ValidationResult.Success;
-            
+
             }
-        }   
-    }    
+        }
+    }
 }

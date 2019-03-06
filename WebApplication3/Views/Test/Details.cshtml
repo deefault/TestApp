@@ -8,14 +8,13 @@
     ViewBag.Title = Model.Name;
     Layout = "_Layout";
 }
-@if (User.Identity.IsAuthenticated)
-{
 
-    // If user created test
-    if (Model.CreatedBy.Id == ((User) ViewData["user"]).Id)
+    <!-- If user created test-->
+    @if (Model.CreatedBy.Id == ((User) ViewData["user"]).Id)
     {
         <div class="align-content-center">
             <h2>@Model.Name</h2>
+            <hr/>
             <form  id="addByIdForm" method="post" class="form" role="form">
                 <div asp-validation-summary="All" class="text-danger"></div>
                 <div class="form-group row">
@@ -23,17 +22,18 @@
                     <div class="col-2">
                         <input class="form-control" id="userId" name="userId" type="number" min="1"/>
                     </div>
-                    
+                    <input id="testId" name="testId" type="hidden" value="@Model.Id"/>
+                    <button type="submit" class="btn btn-info">Добавить пользователя по ID</button>
                 </div>
-                <input id="testId" name="testId" type="hidden" value="@Model.Id"/>
-                <button type="submit" class="btn btn-default">Добавить пользователя по ID</button>
             </form>
             <h4>Вопросы</h4>
 
 
             @if (Model.Questions == null || Model.Questions.Count == 0)
             {
-                <p class="alert-info">В тесте еще нет вопросов</p>
+                <div class="alert alert-warning" role="alert">
+                    В тесте еще нет вопросов
+                </div>
             }
             else
             {
@@ -62,7 +62,6 @@
                             <td>@q.QuestionType</td>
                             <td>    
                                 <form method="post">
-                                    <!--// TODO: add edit page-->
                                     <a asp-controller="Question" asp-action="Edit"
                                        asp-route-testId="@Model.Id" asp-route-questionId="@q.Id">Edit</a> |
                                         <input asp-controller="Question" asp-action="Delete"
@@ -95,7 +94,7 @@
     }
     else
     {
-        if (((TestResult) ViewData["testResult"]).isCompleted)
+        if (((TestResult) ViewData["testResult"]).IsCompleted)
         {
             <div class="align-content-center">
                 <h2>@Model.Name</h2>
@@ -113,7 +112,7 @@
         }
 
     }
-}
+
 
 <!-- Error Modal -->
 <div id="errorModal" class="modal fade" role="dialog">

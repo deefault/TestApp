@@ -14,8 +14,8 @@
 
         <div class="form-group" id="fields">
             <div class="">
-                <form asp-controller="Question" asp-action="EditSingleChoiceQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
-                    <h4>Изменить вопрос с выбором одного правильного ответа</h4>
+                <form asp-controller="Question" asp-action="EditDragAndDropQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
+                    <h4>Изменить вопрос на востановление последовательности</h4>
                     <hr />
                     <ul class="text-danger" id="validation-summary"></ul>
                     @*<div asp-validation-summary="All" class="text-danger"></div>*@
@@ -39,11 +39,11 @@
                                 @foreach (var o in Model.Options)
                                 {
                                     <tr>
+                                        <td class="drag-handler"></td>
                                         <td class="item-table__cell">
                                             <input id="Text" option-id="@o.Id" asp-for="@o.Text" type="text" class="item__text-field" value="@(o.Text)">
                                         </td>
                                         <td class="item-table__cell" align="right">
-                                            <input @((o.IsRight) ? "checked" : "") class="form-check-inline" type="radio" name="isRight" id="isRight" />
                                             <button class="item-table__del-row-btn">
                                                 <span class="glyphicon glyphicon-minus"></span>
                                             </button>
@@ -60,11 +60,11 @@
                     </div>
                     <script id="rowTemplate" type="text/template">
                         <tr>
+                            <td class="drag-handler"></td>
                             <td class="item-table__cell">
                                 <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса">
                             </td>
                             <td class="item-table__cell" align="right">
-                                <input class="form-check-inline" type="radio" name="isRight" id="isRight" />
                                 <button class="item-table__del-row-btn">
                                     <span class="glyphicon glyphicon-minus"></span>
                                 </button>
@@ -88,7 +88,7 @@
 </div>
 
 @section Scripts {
-
+    <script src="~/lib/Sortable/Sortable.js"></script>
     <script>
         $(function () {
             $(document).on('click', '.item-table__add-row-btn', function (e) {
@@ -104,11 +104,18 @@
                 $row.remove();
                 return false;
             });
-        });
+            new Sortable(
+                $('#item-table__body')[0], {
+                    animation: 150,
+                    scroll: true,
+                    handle: '.drag-handler',
+                }
+            );
+        }); 
 
         $("form").submit(function(event) {
             event.preventDefault();
-            submitQuestion('@Url.RouteUrl("EditSingle", new {testId = Context.GetRouteData().Values["testId"], questionId=Model.Id})');
+            submitQuestion('@Url.RouteUrl("EditDragAndDrop", new {testId = Context.GetRouteData().Values["testId"], questionId=Model.Id})');
 
         });
     </script>

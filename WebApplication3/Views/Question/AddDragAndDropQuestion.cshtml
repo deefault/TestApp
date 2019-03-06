@@ -1,5 +1,7 @@
-﻿@using Microsoft.AspNetCore.Routing
-@model WebApplication3.Models.QuestionViewModels.AddSingleChoiceQuestionViewModel
+﻿@using Microsoft.AspNetCore.Mvc
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using Microsoft.AspNetCore.Routing
+@model WebApplication3.Models.QuestionViewModels.AddDragAndDropQuestionViewModel
 
 @{
     ViewBag.Title = "Добавить вопрос на восстановление последовательности";
@@ -11,10 +13,11 @@
 
     <div class="form-group" id="fields">
         <div class="">
-            <form asp-controller="Question" asp-action="AddDragAndDropQuestion"  asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
+            <form asp-controller="Question" asp-action="AddDragAndDropQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
                 <h4>Добавить вопрос на востановление последовательности</h4>
                 <hr />
-                <div asp-validation-summary="All" class="text-danger"></div>
+                <ul class="text-danger" id="validation-summary"></ul>
+                @*<div asp-validation-summary="All" class="text-danger"></div>*@
                 <div class="form-group row">
                     <label asp-for="Title" class="col-md-2 col-lg-2"></label>
                     <div class="col-md-10 col-lg-4">
@@ -22,56 +25,63 @@
                         <span asp-validation-for="Title" class="text-danger"></span>
                     </div>
                 </div>
+                <div class="form-group row">
+                    <label asp-for="Score" class="col-md-2 col-lg-2"></label>
+                    <div class="col-md-10 col-lg-4">
+                        <input asp-for="Score" class="form-control"/>
+                        <span asp-validation-for="Score" class="text-danger"></span>
+                    </div>
+                </div>
 
                 <div class="items">
-                        <table class="item-table" id="itemTable">
-                            <tbody id="itemTableBody">
-                                <tr>
-                                    <td class="drag-handler"></td>
-                                    <td class="item-table__cell">
-                                        <input asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса">
-                                    </td>
-                                    <td class="item-table__cell" align="right">
-                                        <button class="item-table__del-row-btn">
-                                            <span class="glyphicon glyphicon-minus"></span>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="drag-handler"></td>
-                                    <td class="item-table__cell">
-                                        <input asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса">
-                                    </td>
-                                    <td class="item-table__cell" align="right">
-                                        <button class="item-table__del-row-btn">
-                                            <span class="glyphicon glyphicon-minus"></span>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="drag-handler"></td>
-                                    <td class="item-table__cell">
-                                        <input asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса">
-                                    </td>
-                                    <td class="item-table__cell" align="right">
-                                        <button class="item-table__del-row-btn">
-                                            <span class="glyphicon glyphicon-minus"></span>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div class="item-table__add-row">
-                            <span class="item-table__add-row-btn">
-                                <span class="glyphicon glyphicon-plus"></span>
-                            </span>
-                        </div>
+                    <table class="item-table">
+                        <tbody id="item-table__body">
+                            <tr>
+                                <td class="drag-handler"></td>
+                                <td class="item-table__cell">
+                                    <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса">
+                                </td>
+                                <td class="item-table__cell" align="right">
+                                    <button class="item-table__del-row-btn">
+                                        <span class="glyphicon glyphicon-minus"></span>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="drag-handler"></td>
+                                <td class="item-table__cell">
+                                    <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса">
+                                </td>
+                                <td class="item-table__cell" align="right">
+                                    <button class="item-table__del-row-btn">
+                                        <span class="glyphicon glyphicon-minus"></span>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="drag-handler"></td>
+                                <td class="item-table__cell">
+                                    <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса">
+                                </td>
+                                <td class="item-table__cell" align="right">
+                                    <button class="item-table__del-row-btn">
+                                        <span class="glyphicon glyphicon-minus"></span>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="item-table__add-row">
+                        <span class="item-table__add-row-btn">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </span>
+                    </div>
                 </div>
                 <script id="rowTemplate" type="text/template">
                     <tr>
                         <td class="drag-handler"></td>
                         <td class="item-table__cell">
-                            <input asp-for="Text" type="text" class="item__text-field" placeholder="Teкст вопроса">
+                            <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса">
                         </td>
                         <td class="item-table__cell" align="right">
                             <button class="item-table__del-row-btn">
@@ -101,7 +111,7 @@
     <script>
         $(function () {
             $(document).on('click', '.item-table__add-row-btn', function (e) {
-                var $tableBody = $('#itemTableBody');
+                var $tableBody = $('#item-table__body');
                 var htmlString = $('#rowTemplate').html();
                 $tableBody.append(htmlString);
                 return false;
@@ -113,14 +123,15 @@
                 $row.remove();
                 return false;
             });
+
             new Sortable(
-                $('#itemTableBody')[0], {
+                $('#item-table__body')[0], {
                     animation: 150,
                     scroll: true,
                     handle: '.drag-handler',
                 }
             );
-        }); 
+        });
 
         $("form").submit(function(event) {
             event.preventDefault();

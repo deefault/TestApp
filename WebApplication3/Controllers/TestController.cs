@@ -18,13 +18,12 @@ using Newtonsoft.Json;
 using WebApplication3.Data;
 using WebApplication3.Models;
 using WebApplication3.Models.TestViewModels;
-using WebApplication3.TParser;
 using Microsoft.AspNetCore.Http;
 using StatusCodes = Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace WebApplication3.Controllers
 {
-    public class TestController : Controller
+    public partial class TestController : Controller
     {
         #region Поля
         private readonly ApplicationDbContext _context;
@@ -104,41 +103,48 @@ namespace WebApplication3.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddFromFile(IFormFile uploadedFile)
         {
-            var user = await _userManager.GetUserAsync(HttpContext.User);
-            // get a stream
-            var stream = uploadedFile.OpenReadStream();
-            TestData testData = Parser.Parse(Tokenizer.Tokenize(new StreamReader(stream)));
-            testData.Test.CreatedBy = user;
-            await _context.Tests.AddAsync(testData.Test);
-            TestResult testResult = new TestResult
+            try
             {
-                IsCompleted = false,
-                Test = testData.Test,
-                CompletedByUser = user,
-            };
-            user.TestResults.Add(testResult);
-            await _context.SaveChangesAsync();
-            foreach (var q in testData.Questions)
-            {
-                await _context.Questions.AddAsync(q);
-            }
-            await _context.SaveChangesAsync();
-            foreach (var o in testData.Options)
-            {
-                await _context.Options.AddAsync(o);
-                if (o.Question is SingleChoiceQuestion && o.IsRight)
+                var user = await _userManager.GetUserAsync(HttpContext.User);
+                // get a stream
+                var stream = uploadedFile.OpenReadStream();
+                TestData testData = Parser.Parse(Tokenizer.Tokenize(new StreamReader(stream)));
+                testData.Test.CreatedBy = user;
+                await _context.Tests.AddAsync(testData.Test);
+                TestResult testResult = new TestResult
                 {
-                    var questionCreated = _context.Questions.Single(q => q.Id == o.Question.Id) as SingleChoiceQuestion;
-                    questionCreated.RightAnswer = o;
-                    _context.Questions.Update(questionCreated);
+                    IsCompleted = false,
+                    Test = testData.Test,
+                    CompletedByUser = user,
+                };
+                user.TestResults.Add(testResult);
+                await _context.SaveChangesAsync();
+                foreach (var q in testData.Questions)
+                {
+                    await _context.Questions.AddAsync(q);
                 }
+                await _context.SaveChangesAsync();
+                foreach (var o in testData.Options)
+                {
+                    await _context.Options.AddAsync(o);
+                    if (o.Question is SingleChoiceQuestion && o.IsRight)
+                    {
+                        var questionCreated = _context.Questions.Single(q => q.Id == o.Question.Id) as SingleChoiceQuestion;
+                        questionCreated.RightAnswer = o;
+                        _context.Questions.Update(questionCreated);
+                    }
+                }
+
+                // Добавить тест к пользователю, который его создал (чтобы он тоже мог проходить его)
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Details", new { id = testData.Test.Id });
             }
-            
-            // Добавить тест к пользователю, который его создал (чтобы он тоже мог проходить его)
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Details", new { id = testData.Test.Id });
-            
+            catch (Exception e)
+            {
+                ViewBag.Exception = e.Message;
+                return View();
+            }
         }
 
         [HttpPost]
@@ -405,7 +411,7 @@ namespace WebApplication3.Controllers
                     var singleChoiceAnswer = await _context.SingleChoiceAnswers
                         .Include(a => a.Question).Include(a => a.Option)
                         .SingleAsync(a => a.Id == answer.Id);
-                    var question = 
+                    var question =
                         await _context.SingleChoiceQuestions
                             .SingleAsync(q => q.Id == singleChoiceAnswer.QuestionId);
                     if (singleChoiceAnswer.Option == question.RightAnswer)
@@ -424,7 +430,7 @@ namespace WebApplication3.Controllers
                     var multiChoiceAnswer = await _context.MultiChoiceAnswers
                         .Include(a => a.AnswerOptions).Include(a => a.Question).ThenInclude(q => q.Options)
                         .SingleAsync(a => a.Id == answer.Id);
-                    var question = 
+                    var question =
                         await _context.MultiChoiceQuestions
                             .SingleAsync(q => q.Id == multiChoiceAnswer.QuestionId);
 
@@ -447,7 +453,7 @@ namespace WebApplication3.Controllers
                 }
                 else if (answer is TextAnswer textAnswer)
                 {
-                    var question = 
+                    var question =
                         await _context.TextQuestions
                             .SingleAsync(q => q.Id == textAnswer.QuestionId);
                     if (textAnswer.Text == question.TextRightAnswer)
@@ -465,7 +471,7 @@ namespace WebApplication3.Controllers
                     var dndAnswer = await _context.DragAndDropAnswers
                     .Include(a => a.Question).Include(a => a.DragAndDropAnswerOptions)
                     .SingleAsync(a => a.Id == answer.Id);
-                    var question = 
+                    var question =
                         await _context.DragAndDropQuestions
                             .SingleAsync(q => q.Id == dndAnswer.QuestionId);
                     dndAnswer.Score = question.Score;

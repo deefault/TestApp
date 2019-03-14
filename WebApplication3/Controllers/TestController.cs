@@ -243,8 +243,6 @@ namespace WebApplication3.Controllers
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
             if (test.CreatedBy != user) return Forbid();
-            var testResult = await _context.TestResults.SingleOrDefaultAsync(tr => tr.Test == test);
-            _context.TestResults.Remove(testResult);
             _context.Tests.Remove(test);
             await _context.SaveChangesAsync();
             return RedirectToAction("Tests");
@@ -432,13 +430,13 @@ namespace WebApplication3.Controllers
                     var question =
                         await _context.SingleChoiceQuestions
                             .SingleAsync(q => q.Id == singleChoiceAnswer.QuestionId);
-                    if (singleChoiceAnswer.Option == question.RightAnswer)
-                    {
-                        singleChoiceAnswer.Score = 1;
-                        count++;
-                    }
-                    else
-                        singleChoiceAnswer.Score = 0;
+                    singleChoiceAnswer.Score = 0;
+                    if (singleChoiceAnswer.Option != null)
+                        if (singleChoiceAnswer.Option == question.RightAnswer)
+                        {
+                            singleChoiceAnswer.Score = question.Score;
+                            count++;
+                        }
                     //singleChoiceAnswer.Score = (singleChoiceAnswer.Option == question.RightAnswer) ? question.Score : 0;
 
                     _context.SingleChoiceAnswers.Update(singleChoiceAnswer);
@@ -456,6 +454,8 @@ namespace WebApplication3.Controllers
                     //int counter = 0;
                     multiChoiceAnswer.Score = question.Score;
                     count++;
+                    if (multiChoiceAnswer.AnswerOptions == null || multiChoiceAnswer.AnswerOptions.Count == 0)
+                        count--;
                     foreach (var answerOption in multiChoiceAnswer.AnswerOptions)
                     {
                         if (answerOption.Checked != question.Options.Single(o => o.Id == answerOption.OptionId).IsRight)
@@ -494,6 +494,8 @@ namespace WebApplication3.Controllers
                             .SingleAsync(q => q.Id == dndAnswer.QuestionId);
                     dndAnswer.Score = question.Score;
                     count++;
+                    if (dndAnswer.DragAndDropAnswerOptions == null || dndAnswer.DragAndDropAnswerOptions.Count == 0)
+                        count--;
                     foreach (var dndOption in dndAnswer.DragAndDropAnswerOptions)
                     {
                         if (dndOption.RightOptionId != dndOption.OptionId)

@@ -29,10 +29,10 @@
 			}
 		},
 		{
-			"file": "/home/kochkin/Downloads/test.txt",
+			"file": "WebApplication3/Utils/Utils.cs",
 			"settings":
 			{
-				"buffer_size": 636,
+				"buffer_size": 528,
 				"line_ending": "Unix"
 			}
 		},
@@ -49,7 +49,7 @@
 			"file": "WebApplication3/Views/Test/Tests.cshtml",
 			"settings":
 			{
-				"buffer_size": 5377,
+				"buffer_size": 5386,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -67,6 +67,42 @@
 	"build_system": "Packages/User/Asp.Net Core.sublime-build",
 	"build_system_choices":
 	[
+		[
+			[
+				[
+					"Packages/Kulture/ASP.NET.sublime-build",
+					""
+				],
+				[
+					"Packages/User/Asp.Net Core.sublime-build",
+					""
+				],
+				[
+					"Packages/User/MonoDebug.sublime-build",
+					""
+				],
+				[
+					"Packages/User/MonoDebug.sublime-build",
+					"External"
+				],
+				[
+					"Packages/User/OmniSharp.sublime-build",
+					""
+				],
+				[
+					"Packages/User/OmniSharp.sublime-build",
+					"Clean"
+				],
+				[
+					"Packages/User/OmniSharp.sublime-build",
+					"ReBuild"
+				]
+			],
+			[
+				"Packages/User/Asp.Net Core.sublime-build",
+				""
+			]
+		],
 		[
 			[
 				[
@@ -94,6 +130,14 @@
 			[
 				"fold",
 				"SyntaxFold: Fold All"
+			],
+			[
+				"push",
+				"git: push"
+			],
+			[
+				"git comm",
+				"git: commit including unstaged files"
 			],
 			[
 				"ufol",
@@ -206,12 +250,11 @@
 	[
 		"/home/kochkin/GitHub/TestsApp",
 		"/home/kochkin/GitHub/TestsApp/WebApplication3",
-		"/home/kochkin/GitHub/TestsApp/WebApplication3/Controllers",
-		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views",
-		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Test"
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Controllers"
 	],
 	"file_history":
 	[
+		"/home/kochkin/Downloads/test.txt",
 		"/home/kochkin/GitHub/TestsApp/WebApplication3/Controllers/QuestionController.cs",
 		"/home/kochkin/GitHub/TestsApp/WebApplication3/Controllers/TestController.Utils.cs",
 		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/Details.cshtml",
@@ -276,7 +319,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
@@ -292,8 +335,8 @@
 						"selection":
 						[
 							[
-								0,
-								0
+								4960,
+								4960
 							]
 						],
 						"settings":
@@ -307,19 +350,19 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 4245.9379616,
+						"translation.y": 725.99704579,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "/home/kochkin/Downloads/test.txt",
-					"semi_transient": false,
+					"file": "WebApplication3/Utils/Utils.cs",
+					"semi_transient": true,
 					"settings":
 					{
-						"buffer_size": 636,
+						"buffer_size": 528,
 						"regions":
 						{
 						},
@@ -332,13 +375,16 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
+							"git_savvy.repo_path": "/home/kochkin/GitHub/TestsApp",
+							"syntax": "Packages/C#/C#.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
@@ -378,7 +424,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5377,
+						"buffer_size": 5386,
 						"regions":
 						{
 						},

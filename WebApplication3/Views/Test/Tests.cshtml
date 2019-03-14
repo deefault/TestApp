@@ -6,7 +6,7 @@
     Layout = "_Layout";
 }
 
-<h2>title</h2>
+<h2>@ViewBag.Title</h2>
 @if (Model == null)
 {
     <div class="alert alert-warning" role="alert">
@@ -48,6 +48,12 @@ else
                     <td>
                         @Html.DisplayFor(modelItem => item.CreatedBy.UserName)
                     </td>
+                    <td>
+                        <form method="post">
+                            <input asp-controller="Test" asp-action="Delete"
+                            asp-route-testId="@item.Id" value="Delete" class="btn btn-link" type="submit" id="deleteLink"/>
+                        </form>
+                   </td>
                 </tr>
             }
         </table>

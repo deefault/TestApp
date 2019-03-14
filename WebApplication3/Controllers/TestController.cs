@@ -233,6 +233,24 @@ namespace WebApplication3.Controllers
         }
         #endregion
 
+        #region Удаление
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [Route("/Tests/{testId}/Delete/")]
+        public async Task<IActionResult> Delete(int testId)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
+            if (test.CreatedBy != user) return Forbid();
+            var testResult = await _context.TestResults.SingleOrDefaultAsync(tr => tr.Test == test);
+            _context.TestResults.Remove(testResult);
+            _context.Tests.Remove(test);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Tests");
+        }
+        #endregion
+
         #region Список тестов
         [HttpGet]
         [Authorize]

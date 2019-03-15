@@ -243,7 +243,26 @@ namespace WebApplication3.Controllers
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
             if (test.CreatedBy != user) return Forbid();
+            var trs = _context.TestResults.Where(tr => tr.Test == test).ToArray();
+            _context.TestResults.RemoveRange(trs);
             _context.Tests.Remove(test);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Tests");
+        }
+        #endregion
+
+        #region Включение/Выключение
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [Route("/Tests/{testId}/Enable/")]
+        public async Task<IActionResult> Enable(int testId)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
+            if (test.CreatedBy != user) return Forbid();
+            test.IsEnabled = !test.IsEnabled;
+            _context.Tests.Update(test);
             await _context.SaveChangesAsync();
             return RedirectToAction("Tests");
         }

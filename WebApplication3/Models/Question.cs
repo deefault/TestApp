@@ -1,62 +1,65 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Newtonsoft.Json;
 
 namespace WebApplication3.Models
 {
-   
-    
-    
+
+
+
     public abstract class Question
     {
-        
+
         public int Id { get; set; }
         [Required]
+        [DisplayName("Вопрос")]
         public string Title { get; set; }
-        
+
         [Required]
         public Test Test { get; set; }
-        
+
         [Required]
         public string QuestionType { get; set; }
-        
+
         public List<Option> Options { get; set; }
-        
+
+        [DisplayName("Балл")]
         public int Score { get; set; }
-        
+
         public enum QuestionTypeEnum
         {
             [Display(Name = "С одним правильным ответом")]
-            SingleChoiceQuestion=1,
+            SingleChoiceQuestion = 1,
             [Display(Name = "С несколькими правильными ответами")]
-            MultiChoiceQuestion=2,
+            MultiChoiceQuestion = 2,
             [Display(Name = "С вводом текста")]
-            TextQuestion=3,
+            TextQuestion = 3,
             [Display(Name = "На восстановление последовательности")]
-            DragAndDropQuestion=4
+            DragAndDropQuestion = 4
         }
     }
 
     public class SingleChoiceQuestion : Question
     {
-               
+
         public Option RightAnswer { get; set; }
 
     }
-    
+
     public class MultiChoiceQuestion : Question
     {
-        
+
     }
-    
+
     public class TextQuestion : Question
     {
         [Required]
         public string TextRightAnswer { get; set; }
     }
-    
+
     public class DragAndDropQuestion : Question
     {
 
@@ -73,7 +76,7 @@ namespace WebApplication3.Models
         public Question Question { get; set; }
         [Required]
         public int Order { get; set; }
-        
+
         public ICollection<AnswerOption> AnswerOptions { get; set; }
     }
 }

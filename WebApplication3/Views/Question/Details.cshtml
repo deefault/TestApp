@@ -3,16 +3,18 @@
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
-    
+
 }
 <hr/>
 <h3 class="text-center">@Model.Title</h3>
-<h5>Тип вопроса: @Enum.Parse(typeof(Question.QuestionTypeEnum), Model.QuestionType)</h5>
+<hr />
+<h5 class="text-center">Тип вопроса: @Enum.Parse(typeof(Question.QuestionTypeEnum), Model.QuestionType)</h5>
+<hr />
 <h5 class="text-center">Варианты</h5>
 <table class="table table-hover">
     <thead>
     <tr>
-       
+
         <th scope="col">#</th>
         <th scope="col">Текст</th>
     </tr>
@@ -22,10 +24,10 @@
     @foreach (var o in Model.Options)
     {
 
-        <tr class="@((o.IsRight) ? "table-success" : "")">             
+        <tr class="@((o.IsRight) ? "table-success" : "")">
             <td>@(i++)</td>
             <td>@o.Text</td>
-            
+
         </tr>
     }
 

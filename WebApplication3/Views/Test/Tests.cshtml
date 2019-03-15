@@ -6,9 +6,11 @@
     Layout = "_Layout";
 }
 
-<h2>@ViewBag.Title</h2>
-@if (Model == null)
+<hr />
+<h3 class="text-center">@ViewBag.Title</h3>
+@if (Model.Model1 == null || Model.Model1.Count == 0)
 {
+    <hr />
     <div class="alert alert-warning" role="alert">
         Вы пока еще не создали тестов
     </div>
@@ -18,13 +20,14 @@ else
     <dt>
         @Html.DisplayNameFor(model => model)
     </dt>
-    <dd>
-        <table class="table">
+    <dd style="margin-top:1rem; margin-bottom: 0;">
+        <table class="table" style="margin-bottom: 0;">
             <tr>
                 <th>#</th>
                 <th>Название</th>
                 <th>Включен?</th>
                 <th>Создан</th>
+                <th>Управление</th>
             </tr>
             @foreach (var item in Model.Model1)
             {
@@ -36,14 +39,22 @@ else
                         <a asp-action="Details" asp-route-id="@item.Id">@item.Name</a>
                     </td>
                     <td>
+                        <form method="post">
                         @if (item.IsEnabled)
                         {
+                            <button asp-controller="Test" class="btn btn-link" asp-action="Enable"
+                            asp-route-testId="@item.Id" type="submit">
                             <span class="badge badge-success">Да</span>
+                            </button>
                         }
                         else
                         {
+                            <button asp-controller="Test" class="btn btn-link" asp-action="Enable"
+                            asp-route-testId="@item.Id" type="submit">
                             <span class="badge badge-danger">Нет</span>
+                            </button>
                         }
+                        </form>
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.CreatedBy.UserName)
@@ -51,7 +62,7 @@ else
                     <td>
                         <form method="post">
                             <input asp-controller="Test" asp-action="Delete"
-                            asp-route-testId="@item.Id" value="Delete" class="btn btn-link" type="submit" id="deleteLink"/>
+                            asp-route-testId="@item.Id" value="Удалить" class="btn btn-link" type="submit" id="deleteLink"/>
                         </form>
                    </td>
                 </tr>
@@ -59,6 +70,8 @@ else
         </table>
     </dd>
 }
+
+<hr style="margin-top: 0;" />
 <a asp-controller="Test" asp-action="Add" method="get">@*<button class="btn btn-info">Добавить тест</button>*@</a>
 <button class="btn btn-info"
         data-toggle="collapse" data-target="#addFormCollapse"
@@ -125,7 +138,7 @@ test {
                     <div class="form-group row">
                         <label asp-for="Model2.IsEnabled" class="col-md-2 control-label"></label>
                         <div class="col-md-10">
-                            <input asp-for="Model2.IsEnabled" type="checkbox" class="checkbox" />Тест Включен?
+                            <input asp-for="Model2.IsEnabled" type="checkbox" class="checkbox" /> Тест включен?
                             <span asp-validation-for="Model2.IsEnabled" class="text-danger"></span>
                         </div>
                     </div>

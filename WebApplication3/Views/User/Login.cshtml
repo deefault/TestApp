@@ -5,7 +5,7 @@
     <div class="row">
         <div class="col-md-6" style="margin: auto">
             <section>
-                <form asp-controller="User" asp-action="Login" 
+                <form asp-controller="User" asp-action="Login"
                       asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="" role="form">
                     <h4 class="text-center text-capitalize">Войти</h4>
                     <hr />
@@ -24,7 +24,7 @@
                             <span asp-validation-for="Password" class="text-danger"></span>
                         </div>
                     </div>
-               
+
                     <div class="form-group" >
                         <div class="col-md-10 text-center">
                             <button type="submit" class="btn btn-info" style="margin: auto">Войти</button>

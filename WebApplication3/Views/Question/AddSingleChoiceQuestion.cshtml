@@ -11,25 +11,25 @@
 
 
 <div class="container">
-
         <div class="form-group" id="fields">
             <div class="">
                 <form asp-controller="Question" asp-action="AddSingleChoiceQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
-                    <h4>Добавить вопрос с выбором одного правильного ответа</h4>
+                    <hr />
+                    <h4 class="text-center">Добавить вопрос с выбором одного правильного ответа</h4>
                     <hr />
                     <ul class="text-danger" id="validation-summary"></ul>
                     @*<div asp-validation-summary="All" class="text-danger"></div>*@
                     <div class="form-group row">
                         <label asp-for="Title" class="col-md-2 col-lg-2"></label>
                         <div class="col-md-10 col-lg-4">
-                            <input asp-for="Title" class="form-control" />
+                            <input asp-for="Title" class="form-control" placeholder="Текст вопроса" />
                             <span asp-validation-for="Title" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label asp-for="Score" class="col-md-2 col-lg-2"></label>
                         <div class="col-md-10 col-lg-4">
-                            <input asp-for="Score" class="form-control" />
+                            <input asp-for="Score" class="form-control" placeholder="1..100" />
                             <span asp-validation-for="Score" class="text-danger"></span>
                         </div>
                     </div>
@@ -38,7 +38,7 @@
                             <tbody id="item-table__body">
                                 <tr>
                                     <td class="item-table__cell">
-                                        <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса">
+                                        <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст ответа">
                                     </td>
                                     <td class="item-table__cell" align="right">
                                         <input class="form-check-inline" type="radio" name="isRight" id="isRight" />
@@ -49,7 +49,7 @@
                                 </tr>
                                 <tr>
                                     <td class="item-table__cell">
-                                        <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса">
+                                        <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст ответа">
                                     </td>
                                     <td class="item-table__cell" align="right">
                                         <input class="form-check-inline" type="radio" name="isRight" id="isRight" />
@@ -60,7 +60,7 @@
                                 </tr>
                                 <tr>
                                     <td class="item-table__cell">
-                                        <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса">
+                                        <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст ответа">
                                     </td>
                                     <td class="item-table__cell" align="right">
                                         <input class="form-check-inline" type="radio" name="isRight" id="isRight" />
@@ -80,7 +80,7 @@
                     <script id="rowTemplate" type="text/template">
                         <tr>
                             <td class="item-table__cell">
-                                <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса">
+                                <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст ответа">
                                 <span asp-validation-for="Text" class="text-danger"></span>
                             </td>
                             <td class="item-table__cell" align="right">

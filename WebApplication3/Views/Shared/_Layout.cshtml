@@ -19,7 +19,7 @@
         <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/4.1.3/css/bootstrap.min.css"
               asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
-        
+
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
     </environment>
 </head>
@@ -35,17 +35,17 @@
             <ul class="nav navbar-nav">
                 <li class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Index" ? "active" : "")">
                     <a class="nav-link"
-                       asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                       asp-area="" asp-controller="Home" asp-action="Index">Домой</a>
                 </li>
-                
+
             @if (SignInManager.IsSignedIn(User))
             {
                 <li class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "TestResults" ? "active" : "")">
                     <a class="nav-link"
-                       asp-area="" asp-controller="Test" asp-action="TestResults">Тесты</a>
+                       asp-area="" asp-controller="Test" asp-action="TestResults">Текущие тесты</a>
                 </li>
                 <li class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Tests" ? "active" : "")">
-                    <a class="nav-link" asp-controller="Test" asp-action="Tests">Созданные Тесты</a>
+                    <a class="nav-link" asp-controller="Test" asp-action="Tests">Создание тестов</a>
                 </li>
             }
             </ul>

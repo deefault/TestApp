@@ -2,12 +2,13 @@
 @model TestResult
 
 @{
-    ViewBag.Title = "Начать тест";
+    ViewBag.Title = "Результаты";
     Layout = "_Layout";
     //TODO: поправить дизайн
 }
     <div class="container">
-        <h2>@ViewBag.Title</h2>
+        <hr />
+        <h4 class="text-center">@ViewBag.Title</h4>
         <hr />
         <p>Название теста: @Model.Test.Name</p>
         <p>Вопросов: @Model.TotalQuestions</p>

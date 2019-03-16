@@ -245,7 +245,7 @@ namespace WebApplication3.Controllers
             {
                 TestData testData = new TestData();
                 var test = new Test();
-                bool textParsed = false, flagParsed = false;
+                bool textParsed = false, flagParsed = false, shuffleParsed = false;
                 int Row = tokens.Peek().Row;
                 Consume(tokens, "test");
                 Consume(tokens, "{");
@@ -266,6 +266,13 @@ namespace WebApplication3.Controllers
                                 throw new Exception("Flag already parsed");
                             flagParsed = true;
                             break;
+                        case ("shuffled"):
+                            if (!shuffleParsed)
+                                test.Shuffled = ParseShuffle(tokens);
+                            else
+                                throw new Exception("Shuffle already parsed");
+                            shuffleParsed = true;
+                            break;
                         case ("question"):
                             ParseQuestion(tokens, test, testData);
                             break;
@@ -274,8 +281,12 @@ namespace WebApplication3.Controllers
                     }
                 Consume(tokens, "}");
                 testData.Test = test;
-                if (!textParsed || !flagParsed)
-                    throw new Exception(String.Format("Заданы не все требуемые поля (Test (Row - {0})). Text - {1}, Flag - {2}.", Row, textParsed, flagParsed));
+                if (!flagParsed)
+                    test.IsEnabled = false;
+                if (!shuffleParsed)
+                    test.Shuffled = false;
+                if (!textParsed)
+                    throw new Exception(String.Format("Заданы не все требуемые поля (Test (Row - {0})). Text - {1}.", Row, textParsed));
                 return testData;
             }
             private static void ParseQuestion(Queue<Token> tokens, Test test, TestData testData)
@@ -404,6 +415,13 @@ namespace WebApplication3.Controllers
             private static bool ParseFlag(Queue<Token> tokens)
             {
                 Consume(tokens, "flag");
+                Consume(tokens, "=");
+                bool flag = ConsumeFlag(tokens);
+                return flag;
+            }
+            private static bool ParseShuffle(Queue<Token> tokens)
+            {
+                Consume(tokens, "shuffled");
                 Consume(tokens, "=");
                 bool flag = ConsumeFlag(tokens);
                 return flag;

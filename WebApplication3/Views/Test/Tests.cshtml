@@ -2,7 +2,7 @@
 @model AddTestModel
 
 @{
-    ViewBag.Title = "Тесты";
+    ViewBag.Title = "Ваши тесты";
     Layout = "_Layout";
 }
 
@@ -26,47 +26,66 @@ else
             <tr>
                 <th>ID</th>
                 <th>Название</th>
-                <th>Включен?</th>
-                <th>Создатель</th>
+                <th>Включен</th>
+                <th>Перемешивать</th>
+                @*<th>Создатель</th>*@
                 <th>Управление</th>
             </tr>
             @foreach (var item in Model.Model1)
             {
-                <tr>
-                    <td>
-                        @item.Id
-                    </td>
-                    <td>
-                        <a asp-action="Details" asp-route-id="@item.Id">@item.Name</a>
-                    </td>
-                    <td>
-                        <form method="post">
+            <tr>
+                <td>
+                    @item.Id
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id">@item.Name</a>
+                </td>
+                <td>
+                    <form method="post">
                         @if (item.IsEnabled)
                         {
-                            <button asp-controller="Test" class="btn btn-link" asp-action="Enable"
-                            asp-route-testId="@item.Id" type="submit">
-                            <span class="badge badge-success">Да</span>
+                            <button asp-controller="Test" class="btn-link" asp-action="Enable"
+                                    asp-route-testId="@item.Id" type="submit">
+                                <span class="badge badge-success">Да</span>
                             </button>
                         }
                         else
                         {
-                            <button asp-controller="Test" class="btn btn-link" asp-action="Enable"
-                            asp-route-testId="@item.Id" type="submit">
-                            <span class="badge badge-danger">Нет</span>
+                            <button asp-controller="Test" class="btn-link" asp-action="Enable"
+                                    asp-route-testId="@item.Id" type="submit">
+                                <span class="badge badge-danger">Нет</span>
                             </button>
                         }
-                        </form>
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.CreatedBy.UserName)
-                    </td>
-                    <td>
-                        <form method="post">
-                            <input asp-controller="Test" asp-action="Delete"
-                            asp-route-testId="@item.Id" value="Удалить" class="btn btn-link" type="submit" id="deleteLink"/>
-                        </form>
-                   </td>
-                </tr>
+                    </form>
+                </td>
+                <td>
+                    <form method="post">
+                        @if (item.Shuffled)
+                        {
+                            <button asp-controller="Test" class="btn-link" asp-action="Shuffle"
+                                    asp-route-testId="@item.Id" type="submit">
+                                <span class="badge badge-success">Да</span>
+                            </button>
+                        }
+                        else
+                        {
+                            <button asp-controller="Test" class="btn-link" asp-action="Shuffle"
+                                    asp-route-testId="@item.Id" type="submit">
+                                <span class="badge badge-danger">Нет</span>
+                            </button>
+                        }
+                    </form>
+                </td>
+                @*<td>
+                    @Html.DisplayFor(modelItem => item.CreatedBy.UserName)
+                </td>*@
+                <td>
+                    <form method="post">
+                        <input asp-controller="Test" asp-action="Delete"
+                               asp-route-testId="@item.Id" value="Удалить" class="btn-link" type="submit" id="deleteLink" />
+                    </form>
+                </td>
+            </tr>
             }
         </table>
     </dd>
@@ -90,12 +109,23 @@ else
                 <form asp-controller="Test" enctype="multipart/form-data" asp-action="AddFromFile" asp-route-returnurl="/User/Tests/" method="post" class="form" role="form">
                     <div class="form-group">
                         <div class="form-control-file col-md-10">
-                            <details>
-                                <summary>Пример</summary>
-                                <pre>
+                            <div id="example">
+                                <div class="card">
+                                    <div id="exampleHeading">
+                                        <h5 class="mb-0">
+                                            <button class="btn btn-link" style="color: rgb(73, 80, 87); text-decoration: none;" type="button" data-toggle="collapse" data-target="#exampleCollapse" aria-expanded="true" aria-controls="exampleCollapse">
+                                                Пример
+                                            </button>
+                                        </h5>
+                                    </div>
+
+                                    <div id="exampleCollapse" class="collapse" aria-labelledby="exampleHeading" data-parent="#example">
+                                        <div class="card-body">
+                                            <pre>
 test {
 	text = Название теста
 	flag = Состояние (true/false)
+	shuffled = false
 	question {
 		type = Тип вопроса (single/multi/text/dnd)
 		text = Текст вопроса
@@ -107,10 +137,20 @@ test {
 	}
 }
 * - Только для single и multi
-                </pre>
-                            </details>
-
-                            <input type="file" name="uploadedFile" />
+                                        </pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="inputGroupFileAddon01">Upload</span>
+                                </div>
+                                <div class="custom-file" style="cursor:pointer">
+                                    <input type="file" onchange="$('#inputFile01').html(this.files[0].name)" id="inputFile00" class="custom-file-input" name="uploadedFile">
+                                    <label class="custom-file-label" id="inputFile01" for="inputFile00">Choose file</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

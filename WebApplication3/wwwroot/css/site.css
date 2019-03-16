@@ -76,8 +76,8 @@ body {
  }
 /*
 .item-table__row {
-        padding: 3px; /* Поля вокруг содержимого таблицы */
-        border: 1px solid #DDD; /* Параметры рамки */
+        padding: 3px; 
+        border: 1px solid #DDD;
     }*/
 
 .item-table__cell {
@@ -85,7 +85,7 @@ body {
     padding: 3px 5px;
 }
 
-.item__text-field {
+textarea.item__text-field {
     /*width: 100%;
     margin: 0;
     padding: .45em 0.92em;
@@ -95,11 +95,12 @@ body {
     background-image: none;
     border: 1px solid #CCC;
     border-left: 1px solid #CCC;*/
-    line-height: .92;
+    height: calc(2.6rem + 2px);
 }
 
 .item-table__add-row {
     margin-top: 0;
+    margin-bottom: 1rem;
     position: relative;
     z-index: 8;
 }
@@ -146,6 +147,7 @@ body {
         background: #FF0000;
         color: #fff;
     }
+/*#endregion*/
 
 .unselectable {
     -webkit-touch-callout: none; /* iOS Safari */
@@ -155,4 +157,28 @@ body {
     -ms-user-select: none; /* Internet Explorer/Edge */
     user-select: none; /* Non-prefixed version, currently not supported by any browser */
 }
-/*#endregion*/
+.btn-link {
+    cursor: pointer;
+    border-color: transparent;
+}
+
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+
+    .btn-file input[type=file] {
+        position: absolute;
+        top: 0;
+        right: 0;
+        min-width: 100%;
+        min-height: 100%;
+        font-size: 100px;
+        text-align: right;
+        filter: alpha(opacity=0);
+        opacity: 0;
+        outline: none;
+        background: white;
+        cursor: inherit;
+        display: block;
+    }

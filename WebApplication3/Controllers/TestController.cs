@@ -266,6 +266,21 @@ namespace WebApplication3.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction("Tests");
         }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [Route("/Tests/{testId}/Shuffle/")]
+        public async Task<IActionResult> Shuffle(int testId)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
+            if (test.CreatedBy != user) return Forbid();
+            test.Shuffled = !test.Shuffled;
+            _context.Tests.Update(test);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Tests");
+        }
         #endregion
 
         #region Список тестов
@@ -387,7 +402,12 @@ namespace WebApplication3.Controllers
             }
             List<Answer> answers = new List<Answer>();
             Answer answer = null;
-            ushort order = 1;
+            ushort[] order = new ushort[questions.Count];
+            for (int i = 0; i < order.Length; i++)
+                order[i] = (ushort)(i + 1);
+            if (testResult.Test.Shuffled)
+                Shuffle(order);
+            int j = 0;
             foreach (var question in questions)
             {
                 switch (question.QuestionType)
@@ -409,14 +429,11 @@ namespace WebApplication3.Controllers
                 answer.Question = question;
                 answer.Score = 0;
                 answer.TestResult = testResult;
-                answer.Order = order;
+                answer.Order = order[j++];
                 await _context.Answers.AddAsync(answer);
                 answers.Add(answer);
                 await _context.SaveChangesAsync();
-                order++;
             }
-            // answers.Shuffle()
-
 
             // TODO: redirect to first answer (question)
             //throw new NotImplementedException();
@@ -531,6 +548,23 @@ namespace WebApplication3.Controllers
             await _context.SaveChangesAsync();
             //throw new NotImplementedException();
             return RedirectToAction("TestResults");
+        }
+        #endregion
+
+        #region Вспомогательные методы
+        private static Random rng = new Random();
+
+        public static void Shuffle<T>(T[] list)
+        {
+            int n = list.Length;
+            while (n > 1)
+            {
+                n--;
+                int k = rng.Next(n + 1);
+                T value = list[k];
+                list[k] = list[n];
+                list[n] = value;
+            }
         }
         #endregion
     }

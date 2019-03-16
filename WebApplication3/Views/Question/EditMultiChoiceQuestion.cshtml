@@ -41,7 +41,7 @@
                                 {
                                     <tr>
                                         <td class="item-table__cell">
-                                            <textarea rows="1" id="Text" option-id="@o.Id" asp-for="@o.Text" type="text" class="item__text-field form-control" value="@(o.Text)" placeholder="Текст ответа"></textarea>
+                                            <textarea rows="1" id="Text" option-id="@o.Id" asp-for="@o.Text" type="text" class="form-control item__text-field" value="@(o.Text)" placeholder="Текст ответа"></textarea>
                                         </td>
                                         <td class="item-table__cell" align="right">
                                             <input @((o.IsRight) ? "checked" : "") class="form-check-inline" type="checkbox" name="isRight" id="isRight" />
@@ -62,11 +62,11 @@
                     <script id="rowTemplate" type="text/template">
                         <tr>
                             <td class="item-table__cell">
-                                <textarea rows="1" id="Text" asp-for="Text" type="text" class="item__text-field form-control" placeholder="Текст ответа"></textarea>
+                                <textarea rows="1" id="Text" asp-for="Text" type="text" class="form-control item__text-field" placeholder="Текст ответа"></textarea>
                             </td>
                             <td class="item-table__cell" align="right">
                                 <input class="form-check-inline" type="checkbox" name="isRight" id="isRight" />
-                                <button class="item-table__del-row-btn">
+                                <button class="btn item-table__del-row-btn">
                                     <span class="glyphicon glyphicon-minus"></span>
                                 </button>
                             </td>

@@ -19,6 +19,7 @@ namespace WebApplication3.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;        
         public bool IsEnabled { get; set; }        
+        public bool Shuffled { get; set; }
         public ICollection<Question> Questions { get; set; }
         
         public enum QuestionTypeEnum

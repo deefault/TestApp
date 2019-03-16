@@ -16,14 +16,14 @@
             <hr />
             <h3 class="text-center">@Model.Name</h3>
             <hr/>
-            <form  id="addByIdForm" method="post" class="form" role="form">
+            <form id="addByIdForm" method="post" class="form" role="form">
                 <div asp-validation-summary="All" class="text-danger"></div>
                 <div class="form-group row">
                     <label for="userId" class="col-1 col-form-label">ID</label>
                     <div class="col-2">
-                        <input class="form-control" id="userId" name="userId" type="number" min="1"/>
+                        <input class="form-control" id="userId" name="userId" type="number" min="1" />
                     </div>
-                    <input id="testId" name="testId" type="hidden" value="@Model.Id"/>
+                    <input id="testId" name="testId" type="hidden" value="@Model.Id" />
                     <button type="submit" class="btn btn-info">Добавить пользователя по ID</button>
                 </div>
             </form>
@@ -43,13 +43,12 @@
             {
                 <table class="table item-table table-hover" style="margin-bottom: 1rem;">
                     <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Название</th>
-                        <th scope="col">Тип</th>
-                        <th scope="col">Управление</th>
-
-                    </tr>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Название</th>
+                            <th scope="col">Тип</th>
+                            <th scope="col">Управление</th>
+                        </tr>
                     </thead>
                     <tbody>
                     @{ int i = 0; }
@@ -68,8 +67,8 @@
                                 <form method="post">
                                     <a asp-controller="Question" asp-action="Edit"
                                        asp-route-testId="@Model.Id" asp-route-questionId="@q.Id">Изменить</a> |
-                                        <input asp-controller="Question" asp-action="Delete"
-                                          asp-route-testId="@Model.Id" asp-route-questionId="@q.Id" value="Удалить" class="btn btn-link" type="submit" id="deleteLink"/>
+                                    <input asp-controller="Question" asp-action="Delete"
+                                           asp-route-testId="@Model.Id" asp-route-questionId="@q.Id" value="Удалить" class="btn-link" type="submit" id="deleteLink" />
                                 </form>
                             </td>
                         </tr>

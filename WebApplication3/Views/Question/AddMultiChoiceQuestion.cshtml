@@ -39,11 +39,11 @@
                                 @for(var i = 0; i < 3; i++) {
                                 <tr>
                                     <td class="item-table__cell">
-                                        <textarea rows="1" id="Text" asp-for="Text" class="item__text-field form-control" placeholder="Текст ответа"></textarea>
+                                        <textarea rows="1" id="Text" asp-for="Text" class="form-control item__text-field" placeholder="Текст ответа"></textarea>
                                     </td>
                                     <td class="item-table__cell" align="right">
                                         <input class="form-check-inline" type="checkbox" name="isRight" id="isRight" />
-                                        <button class="item-table__del-row-btn">
+                                        <button class="btn item-table__del-row-btn">
                                             <span class="glyphicon glyphicon-minus"></span>
                                         </button>
 
@@ -61,11 +61,11 @@
                     <script id="rowTemplate" type="text/template">
                         <tr>
                             <td class="item-table__cell">
-                                <textarea rows="1" id="Text" asp-for="Text" class="item__text-field form-control" placeholder="Текст ответа"></textarea>s
+                                <textarea rows="1" id="Text" asp-for="Text" class="form-control item__text-field" placeholder="Текст ответа"></textarea>
                             </td>
                             <td class="item-table__cell" align="right">
                                 <input class="form-check-inline" type="checkbox" name="isRight" id="isRight" />
-                                <button class="item-table__del-row-btn">
+                                <button class="btn item-table__del-row-btn">
                                     <span class="glyphicon glyphicon-minus"></span>
                                 </button>
                             </td>

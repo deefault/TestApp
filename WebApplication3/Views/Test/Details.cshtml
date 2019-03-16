@@ -37,10 +37,11 @@
                 <div class="alert alert-warning" role="alert">
                     В тесте еще нет вопросов
                 </div>
+                <hr />
             }
             else
             {
-                <table class="table table-hover">
+                <table class="table item-table table-hover" style="margin-bottom: 1rem;">
                     <thead>
                     <tr>
                         <th scope="col">#</th>
@@ -79,7 +80,6 @@
                     </tbody>
                 </table>
             }
-            <hr style="margin-top: 0;" />
             <div class="form-group row">
                 <select class="form-control col-lg-4" id="questionType"
                         asp-items="Html.GetEnumSelectList<Question.QuestionTypeEnum>()"

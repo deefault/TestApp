@@ -41,12 +41,48 @@
     <hr />
 </form>
 
+@if (nonCompletedTests.Count == 0)
+{
+    <div class="alert alert-warning" role="alert">
+        Не найдено непройденных тестов
+    </div>
+    <hr />
+}
+else
+{
+    <dt>
+        <h4 class="text-center">Текущие тесты</h4>
+    </dt>
+    <dd>
+        <table class="table item-table">
+            <tr>
+                <th>ID</th>
+                <th>Название</th>
+                <th>Создатель</th>
+            </tr>
+            @foreach (var item in nonCompletedTests)
+            {
+                <tr>
+                    <td>
+                        @item.Test.Id
+                    </td>
+                    <td>
+                        <a asp-controller="Test" asp-action="Start" asp-route-testResultId="@item.Id">@item.Test.Name</a>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Test.CreatedBy.UserName)
+                    </td>
+                </tr>
+            }
+        </table>
+    </dd>
+}
+
 @if (completedTests.Count == 0)
 {
     <div class="alert alert-warning" role="alert">
         Вы не прошли ни одного теста
     </div>
-    <hr />
 }
 else
 {
@@ -56,13 +92,13 @@ else
                 }
         <h4 class="text-center">Завершенные тесты</h4>
     </dt>
-    <dd style="margin-bottom: 0;">
-        <table class="table" style="margin-bottom: 0;">
+    <dd>
+        <table class="table item-table">
             <tr>
-                <th>#</th>
+                <th>ID</th>
                 <th>Название</th>
-                <th>Кем создан</th>
-                <th>Когда пройден</th>
+                <th>Создатель</th>
+                <th>Пройден</th>
                 <th>Процент выполнения</th>
             </tr>
             @foreach (var item in completedTests)
@@ -82,42 +118,6 @@ else
                     </td>
                     <td>
                         @(item.RightAnswersCount * 100 / item.TotalQuestions)%
-                    </td>
-                </tr>
-            }
-        </table>
-    </dd>
-    <hr style="margin-top: 0;" />
-}
-@if (nonCompletedTests.Count == 0)
-{
-    <div class="alert alert-warning" role="alert">
-        Не найдено непройденных тестов
-    </div>
-}
-else
-{
-    <dt>
-        <h4 class="text-center">Текущие тесты</h4>
-    </dt>
-    <dd style="margin-bottom: 0;">
-        <table class="table" style="margin-bottom: 0;">
-            <tr>
-                <th>#</th>
-                <th>Название</th>
-                <th>Кем создан</th>
-            </tr>
-            @foreach (var item in nonCompletedTests)
-            {
-                <tr>
-                    <td>
-                        @item.Test.Id
-                    </td>
-                    <td>
-                        <a asp-controller="Test" asp-action="Start" asp-route-testResultId="@item.Id">@item.Test.Name</a>
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Test.CreatedBy.UserName)
                     </td>
                 </tr>
             }

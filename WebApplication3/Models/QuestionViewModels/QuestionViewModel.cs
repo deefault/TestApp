@@ -13,6 +13,7 @@ namespace WebApplication3.Models.QuestionViewModels
 
         [Required]
         [DisplayName("Вопрос")]
+        [DataType(DataType.MultilineText)]
         public string Title { get; set; }
 
         [Required]

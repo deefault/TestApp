@@ -21,24 +21,25 @@
                     <div class="form-group row">
                         <label asp-for="Title" class="col-md-2 col-lg-2"></label>
                         <div class="col-md-10 col-lg-4">
-                            <input asp-for="Title" class="form-control" placeholder="Текст вопроса" />
+                            <textarea asp-for="Title" class="form-control" placeholder="Текст вопроса"></textarea>
                             <span asp-validation-for="Title" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label asp-for="Score" class="col-md-2 col-lg-2"></label>
                         <div class="col-md-10 col-lg-4">
-                            <input asp-for="Score" class="form-control" placeholder="1..100" />
+                            <input asp-for="Score" class="form-control" placeholder="1..100" min="1" max="100" />
                             <span asp-validation-for="Score" class="text-danger"></span>
                         </div>
                     </div>
 
                     <div class="items">
-                        <table class="item-table">
+                        <table class="table item-table">
                             <tbody id="item-table__body">
+                                @for(var i = 0; i < 3; i++) {
                                 <tr>
                                     <td class="item-table__cell">
-                                        <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст ответа">
+                                        <textarea rows="1" id="Text" asp-for="Text" class="item__text-field form-control" placeholder="Текст ответа"></textarea>
                                     </td>
                                     <td class="item-table__cell" align="right">
                                         <input class="form-check-inline" type="checkbox" name="isRight" id="isRight" />
@@ -48,28 +49,7 @@
 
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td class="item-table__cell">
-                                        <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст ответа">
-                                    </td>
-                                    <td class="item-table__cell" align="right">
-                                        <input class="form-check-inline" type="checkbox" name="isRight" id="isRight" />
-                                        <button class="item-table__del-row-btn">
-                                            <span class="glyphicon glyphicon-minus"></span>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="item-table__cell">
-                                        <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст ответа">
-                                    </td>
-                                    <td class="item-table__cell" align="right">
-                                        <input class="form-check-inline" type="checkbox" name="isRight" id="isRight" />
-                                        <button class="item-table__del-row-btn">
-                                            <span class="glyphicon glyphicon-minus"></span>
-                                        </button>
-                                    </td>
-                                </tr>
+                                }
                             </tbody>
                         </table>
                         <div class="item-table__add-row">
@@ -81,7 +61,7 @@
                     <script id="rowTemplate" type="text/template">
                         <tr>
                             <td class="item-table__cell">
-                                <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Teкст вопроса">
+                                <textarea rows="1" id="Text" asp-for="Text" class="item__text-field form-control" placeholder="Текст ответа"></textarea>s
                             </td>
                             <td class="item-table__cell" align="right">
                                 <input class="form-check-inline" type="checkbox" name="isRight" id="isRight" />

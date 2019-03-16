@@ -7,21 +7,15 @@
     <input type="hidden" value="@Model.Id">
     <fieldset class="form-group row" id="options">
         <div class="col-sm-10">
-            <table class="item-table">
+            <table class="table item-table">
                 <tbody id="item-table__body">
                     <tr class="item-table__row">
                         <td class="item-table__cell">
-                            <input name="option" id="Text" type="text" class="item__text-field" @((Model.Text != null && Model.Text != "") ? String.Format("value={0}", Model.Text) : "") placeholder="Ответ">
+                            <textarea name="option" id="Text" type="text" class="form-control item__text-field" @((Model.Text != null && Model.Text != "") ? String.Format("value={0}", Model.Text) : "") placeholder="Ответ"></textarea>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </fieldset>
-    <style>
-        .item-table__row {
-            padding: 3px; /* Поля вокруг содержимого таблицы */
-            border: 1px solid #DDD; /* Параметры рамки */
-        }
-    </style>
 </form>

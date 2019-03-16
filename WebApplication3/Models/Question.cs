@@ -16,6 +16,7 @@ namespace WebApplication3.Models
         public int Id { get; set; }
         [Required]
         [DisplayName("Вопрос")]
+        [DataType(DataType.MultilineText)]
         public string Title { get; set; }
 
         [Required]

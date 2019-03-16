@@ -1,4 +1,4 @@
-﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification\ 
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification\
 for details on configuring this project to bundle and minify static web assets. */
 body {
     /*padding-top: 50px;
@@ -38,11 +38,11 @@ body {
 }
 
 #loginForm {
-    
+
   }
 
 #deleteLink {
-    
+
 }
 
 /* #region Drag And Drop Table Styles */
@@ -63,15 +63,22 @@ body {
     }
 
  .item-table {
-     position: relative;
-     padding: 1em;
-     border: 1px solid #DDD;
-     box-shadow: 0 15px 10px -10px rgba(31, 31, 31, 0.5);
-     z-index: 10;
-     table-layout: auto;
-     width: 100%;
-
+    /*
+    position: relative;
+    padding: 1em;
+    border: 1px solid #DDD;
+    box-shadow: 0 15px 10px -10px rgba(31, 31, 31, 0.5);
+    z-index: 10;
+    table-layout: auto;
+    width: 100%;*/
+    border-bottom: 1px solid #DDD;
+    margin-bottom: 0;
  }
+/*
+.item-table__row {
+        padding: 3px; /* Поля вокруг содержимого таблицы */
+        border: 1px solid #DDD; /* Параметры рамки */
+    }*/
 
 .item-table__cell {
     vertical-align: top;
@@ -79,22 +86,21 @@ body {
 }
 
 .item__text-field {
-    width: 100%;
+    /*width: 100%;
     margin: 0;
     padding: .45em 0.92em;
     font-size: 1em;
-    line-height: 1.4;
     color: #555555;
     background-color: #FFF;
     background-image: none;
     border: 1px solid #CCC;
-    border-left: 1px solid #CCC;
+    border-left: 1px solid #CCC;*/
+    line-height: .92;
 }
 
 .item-table__add-row {
     margin-top: 0;
     position: relative;
-    border-top: 1px solid #EEE;
     z-index: 8;
 }
 
@@ -125,7 +131,7 @@ body {
 .item-table__del-row-btn {
     cursor: pointer;
     display: inline-block;
-    padding: .45em 0.92em;
+    padding: .6em 0.92em;
     font-size: 1em;
     line-height: 1.4;
     border: 1px solid #FF0000;

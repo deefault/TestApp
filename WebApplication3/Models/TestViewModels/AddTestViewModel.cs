@@ -13,7 +13,10 @@ namespace WebApplication3.Models.TestViewModels
         [DisplayName("Имя")]
         public string Name { get; set; }
         [Required]
-        [DisplayName("Состояние	")]
+        [DisplayName("Состояние")]
         public bool IsEnabled { get; set; }
+        [Required]
+        [DisplayName("Перемешивать")]
+        public bool Shuffled { get; set; }
     }
 }

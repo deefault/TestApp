@@ -70,7 +70,7 @@ namespace WebApplication3.Controllers
             var user = await _userManager.GetUserAsync(HttpContext.User);
             if (ModelState.IsValid)
             {
-                var test = new Test { Name = model.Model2.Name, CreatedBy = user, IsEnabled = model.Model2.IsEnabled };
+                var test = new Test { Name = model.Model2.Name, CreatedBy = user, IsEnabled = model.Model2.IsEnabled, Shuffled = model.Model2.Shuffled };
                 await _context.Tests.AddAsync(test);
 
                 // Добавить тест к пользователю, который его создал (чтобы он тоже мог проходить его)

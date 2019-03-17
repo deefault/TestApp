@@ -35,7 +35,7 @@
             {
                 <hr />
                 <div class="alert alert-warning" role="alert">
-                    В тесте еще нет вопросов
+                    В тесте ещё нет вопросов
                 </div>
                 <hr />
             }
@@ -56,11 +56,11 @@
                     {
 
                         <tr>
-
                             <td>@(i + 1)</td>
                             <td>
+                                @{ var title = q.Title; if (q.Title.Length > 25) { title = q.Title.Substring(0, 25).Trim() + "..."; } }
                                 <a asp-controller="Question" asp-action="Details"
-                                   asp-route-testId="@Model.Id" asp-route-questionId="@q.Id">@q.Title</a>
+                                   asp-route-testId="@Model.Id" asp-route-questionId="@q.Id">@title</a>
                             </td>
                             <td>@q.QuestionType</td>
                             <td>

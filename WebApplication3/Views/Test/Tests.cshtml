@@ -125,7 +125,7 @@ else
 test {
 	text = Название теста
 	flag = Состояние (true/false)
-	shuffled = false
+	shuffled = Перемешивать (true/false)
 	question {
 		type = Тип вопроса (single/multi/text/dnd)
 		text = Текст вопроса
@@ -178,8 +178,15 @@ test {
                     <div class="form-group row">
                         <label asp-for="Model2.IsEnabled" class="col-md-2 control-label"></label>
                         <div class="col-md-10">
-                            <input asp-for="Model2.IsEnabled" type="checkbox" class="checkbox" /> Тест включен?
+                            <input asp-for="Model2.IsEnabled" type="checkbox" class="checkbox" />
                             <span asp-validation-for="Model2.IsEnabled" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label asp-for="Model2.Shuffled" class="col-md-2 control-label"></label>
+                        <div class="col-md-10">
+                            <input asp-for="Model2.Shuffled" type="checkbox" class="checkbox" />
+                            <span asp-validation-for="Model2.Shuffled" class="text-danger"></span>
                         </div>
                     </div>
 

@@ -19,14 +19,13 @@ using Newtonsoft.Json;
 using WebApplication3.Data;
 using WebApplication3.Models;
 using WebApplication3.Models.TestViewModels;
-using WebApplication3.TParser;
 using Microsoft.AspNetCore.Http;
 using StatusCodes = Microsoft.AspNetCore.Http.StatusCodes;
 using WebApplication3.Utils;
 
 namespace WebApplication3.Controllers
 {
-    public class TestController : Controller
+    public partial class TestController : Controller
     {
         #region Поля
         private readonly ApplicationDbContext _context;
@@ -73,7 +72,7 @@ namespace WebApplication3.Controllers
             var user = await _userManager.GetUserAsync(HttpContext.User);
             if (ModelState.IsValid)
             {
-                var test = new Test { Name = model.Model2.Name, CreatedBy = user, IsEnabled = model.Model2.IsEnabled };
+                var test = new Test { Name = model.Model2.Name, CreatedBy = user, IsEnabled = model.Model2.IsEnabled, Shuffled = model.Model2.Shuffled };
                 await _context.Tests.AddAsync(test);
 
                 // Добавить тест к пользователю, который его создал (чтобы он тоже мог проходить его)
@@ -106,41 +105,48 @@ namespace WebApplication3.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddFromFile(IFormFile uploadedFile)
         {
-            var user = await _userManager.GetUserAsync(HttpContext.User);
-            // get a stream
-            var stream = uploadedFile.OpenReadStream();
-            TestData testData = Parser.Parse(Tokenizer.Tokenize(new StreamReader(stream)));
-            testData.Test.CreatedBy = user;
-            await _context.Tests.AddAsync(testData.Test);
-            TestResult testResult = new TestResult
+            try
             {
-                IsCompleted = false,
-                Test = testData.Test,
-                CompletedByUser = user,
-            };
-            user.TestResults.Add(testResult);
-            await _context.SaveChangesAsync();
-            foreach (var q in testData.Questions)
-            {
-                await _context.Questions.AddAsync(q);
-            }
-            await _context.SaveChangesAsync();
-            foreach (var o in testData.Options)
-            {
-                await _context.Options.AddAsync(o);
-                if (o.Question is SingleChoiceQuestion && o.IsRight)
+                var user = await _userManager.GetUserAsync(HttpContext.User);
+                // get a stream
+                var stream = uploadedFile.OpenReadStream();
+                TestData testData = Parser.Parse(Tokenizer.Tokenize(new StreamReader(stream)));
+                testData.Test.CreatedBy = user;
+                await _context.Tests.AddAsync(testData.Test);
+                TestResult testResult = new TestResult
                 {
-                    var questionCreated = _context.Questions.Single(q => q.Id == o.Question.Id) as SingleChoiceQuestion;
-                    questionCreated.RightAnswer = o;
-                    _context.Questions.Update(questionCreated);
+                    IsCompleted = false,
+                    Test = testData.Test,
+                    CompletedByUser = user,
+                };
+                user.TestResults.Add(testResult);
+                await _context.SaveChangesAsync();
+                foreach (var q in testData.Questions)
+                {
+                    await _context.Questions.AddAsync(q);
                 }
+                await _context.SaveChangesAsync();
+                foreach (var o in testData.Options)
+                {
+                    await _context.Options.AddAsync(o);
+                    if (o.Question is SingleChoiceQuestion && o.IsRight)
+                    {
+                        var questionCreated = _context.Questions.Single(q => q.Id == o.Question.Id) as SingleChoiceQuestion;
+                        questionCreated.RightAnswer = o;
+                        _context.Questions.Update(questionCreated);
+                    }
+                }
+
+                // Добавить тест к пользователю, который его создал (чтобы он тоже мог проходить его)
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Details", new { id = testData.Test.Id });
             }
-            
-            // Добавить тест к пользователю, который его создал (чтобы он тоже мог проходить его)
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Details", new { id = testData.Test.Id });
-            
+            catch (Exception e)
+            {
+                ViewBag.Exception = e.Message;
+                return View();
+            }
         }
 
         [HttpPost]
@@ -246,6 +252,56 @@ namespace WebApplication3.Controllers
             await _context.SaveChangesAsync();
             Response.StatusCode = 200;
             return new JsonResult("Успешно");
+        }
+        #endregion
+
+        #region Удаление
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [Route("/Tests/{testId}/Delete/")]
+        public async Task<IActionResult> Delete(int testId)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
+            if (test.CreatedBy != user) return Forbid();
+            var trs = _context.TestResults.Where(tr => tr.Test == test).ToArray();
+            _context.TestResults.RemoveRange(trs);
+            _context.Tests.Remove(test);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Tests");
+        }
+        #endregion
+
+        #region Включение/Выключение
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [Route("/Tests/{testId}/Enable/")]
+        public async Task<IActionResult> Enable(int testId)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
+            if (test.CreatedBy != user) return Forbid();
+            test.IsEnabled = !test.IsEnabled;
+            _context.Tests.Update(test);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Tests");
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [Route("/Tests/{testId}/Shuffle/")]
+        public async Task<IActionResult> Shuffle(int testId)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
+            if (test.CreatedBy != user) return Forbid();
+            test.Shuffled = !test.Shuffled;
+            _context.Tests.Update(test);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Tests");
         }
         #endregion
 
@@ -373,7 +429,12 @@ namespace WebApplication3.Controllers
             }
             List<Answer> answers = new List<Answer>();
             Answer answer = null;
-            ushort order = 1;
+            ushort[] order = new ushort[questions.Count];
+            for (int i = 0; i < order.Length; i++)
+                order[i] = (ushort)(i + 1);
+            if (testResult.Test.Shuffled)
+                Shuffle(order);
+            int j = 0;
             foreach (var question in questions)
             {
                 switch (question.QuestionType)
@@ -395,14 +456,11 @@ namespace WebApplication3.Controllers
                 answer.Question = question;
                 answer.Score = 0;
                 answer.TestResult = testResult;
-                answer.Order = order;
+                answer.Order = order[j++];
                 await _context.Answers.AddAsync(answer);
                 answers.Add(answer);
                 await _context.SaveChangesAsync();
-                order++;
             }
-            // answers.Shuffle()
-
 
             // TODO: redirect to first answer (question)
             //throw new NotImplementedException();
@@ -432,16 +490,16 @@ namespace WebApplication3.Controllers
                     var singleChoiceAnswer = await _context.SingleChoiceAnswers
                         .Include(a => a.Question).Include(a => a.Option)
                         .SingleAsync(a => a.Id == answer.Id);
-                    var question = 
+                    var question =
                         await _context.SingleChoiceQuestions
                             .SingleAsync(q => q.Id == singleChoiceAnswer.QuestionId);
-                    if (singleChoiceAnswer.Option == question.RightAnswer)
-                    {
-                        singleChoiceAnswer.Score = 1;
-                        count++;
-                    }
-                    else
-                        singleChoiceAnswer.Score = 0;
+                    singleChoiceAnswer.Score = 0;
+                    if (singleChoiceAnswer.Option != null)
+                        if (singleChoiceAnswer.Option == question.RightAnswer)
+                        {
+                            singleChoiceAnswer.Score = question.Score;
+                            count++;
+                        }
                     //singleChoiceAnswer.Score = (singleChoiceAnswer.Option == question.RightAnswer) ? question.Score : 0;
 
                     _context.SingleChoiceAnswers.Update(singleChoiceAnswer);
@@ -451,7 +509,7 @@ namespace WebApplication3.Controllers
                     var multiChoiceAnswer = await _context.MultiChoiceAnswers
                         .Include(a => a.AnswerOptions).Include(a => a.Question).ThenInclude(q => q.Options)
                         .SingleAsync(a => a.Id == answer.Id);
-                    var question = 
+                    var question =
                         await _context.MultiChoiceQuestions
                             .SingleAsync(q => q.Id == multiChoiceAnswer.QuestionId);
 
@@ -459,6 +517,8 @@ namespace WebApplication3.Controllers
                     //int counter = 0;
                     multiChoiceAnswer.Score = question.Score;
                     count++;
+                    if (multiChoiceAnswer.AnswerOptions == null || multiChoiceAnswer.AnswerOptions.Count == 0)
+                        count--;
                     foreach (var answerOption in multiChoiceAnswer.AnswerOptions)
                     {
                         if (answerOption.Checked != question.Options.Single(o => o.Id == answerOption.OptionId).IsRight)
@@ -474,7 +534,7 @@ namespace WebApplication3.Controllers
                 }
                 else if (answer is TextAnswer textAnswer)
                 {
-                    var question = 
+                    var question =
                         await _context.TextQuestions
                             .SingleAsync(q => q.Id == textAnswer.QuestionId);
                     if (textAnswer.Text == question.TextRightAnswer)
@@ -492,11 +552,13 @@ namespace WebApplication3.Controllers
                     var dndAnswer = await _context.DragAndDropAnswers
                     .Include(a => a.Question).Include(a => a.DragAndDropAnswerOptions)
                     .SingleAsync(a => a.Id == answer.Id);
-                    var question = 
+                    var question =
                         await _context.DragAndDropQuestions
                             .SingleAsync(q => q.Id == dndAnswer.QuestionId);
                     dndAnswer.Score = question.Score;
                     count++;
+                    if (dndAnswer.DragAndDropAnswerOptions == null || dndAnswer.DragAndDropAnswerOptions.Count == 0)
+                        count--;
                     foreach (var dndOption in dndAnswer.DragAndDropAnswerOptions)
                     {
                         if (dndOption.RightOptionId != dndOption.OptionId)
@@ -513,6 +575,23 @@ namespace WebApplication3.Controllers
             await _context.SaveChangesAsync();
             //throw new NotImplementedException();
             return RedirectToAction("TestResults");
+        }
+        #endregion
+
+        #region Вспомогательные методы
+        private static Random rng = new Random();
+
+        public static void Shuffle<T>(T[] list)
+        {
+            int n = list.Length;
+            while (n > 1)
+            {
+                n--;
+                int k = rng.Next(n + 1);
+                T value = list[k];
+                list[k] = list[n];
+                list[n] = value;
+            }
         }
         #endregion
     }

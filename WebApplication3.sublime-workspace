@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"text",
+				"textarea\tTag"
+			],
+			[
 				"pare",
 				"parentElement\t: Element Node"
 			],
@@ -19,10 +23,89 @@
 	},
 	"buffers":
 	[
+		{
+			"file": "WebApplication3/Models/Question.cs",
+			"settings":
+			{
+				"buffer_size": 1900,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "WebApplication3/Views/Test/Details.cshtml",
+			"settings":
+			{
+				"buffer_size": 6457,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "WebApplication3/Views/Test/Tests.cshtml",
+			"settings":
+			{
+				"buffer_size": 6089,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		}
 	],
-	"build_system": "",
+	"build_system": "Packages/User/Asp.Net Core.sublime-build",
 	"build_system_choices":
 	[
+		[
+			[
+				[
+					"Packages/Kulture/ASP.NET.sublime-build",
+					""
+				],
+				[
+					"Packages/User/Asp.Net Core.sublime-build",
+					""
+				],
+				[
+					"Packages/User/MonoDebug.sublime-build",
+					""
+				],
+				[
+					"Packages/User/MonoDebug.sublime-build",
+					"External"
+				],
+				[
+					"Packages/User/OmniSharp.sublime-build",
+					""
+				],
+				[
+					"Packages/User/OmniSharp.sublime-build",
+					"Clean"
+				],
+				[
+					"Packages/User/OmniSharp.sublime-build",
+					"ReBuild"
+				]
+			],
+			[
+				"Packages/User/Asp.Net Core.sublime-build",
+				""
+			]
+		],
+		[
+			[
+				[
+					"Packages/User/Asp.Net Core.sublime-build",
+					""
+				],
+				[
+					"Packages/User/Asp.Net Core.sublime-build",
+					"Cancel"
+				]
+			],
+			[
+				"Packages/User/Asp.Net Core.sublime-build",
+				"Cancel"
+			]
+		]
 	],
 	"build_varint": "",
 	"command_palette":
@@ -31,6 +114,70 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"comm",
+				"git: commit including unstaged files"
+			],
+			[
+				"pu",
+				"git: push"
+			],
+			[
+				"fol",
+				"SyntaxFold: Fold All"
+			],
+			[
+				"fold",
+				"SyntaxFold: Fold All"
+			],
+			[
+				"push",
+				"git: push"
+			],
+			[
+				"commit",
+				"git: commit including unstaged files"
+			],
+			[
+				"comit",
+				"git: commit"
+			],
+			[
+				"git comm",
+				"git: commit including unstaged files"
+			],
+			[
+				"ufol",
+				"Code Folding: Unfold All"
+			],
+			[
+				"git p",
+				"git: pull"
+			],
+			[
+				"pull",
+				"git: pull"
+			],
+			[
+				"git rese",
+				"git: reset"
+			],
+			[
+				"f",
+				"SyntaxFold: Fold All"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"git rest",
+				"git: reset to branch"
+			],
 			[
 				"gitsavv",
 				"GitSavvy: help"
@@ -88,7 +235,7 @@
 	},
 	"console":
 	{
-		"height": 0.0,
+		"height": 228.180206299,
 		"history":
 		[
 		]
@@ -102,8 +249,49 @@
 		"side_bar_visible": false,
 		"status_bar_visible": false
 	},
+	"expanded_folders":
+	[
+		"/home/kochkin/GitHub/TestsApp",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3"
+	],
 	"file_history":
 	[
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Test/Start.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Test/TRDetails.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Models/QuestionViewModels/QuestionViewModel.cs",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/AddSingleChoiceQuestion.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/AddMultiChoiceQuestion.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/AddDragAndDropQuestion.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/AddTextQuestion.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/EditSingleChoiceQuestion.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/EditTextQuestion.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/EditMultiChoiceQuestion.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/EditDragAndDropQuestion.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/User/Login.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Test/Tests.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Test/TestResults.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Models/Question.cs",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Controllers/TestController.cs",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Test/Details.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Models/TestViewModels/AddTestViewModel.cs",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Answer/_LoadDragAndDropAnswer.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/Details.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Shared/_Layout.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Answer/_LoadSingleChoiceAnswer.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Answer/_LoadMultiChoiceAnswer.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Answer/_LoadTextAnswer.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Controllers/QuestionController.cs",
+		"/home/kochkin/Downloads/test.txt",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Controllers/TestController.Utils.cs",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Models/TestResult.cs",
+		"/home/kochkin/.geeknote/error.log",
+		"/home/kochkin/geeknote-2.0.16/geeknote/config.py",
+		"/home/kochkin/geeknote/setup.py",
+		"/home/kochkin/.config/sublime-text-3/Packages/User/OmniSharp.sublime-build",
+		"/home/kochkin/.config/sublime-text-3/Packages/User/Asp.Net Core.sublime-build",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3.sublime-project",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/WebApplication3.csproj",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/Add.cshtml",
 		"/home/kochkin/Projects/TestsApp/WebApplication3/Views/Question/EditSingleChoiceQuestion.cshtml",
 		"/home/kochkin/Projects/WebApplication3/Controllers/TestController.cs",
 		"/home/kochkin/Projects/WebApplication3/Views/Question/EditSingleChoiceQuestion.cshtml",
@@ -118,12 +306,11 @@
 		"/home/kochkin/.config/sublime-text-3/Packages/TrailingSpaces/trailing_spaces.sublime-settings",
 		"/home/kochkin/Projects/WebApplication3/Views/Answer/Answer.cshtml",
 		"/home/kochkin/Projects/WebApplication3/Views/Question/AddDragAndDropQuestion.cshtml",
-		"/home/kochkin/.config/sublime-text-3/Packages/User/Asp.Net Core.sublime-build",
 		"/home/kochkin/.config/sublime-text-3/Packages/Color Highlighter/ColorHighlighter.sublime-settings"
 	],
 	"find":
 	{
-		"height": 0.0
+		"height": 35.4505169867
 	},
 	"find_in_files":
 	{
@@ -137,6 +324,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"hr"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -154,18 +342,112 @@
 	"groups":
 	[
 		{
+			"selected": 1,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "WebApplication3/Models/Question.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1900,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1449,
+								1449
+							]
+						],
+						"settings":
+						{
+							"git_savvy.repo_path": "/home/kochkin/GitHub/TestsApp",
+							"syntax": "Packages/C#/C#.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1056.12998523,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "WebApplication3/Views/Test/Details.cshtml",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6457,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								446,
+								446
+							]
+						],
+						"settings":
+						{
+							"git_savvy.repo_path": "/home/kochkin/GitHub/TestsApp",
+							"syntax": "Packages/Razor/Razor.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "WebApplication3/Views/Test/Tests.cshtml",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6089,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								691,
+								691
+							]
+						],
+						"settings":
+						{
+							"git_savvy.repo_path": "/home/kochkin/GitHub/TestsApp",
+							"syntax": "Packages/Razor/Razor.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				}
 			]
 		}
 	],
 	"incremental_find":
 	{
-		"height": 0.0
+		"height": 35.4505169867
 	},
 	"input":
 	{
-		"height": 48.5745937962
+		"height": 52.7902511078
 	},
 	"layout":
 	{
@@ -190,19 +472,35 @@
 		]
 	},
 	"menu_visible": true,
+	"output.GitSavvy":
+	{
+		"height": 175.004425049
+	},
 	"output.SublimeLinter":
 	{
 		"height": 0.0
+	},
+	"output.exec":
+	{
+		"height": 166.004425049
 	},
 	"output.find_results":
 	{
 		"height": 0.0
 	},
-	"pinned_build_system": "Packages/User/Asp.Net Core.sublime-build",
+	"output.show_commit_info":
+	{
+		"height": 162.449035645
+	},
+	"output.variable_get":
+	{
+		"height": 168.004425049
+	},
+	"pinned_build_system": "",
 	"project": "WebApplication3.sublime-project",
 	"replace":
 	{
-		"height": 0.0
+		"height": 65.7311669129
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -216,12 +514,16 @@
 	},
 	"select_project":
 	{
-		"height": 0.0,
+		"height": 677.0,
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"",
+				"~/Projects/MV_2/MV_2.sublime-project"
+			]
 		],
-		"width": 0.0
+		"width": 515.0
 	},
 	"select_symbol":
 	{

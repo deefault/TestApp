@@ -110,14 +110,16 @@ function loadAnswer() {
         method: "GET",
         url: actionUrl,
         dataType: "html",
+        beforeSend: function (){
 
+        },
         success: function (response) {
             //заменить html код формой внутри div
             $("#formDiv").html(response);
             // change question # in url
             var stateUrl = window.location.pathname.split("/");
             stateUrl[stateUrl.length-1] = id;
-            var stateObj = {id:id,type:type,actionUrl:actionUrl}; 
+            var stateObj = {id:id,type:type,actionUrl:actionUrl};
             window.history.pushState(stateObj,"Вопрос " + id, stateUrl.join("/"));
         },
         error: function (xhr, textStatus, errorThrown) {
@@ -163,7 +165,7 @@ function submitAnswer() {
     }
     else if (type == "TextAnswer") {
         var data = {};
-        data.Text = $("input[name='option']").val();
+        data.Text = $("textarea[name='option']").val();
     }
     else if (type == "DragAndDropAnswer") {
         var data = {};
@@ -184,6 +186,7 @@ function submitAnswer() {
         method: "POST",
         url: actionUrl,
         beforeSend: function (xhr) {
+            $("#formDiv").html("<img src=\"/images/loading.gif\" class=\"img-responsive\"/>");
             xhr.setRequestHeader("RequestVerificationToken",
                 $('input:hidden[name="__RequestVerificationToken"]').val());
         },

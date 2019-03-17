@@ -13,40 +13,44 @@
     @if (Model.CreatedBy == ((User) ViewData["user"]))
     {
         <div class="align-content-center">
-            <h2>@Model.Name</h2>
+            <hr />
+            <h3 class="text-center">@Model.Name</h3>
             <hr/>
-            <form  id="addByIdForm" method="post" class="form" role="form">
+            <form id="addByIdForm" method="post" class="form" role="form">
                 <div asp-validation-summary="All" class="text-danger"></div>
                 <div class="form-group row">
                     <label for="userId" class="col-1 col-form-label">ID</label>
                     <div class="col-2">
-                        <input class="form-control" id="userId" name="userId" type="number" min="1"/>
+                        <input class="form-control" id="userId" name="userId" type="number" min="1" />
                     </div>
-                    <input id="testId" name="testId" type="hidden" value="@Model.Id"/>
+                    <input id="testId" name="testId" type="hidden" value="@Model.Id" />
                     <button type="submit" class="btn btn-info">Добавить пользователя по ID</button>
                 </div>
             </form>
+            <hr />
             <img class="col-3" src="@ViewBag.qrCodeBase64"/>
-            <h4>Вопросы</h4>
+            <h4 class="text-center text-capitalize">Вопросы</h4>
+            
 
 
             @if (Model.Questions == null || Model.Questions.Count == 0)
             {
+                <hr />
                 <div class="alert alert-warning" role="alert">
-                    В тесте еще нет вопросов
+                    В тесте ещё нет вопросов
                 </div>
+                <hr />
             }
             else
             {
-                <table class="table table-hover">
+                <table class="table item-table table-hover" style="margin-bottom: 1rem;">
                     <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Название</th>
-                        <th scope="col">Тип</th>
-                        <th scope="col"></th>
-
-                    </tr>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Название</th>
+                            <th scope="col">Тип</th>
+                            <th scope="col">Управление</th>
+                        </tr>
                     </thead>
                     <tbody>
                     @{ int i = 0; }
@@ -54,19 +58,19 @@
                     {
 
                         <tr>
-
                             <td>@(i + 1)</td>
                             <td>
+                                @{ var title = q.Title; if (q.Title.Length > 25) { title = q.Title.Substring(0, 25).Trim() + "..."; } }
                                 <a asp-controller="Question" asp-action="Details"
-                                   asp-route-testId="@Model.Id" asp-route-questionId="@q.Id">@q.Title</a>
+                                   asp-route-testId="@Model.Id" asp-route-questionId="@q.Id">@title</a>
                             </td>
                             <td>@q.QuestionType</td>
-                            <td>    
+                            <td>
                                 <form method="post">
                                     <a asp-controller="Question" asp-action="Edit"
-                                       asp-route-testId="@Model.Id" asp-route-questionId="@q.Id">Edit</a> |
-                                        <input asp-controller="Question" asp-action="Delete"
-                                          asp-route-testId="@Model.Id" asp-route-questionId="@q.Id" value="Delete" class="btn btn-link" type="submit" id="deleteLink"/>
+                                       asp-route-testId="@Model.Id" asp-route-questionId="@q.Id">Изменить</a> |
+                                    <input asp-controller="Question" asp-action="Delete"
+                                           asp-route-testId="@Model.Id" asp-route-questionId="@q.Id" value="Удалить" class="btn-link" type="submit" id="deleteLink" />
                                 </form>
                             </td>
                         </tr>
@@ -76,7 +80,6 @@
 
                     </tbody>
                 </table>
-
             }
             <div class="form-group row">
                 <select class="form-control col-lg-4" id="questionType"
@@ -158,11 +161,11 @@
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
-    
+
     <script>
-        function changeUrl() { 
+        function changeUrl() {
             var href = $("#addLink").attr("href");
-        
+
             var split = href.split("/");
             // Get selected value
             console.log($("#questionType").val());

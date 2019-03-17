@@ -76,26 +76,60 @@
             switchAnswer(e);
             loadAnswer();
         });
-        /**
+
+
+
+        var disableArrowKeys = function (e) {
+            if ($("input[type=radio]").is(':focus')) {
+                var arrowKeys = [37, 39];
+                if (arrowKeys.indexOf(e.which) !== -1) {
+                    $(this).blur();
+                    return false;
+                }
+            }
+        }
+
+        $(document).keydown(disableArrowKeys);
+
         document.onkeyup =
             function(e) {
-                var ev={};
-                ev.target = {};
-                ev.target.parentElement = {};
-                console.log(e);
                 if (e.which == 37) {
-                    ev.target.parentElement.classList = ["prev-btn"];
                     submitAnswer();
-                    switchAnswer(ev);
+                    if (!$(".prev-btn").hasClass("disabled")) {
+                        var tmp = getActiveAnswerId() - 1;
+                        $(".active").removeClass("active");
+                        $("li[btn-id=" + tmp + "]").addClass("active");
+                    }
+                    var activeId = getActiveAnswerId();
+                    if (activeId == firstId)
+                        $(".prev-btn").addClass("disabled");
+                    else
+                        $(".prev-btn").removeClass("disabled");
+                    if (activeId == lastId)
+                        $(".next-btn").addClass("disabled");
+                    else
+                        $(".next-btn").removeClass("disabled");
                     loadAnswer();
                 }
-                else if (e.which == 39) {
-                    ev.target.parentElement.classList = ["next-btn"];
+                else if (e.keyCode == 39) {
                     submitAnswer();
-                    switchAnswer(ev);
+                    if (!$(".next-btn").hasClass("disabled")) {
+                        var tmp = getActiveAnswerId() - -1;
+                        $(".active").removeClass("active");
+                        $("li[btn-id=" + tmp + "]").addClass("active");
+                    }
+                    var activeId = getActiveAnswerId();
+                    if (activeId == firstId)
+                        $(".prev-btn").addClass("disabled");
+                    else
+                        $(".prev-btn").removeClass("disabled");
+                    if (activeId == lastId)
+                        $(".next-btn").addClass("disabled");
+                    else
+                        $(".next-btn").removeClass("disabled");
                     loadAnswer();
                 }
             };
-            **/
+            
     </script>
 }

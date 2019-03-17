@@ -12,89 +12,115 @@
     <!-- If user created test-->
     @if (Model.CreatedBy == ((User) ViewData["user"]))
     {
-        <div class="align-content-center">
-            <hr />
-            <h3 class="text-center">@Model.Name</h3>
-            <hr/>
-            <form id="addByIdForm" method="post" class="form" role="form">
-                <div asp-validation-summary="All" class="text-danger"></div>
-                <div class="form-group row">
-                    <label for="userId" class="col-1 col-form-label">ID</label>
-                    <div class="col-2">
-                        <input class="form-control" id="userId" name="userId" type="number" min="1" />
+<div class="align-content-center">
+    <hr />
+    <h3 class="text-center">@Model.Name</h3>
+    <hr />
+    <div id="addById">
+        <div class="card">
+            <div id="addByIdHeading">
+                <h5 class="mb-0">
+                    <button class="btn btn-link" style="color: rgb(73, 80, 87); text-decoration: none;" type="button" data-toggle="collapse" data-target="#addByIdCollapse" aria-expanded="true" aria-controls="addByIdCollapse">
+                        Добавить пользователя
+                    </button>
+                </h5>
+            </div>
+            <div id="addByIdCollapse" class="collapse" aria-labelledby="addByIdHeading" data-parent="#addById">
+                <div class="card-body">
+                    <div id="qrCode">
+                        <div class="card">
+                            <div id="qrCodeHeading">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link" style="color: rgb(73, 80, 87); text-decoration: none;" type="button" data-toggle="collapse" data-target="#qrCodeCollapse" aria-expanded="true" aria-controls="qrCodeCollapse">
+                                        QR-код
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="qrCodeCollapse" class="collapse" aria-labelledby="qrCodeHeading" data-parent="#qrCode">
+                                <div class="card-body">
+                                    <img class="col-3" src="@ViewBag.qrCodeBase64" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <input id="testId" name="testId" type="hidden" value="@Model.Id" />
-                    <button type="submit" class="btn btn-info">Добавить пользователя по ID</button>
+                    <form id="addByIdForm" method="post" class="form" role="form">
+                        <div asp-validation-summary="All" class="text-danger"></div>
+                        <div class="form-group row">
+                            <label for="userId" class="col-1 col-form-label">ID</label>
+                            <div class="col-2">
+                                <input class="form-control" id="userId" name="userId" type="number" min="1" />
+                            </div>
+                            <input id="testId" name="testId" type="hidden" value="@Model.Id" />
+                            <button type="submit" class="btn btn-info">Добавить пользователя по ID</button>
+                        </div>
+                    </form>
                 </div>
-            </form>
-            <hr />
-            <img class="col-3" src="@ViewBag.qrCodeBase64"/>
-            <h4 class="text-center text-capitalize">Вопросы</h4>
-            
-
-
-            @if (Model.Questions == null || Model.Questions.Count == 0)
-            {
-                <hr />
-                <div class="alert alert-warning" role="alert">
-                    В тесте ещё нет вопросов
-                </div>
-                <hr />
-            }
-            else
-            {
-                <table class="table item-table table-hover" style="margin-bottom: 1rem;">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Название</th>
-                            <th scope="col">Тип</th>
-                            <th scope="col">Управление</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    @{ int i = 0; }
-                    @foreach (var q in Model.Questions)
-                    {
-
-                        <tr>
-                            <td>@(i + 1)</td>
-                            <td>
-                                @{ var title = q.Title; if (q.Title.Length > 25) { title = q.Title.Substring(0, 25).Trim() + "..."; } }
-                                <a asp-controller="Question" asp-action="Details"
-                                   asp-route-testId="@Model.Id" asp-route-questionId="@q.Id">@title</a>
-                            </td>
-                            <td>@q.QuestionType</td>
-                            <td>
-                                <form method="post">
-                                    <a asp-controller="Question" asp-action="Edit"
-                                       asp-route-testId="@Model.Id" asp-route-questionId="@q.Id">Изменить</a> |
-                                    <input asp-controller="Question" asp-action="Delete"
-                                           asp-route-testId="@Model.Id" asp-route-questionId="@q.Id" value="Удалить" class="btn-link" type="submit" id="deleteLink" />
-                                </form>
-                            </td>
-                        </tr>
-                        i++;
-                    }
-
-
-                    </tbody>
-                </table>
-            }
-            <div class="form-group row">
-                <select class="form-control col-lg-4" id="questionType"
-                        asp-items="Html.GetEnumSelectList<Question.QuestionTypeEnum>()"
-                        onchange="changeUrl()">
-                </select>
             </div>
-            <div class="form-group row">
-                <a class="btn btn-primary" id="addLink" asp-controller="Question" asp-action="AddGet" asp-route-testId="@Model.Id"
-                   asp-route-type="@((int) Question.QuestionTypeEnum.SingleChoiceQuestion)" method="get" onclick="changeUrl()">
-                    Добавить вопрос
-                </a>
-            </div>
-
         </div>
+    </div>
+    <hr />
+    <h4 class="text-center text-capitalize">Вопросы</h4>
+    @if (Model.Questions == null || Model.Questions.Count == 0)
+    {
+        <hr />
+        <div class="alert alert-warning" role="alert">
+            В тесте ещё нет вопросов
+        </div>
+        <hr />
+    }
+    else
+    {
+        <table class="table item-table table-hover" style="margin-bottom: 1rem;">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Название</th>
+                    <th scope="col">Тип</th>
+                    <th scope="col">Управление</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ int i = 0; }
+                @foreach (var q in Model.Questions)
+                {
+
+                    <tr>
+                        <td>@(i + 1)</td>
+                        <td>
+                            @{ var title = q.Title; if (q.Title.Length > 25) { title = q.Title.Substring(0, 25).Trim() + "..."; } }
+                            <a asp-controller="Question" asp-action="Details"
+                               asp-route-testId="@Model.Id" asp-route-questionId="@q.Id">@title</a>
+                        </td>
+                        <td>@q.QuestionType</td>
+                        <td>
+                            <form method="post">
+                                <a asp-controller="Question" asp-action="Edit"
+                                   asp-route-testId="@Model.Id" asp-route-questionId="@q.Id">Изменить</a> |
+                                <input asp-controller="Question" asp-action="Delete"
+                                       asp-route-testId="@Model.Id" asp-route-questionId="@q.Id" value="Удалить" class="btn-link" type="submit" id="deleteLink" />
+                            </form>
+                        </td>
+                    </tr>
+                    i++;
+                }
+
+
+            </tbody>
+        </table>
+    }
+    <div class="form-group row">
+        <select class="form-control col-lg-4" id="questionType"
+                asp-items="Html.GetEnumSelectList<Question.QuestionTypeEnum>()"
+                onchange="changeUrl()"></select>
+    </div>
+    <div class="form-group row">
+        <a class="btn btn-primary" id="addLink" asp-controller="Question" asp-action="AddGet" asp-route-testId="@Model.Id"
+           asp-route-type="@((int) Question.QuestionTypeEnum.SingleChoiceQuestion)" method="get" onclick="changeUrl()">
+            Добавить вопрос
+        </a>
+    </div>
+
+</div>
     }
     else
     {

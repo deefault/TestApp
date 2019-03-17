@@ -1,4 +1,4 @@
-﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification\ 
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification\
 for details on configuring this project to bundle and minify static web assets. */
 body {
     /*padding-top: 50px;
@@ -38,11 +38,11 @@ body {
 }
 
 #loginForm {
-    
+
   }
 
 #deleteLink {
-    
+
 }
 
 /* #region Drag And Drop Table Styles */
@@ -63,38 +63,45 @@ body {
     }
 
  .item-table {
-     position: relative;
-     padding: 1em;
-     border: 1px solid #DDD;
-     box-shadow: 0 15px 10px -10px rgba(31, 31, 31, 0.5);
-     z-index: 10;
-     table-layout: auto;
-     width: 100%;
-
+    /*
+    position: relative;
+    padding: 1em;
+    border: 1px solid #DDD;
+    box-shadow: 0 15px 10px -10px rgba(31, 31, 31, 0.5);
+    z-index: 10;
+    table-layout: auto;
+    width: 100%;*/
+    border-bottom: 1px solid #DDD;
+    margin-bottom: 0;
  }
+/*
+.item-table__row {
+        padding: 3px; 
+        border: 1px solid #DDD;
+    }*/
 
 .item-table__cell {
     vertical-align: top;
     padding: 3px 5px;
 }
 
-.item__text-field {
-    width: 100%;
+textarea.item__text-field {
+    /*width: 100%;
     margin: 0;
     padding: .45em 0.92em;
     font-size: 1em;
-    line-height: 1.4;
     color: #555555;
     background-color: #FFF;
     background-image: none;
     border: 1px solid #CCC;
-    border-left: 1px solid #CCC;
+    border-left: 1px solid #CCC;*/
+    height: calc(2.6rem + 2px);
 }
 
 .item-table__add-row {
     margin-top: 0;
+    margin-bottom: 1rem;
     position: relative;
-    border-top: 1px solid #EEE;
     z-index: 8;
 }
 
@@ -125,7 +132,7 @@ body {
 .item-table__del-row-btn {
     cursor: pointer;
     display: inline-block;
-    padding: .45em 0.92em;
+    padding: .6em 0.92em;
     font-size: 1em;
     line-height: 1.4;
     border: 1px solid #FF0000;
@@ -140,6 +147,7 @@ body {
         background: #FF0000;
         color: #fff;
     }
+/*#endregion*/
 
 .unselectable {
     -webkit-touch-callout: none; /* iOS Safari */
@@ -149,4 +157,28 @@ body {
     -ms-user-select: none; /* Internet Explorer/Edge */
     user-select: none; /* Non-prefixed version, currently not supported by any browser */
 }
-/*#endregion*/
+.btn-link {
+    cursor: pointer;
+    border-color: transparent;
+}
+
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+
+    .btn-file input[type=file] {
+        position: absolute;
+        top: 0;
+        right: 0;
+        min-width: 100%;
+        min-height: 100%;
+        font-size: 100px;
+        text-align: right;
+        filter: alpha(opacity=0);
+        opacity: 0;
+        outline: none;
+        background: white;
+        cursor: inherit;
+        display: block;
+    }

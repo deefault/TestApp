@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-
+using System.ComponentModel;
 
 namespace WebApplication3.Models.TestViewModels
 {
     public class AddTestViewModel
     {
         [Required]
-        [DisplayName("Название теста")]
+        [DisplayName("Имя")]
         public string Name { get; set; }
         [Required]
-        [DisplayName("Включить")]
+        [DisplayName("Состояние")]
         public bool IsEnabled { get; set; }
-        
+        [Required]
+        [DisplayName("Перемешивать")]
+        public bool Shuffled { get; set; }
     }
 }

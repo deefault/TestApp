@@ -1,12 +1,14 @@
 ﻿@{
-    ViewBag.Title = "Добавить Тест";
+    ViewBag.Title = "Добавить тест из файла";
     Layout = "_Layout";
 }
-
 <h2>@ViewBag.Title</h2>
 <form asp-controller="Test" enctype="multipart/form-data" asp-action="AddFromFile" asp-route-returnurl="/User/Tests/" method="post" class="form" role="form">
     <div class="form-group">
         <div class="form-control-file col-md-10">
+            <ul class="text-danger" id="validation-summary">
+                <li>@ViewBag.Exception</li>
+            </ul>
             <details>
                 <summary>Пример</summary>
                 <pre>
@@ -26,18 +28,17 @@ test {
 * - Только для single и multi
                 </pre>
             </details>
-            
+
             <input type="file" name="uploadedFile" />
         </div>
     </div>
-    
+
     <div class="form-group row">
         <div class="col-md-offset-2 col-md-10">
             <button type="submit" value="Upload" class="btn btn-primary">Добавить</button>
         </div>
     </div>
 </form>
-
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }

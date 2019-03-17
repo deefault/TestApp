@@ -68,7 +68,7 @@ namespace WebApplication3
             services.AddIdentity<User , IdentityRole<int>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddSignInManager()
-                .AddDefaultUI()
+                //.AddDefaultUI()
                 .AddDefaultTokenProviders();
 
             services.ConfigureApplicationCookie(options =>
@@ -109,7 +109,7 @@ namespace WebApplication3
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
-                routes.MapRoute("user", "{controller=User}/{action=Tests}/");
+                //routes.MapRoute("user", "{controller=User}/{action=Tests}/");
             });
         }
     }

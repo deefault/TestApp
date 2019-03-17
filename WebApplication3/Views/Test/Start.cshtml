@@ -7,22 +7,23 @@
     //TODO: поправить дизайн
 }
 <div class="container">
-    <h2>@ViewBag.Title</h2>
+    <hr />
+    <h4 class="text-center">@ViewBag.Title</h4>
     <hr/>
     <p>Название теста: @Model.Test.Name</p>
     <p>Вопросов: @ViewBag.QuestionsCount</p>
     @if (ViewBag.IsStarted)
     {
-            <a class="btn btn-primary" role="button" 
+            <a class="btn btn-primary" role="button"
                href="@Url.Action("Answer", "Answer", new {testResultId = Model.Id, answerOrder = 1})">
-                Продолжить Тест
+                Продолжить
             </a>
     }
     else
     {
         <form asp-controller="Test" asp-action="Start" asp-route-testResultId="@Model.Id" class="form" role="form" method="post">
             <div asp-validation-summary="All" class="text-danger"></div>
-            <button type="submit" class="btn btn-success">Начать Тест</button> 
-        </form> 
+            <button type="submit" class="btn btn-success">Начать</button>
+        </form>
     }
 </div>

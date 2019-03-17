@@ -14,61 +14,42 @@
     <div class="form-group" id="fields">
         <div class="">
             <form asp-controller="Question" asp-action="AddDragAndDropQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
-                <h4>Добавить вопрос на востановление последовательности</h4>
+                <hr />
+                <h4 class="text-center">Добавить вопрос на востановление последовательности</h4>
                 <hr />
                 <ul class="text-danger" id="validation-summary"></ul>
                 @*<div asp-validation-summary="All" class="text-danger"></div>*@
                 <div class="form-group row">
                     <label asp-for="Title" class="col-md-2 col-lg-2"></label>
                     <div class="col-md-10 col-lg-4">
-                        <input asp-for="Title" class="form-control" />
+                        <textarea asp-for="Title" class="form-control" placeholder="Текст вопроса"></textarea>
                         <span asp-validation-for="Title" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="form-group row">
                     <label asp-for="Score" class="col-md-2 col-lg-2"></label>
                     <div class="col-md-10 col-lg-4">
-                        <input asp-for="Score" class="form-control"/>
+                        <input asp-for="Score" class="form-control" placeholder="1..100" min="1" max="100" />
                         <span asp-validation-for="Score" class="text-danger"></span>
                     </div>
                 </div>
 
                 <div class="items">
-                    <table class="item-table">
+                    <table class="table item-table">
                         <tbody id="item-table__body">
+                            @for(var i = 0; i < 3; i++) {
                             <tr>
                                 <td class="drag-handler"></td>
                                 <td class="item-table__cell">
-                                    <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса">
+                                    <textarea rows="1" id="Text" asp-for="Text" class="form-control item__text-field" placeholder="Текст ответа"></textarea>
                                 </td>
                                 <td class="item-table__cell" align="right">
-                                    <button class="item-table__del-row-btn">
+                                    <button class="btn item-table__del-row-btn">
                                         <span class="glyphicon glyphicon-minus"></span>
                                     </button>
                                 </td>
                             </tr>
-                            <tr>
-                                <td class="drag-handler"></td>
-                                <td class="item-table__cell">
-                                    <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса">
-                                </td>
-                                <td class="item-table__cell" align="right">
-                                    <button class="item-table__del-row-btn">
-                                        <span class="glyphicon glyphicon-minus"></span>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="drag-handler"></td>
-                                <td class="item-table__cell">
-                                    <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса">
-                                </td>
-                                <td class="item-table__cell" align="right">
-                                    <button class="item-table__del-row-btn">
-                                        <span class="glyphicon glyphicon-minus"></span>
-                                    </button>
-                                </td>
-                            </tr>
+                            }
                         </tbody>
                     </table>
                     <div class="item-table__add-row">
@@ -81,10 +62,10 @@
                     <tr>
                         <td class="drag-handler"></td>
                         <td class="item-table__cell">
-                            <input id="Text" asp-for="Text" type="text" class="item__text-field" placeholder="Текст вопроса">
+                            <textarea rows="1" id="Text" asp-for="Text" class="form-control item__text-field" placeholder="Текст ответа"></textarea>
                         </td>
                         <td class="item-table__cell" align="right">
-                            <button class="item-table__del-row-btn">
+                            <button class="btn item-table__del-row-btn">
                                 <span class="glyphicon glyphicon-minus"></span>
                             </button>
                         </td>

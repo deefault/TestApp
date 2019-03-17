@@ -1,15 +1,16 @@
 @model WebApplication3.Models.UserViewModels.LoginViewModel
 
-
+<hr></hr>
 <div>
     <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-6" style="margin: auto">
             <section>
-                <form asp-controller="User" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal" role="form">
-                    <h4>Use a local account to log in.</h4>
+                <form asp-controller="User" asp-action="Login"
+                      asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="" role="form">
+                    <h4 class="text-center text-capitalize">Войти</h4>
                     <hr />
                     <div asp-validation-summary="All" class="text-danger"></div>
-                    <div class="form-group">
+                    <div class="form-group" >
                         <label asp-for="Email" class="col-md-2 control-label">Почта</label>
                         <div class="col-md-10">
                             <input asp-for="Email" class="form-control" />
@@ -23,17 +24,16 @@
                             <span asp-validation-for="Password" class="text-danger"></span>
                         </div>
                     </div>
-               
-                    <div class="form-group">
-                        <div class="col-md-offset-2 col-md-10">
-                            <button type="submit" class="btn btn-default">Войти</button>
+
+                    <div class="form-group" >
+                        <div class="col-md-10 text-center">
+                            <button type="submit" class="btn btn-info" style="margin: auto">Войти</button>
+                            <p>
+                                <a asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]">Зарегистрироваться?</a>
+                            </p>
                         </div>
                     </div>
-                    <p>
-                        <a asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]">Register as a new user?</a>
-                    </p>
-                
-                </form>
+                   </form>
             </section>
         </div>
     </div>

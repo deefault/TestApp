@@ -10,7 +10,7 @@
 }
 
     <!-- If user created test-->
-    @if (Model.CreatedBy.Id == ((User) ViewData["user"]).Id)
+    @if (Model.CreatedBy == ((User) ViewData["user"]))
     {
         <div class="align-content-center">
             <h2>@Model.Name</h2>
@@ -26,6 +26,7 @@
                     <button type="submit" class="btn btn-info">Добавить пользователя по ID</button>
                 </div>
             </form>
+            <img class="col-3" src="@ViewBag.qrCodeBase64"/>
             <h4>Вопросы</h4>
 
 

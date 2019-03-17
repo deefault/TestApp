@@ -76,5 +76,26 @@
             switchAnswer(e);
             loadAnswer();
         });
+        /**
+        document.onkeyup =
+            function(e) {
+                var ev={};
+                ev.target = {};
+                ev.target.parentElement = {};
+                console.log(e);
+                if (e.which == 37) {
+                    ev.target.parentElement.classList = ["prev-btn"];
+                    submitAnswer();
+                    switchAnswer(ev);
+                    loadAnswer();
+                }
+                else if (e.which == 39) {
+                    ev.target.parentElement.classList = ["next-btn"];
+                    submitAnswer();
+                    switchAnswer(ev);
+                    loadAnswer();
+                }
+            };
+            **/
     </script>
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers.Text;
 using System.IO;
 using System.Collections.Generic;
 using System.Data;
@@ -21,6 +22,7 @@ using WebApplication3.Models.TestViewModels;
 using WebApplication3.TParser;
 using Microsoft.AspNetCore.Http;
 using StatusCodes = Microsoft.AspNetCore.Http.StatusCodes;
+using WebApplication3.Utils;
 
 namespace WebApplication3.Controllers
 {
@@ -149,36 +151,56 @@ namespace WebApplication3.Controllers
             //throw new NotImplementedException();
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var test = await _context.Tests.SingleAsync(t => t.Id == testId);
+            if (user == null)
+            {
+                Response.StatusCode = 404;
+            }
             if (test == null)
             {
-                return NotFound();
+                Response.StatusCode = 404;
             }
+            if (!test.IsEnabled)
+            {
+                Response.StatusCode = 400;
+            }
+
+            if (_context.TestResults.Any(t => t.CompletedByUser == user && t.Test == test))
+            {
+                Response.StatusCode = 400;
+            }
+
+
             TestResult testResult = new TestResult
             {
                 IsCompleted = false,
                 Test = test,
-                CompletedByUser = user,
-                CompletedOn = DateTime.Now,
+                CompletedByUser = user
                 //TotalQuestions = (uint)test.Questions.Count()
             };
             await _context.TestResults.AddAsync(testResult);
             await _context.SaveChangesAsync();
             Response.StatusCode = 200;
-            return RedirectToAction("Details", new { id = testId });
+            return RedirectToAction("Start", new { testResultId = testResult.Id });
         }
 
         [HttpGet]
         [Authorize]
-        [Route("/User/[controller]s/{testId}/AddTestToUser/")]
+        [Route("/User/[controller]s/{testId}/AddTestToUser/", Name = "AddTestToUser")]
         public async Task<IActionResult> AddTestToUser(AddTestToUserViewModel model, int testId)
         {
-            var test = await _context.Tests.SingleAsync(t => t.Id == testId);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
             if (test == null)
             {
                 Response.StatusCode = 404;
                 return NotFound();
             }
 
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var testResult = await _context.TestResults.SingleOrDefaultAsync(tr=>tr.Test == test && tr.CompletedByUser == user);
+            if (testResult != null)
+            {
+                return RedirectToAction("Start", new { testResultId = testResult.Id });
+            }
             ViewData["test"] = test;
             return View(model);
         }
@@ -188,8 +210,8 @@ namespace WebApplication3.Controllers
         [Route("/User/[controller]s/AddTestToUserAjax/")]
         public async Task<JsonResult> AddTestToUserAjax(int testId, int userId)
         {
-            var user = await _context.Users.FindAsync(userId);
-            var test = await _context.Tests.FindAsync(testId);
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleAsync(x=>x.Id==testId);
             if (user == null)
             {
                 Response.StatusCode = 404;
@@ -261,6 +283,11 @@ namespace WebApplication3.Controllers
             ViewData["question"] = questions;
             if (test.CreatedBy == user)
             {
+                 
+                string link =  Url.Link("AddTestToUser", new {testId = test.Id});
+                var qrCode = "data:image/png;base64, " + Utils.Utils.GenerateBase64QRCodeFromLink(link);
+                ViewBag.qrCodeBase64 = qrCode;
+                
                 return View(test);
             }
 
@@ -271,8 +298,8 @@ namespace WebApplication3.Controllers
                 // добавляем тест к пользователю
                 return RedirectToAction("AddTestToUser", new { testId = test.Id, userId = user.Id });
             }
-
             ViewData["testResult"] = testResult;
+            
             return View(test);
         }
         #endregion

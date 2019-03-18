@@ -208,6 +208,7 @@ function switchAnswer(e) {
             var tmp = getActiveAnswerOrder() - -1;
             $(".active").removeClass("active");
             $("li[btn-order=" + tmp + "]").addClass("active");
+            refreshButtons()
         }
     }
     else
@@ -216,13 +217,46 @@ function switchAnswer(e) {
                 var tmp = getActiveAnswerOrder() - 1;
                 $(".active").removeClass("active");
                 $("li[btn-order=" + tmp + "]").addClass("active");
+                refreshButtons();
             }
         }
         else
             if (e.target.parentElement.classList.contains("num-btn")) {
                 $(".active").removeClass("active");
                 $("li[btn-Order=" + e.target.parentElement.getAttribute("btn-Order") + "]").addClass("active");
+                refreshButtons();
             }
+    
+}
+function submitSwitchAnswer(e) {
+    if (e.target.parentElement.classList.contains("next-btn")) {
+        if (!e.target.parentElement.classList.contains("disabled")) {
+            submitAnswer();
+            var tmp = getActiveAnswerOrder() - -1;
+            $(".active").removeClass("active");
+            $("li[btn-order=" + tmp + "]").addClass("active");
+            refreshButtons()
+        }
+    }
+    else
+        if (e.target.parentElement.classList.contains("prev-btn")) {
+            if (!e.target.parentElement.classList.contains("disabled")) {
+                submitAnswer();
+                var tmp = getActiveAnswerOrder() - 1;
+                $(".active").removeClass("active");
+                $("li[btn-order=" + tmp + "]").addClass("active");
+                refreshButtons();
+            }
+        }
+        else
+            if (e.target.parentElement.classList.contains("num-btn")) {
+                submitAnswer();
+                $(".active").removeClass("active");
+                $("li[btn-Order=" + e.target.parentElement.getAttribute("btn-Order") + "]").addClass("active");
+                refreshButtons();
+            }
+}
+function refreshButtons() {
     var activeOrder = getActiveAnswerOrder();
     if (activeOrder == firstOrder)
         $(".prev-btn").addClass("disabled");
@@ -232,5 +266,14 @@ function switchAnswer(e) {
         $(".next-btn").addClass("disabled");
     else
         $(".next-btn").removeClass("disabled");
+}
+var disableArrowKeys = function (e) {
+    if ($("input[type=radio]").is(':focus')) {
+        var arrowKeys = [37, 39];
+        if (arrowKeys.indexOf(e.which) !== -1) {
+            $(this).blur();
+            return false;
+        }
+    }
 }
 // #endregion

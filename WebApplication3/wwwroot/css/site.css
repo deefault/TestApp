@@ -182,3 +182,20 @@ textarea.item__text-field {
         cursor: inherit;
         display: block;
     }
+
+button.collapse-btn {
+    color: CaptionText;
+    width: 100%;
+    text-align: left;
+    text-decoration: none;
+    
+}
+    button.collapse-btn:focus {
+        color: CaptionText;
+        text-decoration: none;
+    }
+
+    button.collapse-btn:hover {
+        color: CaptionText;
+        text-decoration: none;
+    } 

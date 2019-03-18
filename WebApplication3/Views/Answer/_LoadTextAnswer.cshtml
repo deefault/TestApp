@@ -11,7 +11,7 @@
                 <tbody id="item-table__body">
                     <tr class="item-table__row">
                         <td class="item-table__cell">
-                            <textarea name="option" id="Text" type="text" class="form-control item__text-field" @((Model.Text != null && Model.Text != "") ? String.Format("value={0}", Model.Text) : "") placeholder="Ответ"></textarea>
+                            <textarea name="option" id="Text" class="form-control item__text-field" value="@((Model.Text != null && Model.Text != "") ? Model.Text : "")" placeholder="Ответ">@Model.Text</textarea>
                         </td>
                     </tr>
                 </tbody>

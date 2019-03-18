@@ -381,6 +381,7 @@ namespace WebApplication3.Controllers
                 .SingleAsync(tr => tr.Id == testResultId && tr.CompletedByUser == user);
             if (testResult == null) return NotFound();
             if (!testResult.Test.IsEnabled || !testResult.IsCompleted) return Forbid();
+            ViewBag.AnswerId = _context.Answers.Where(a => a.TestResult == testResult).SingleOrDefault(a => a.Order == 1).Id;
             return View(testResult);
         }
         #endregion

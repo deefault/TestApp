@@ -73,60 +73,52 @@
         loadAnswer();
 
         $("nav ul").on("click", function (e) {
-            submitAnswer();
-            switchAnswer(e);
+            //submitAnswer();
+            submitSwitchAnswer(e);
             loadAnswer();
         });
-
-        var disableArrowKeys = function (e) {
-            if ($("input[type=radio]").is(':focus')) {
-                var arrowKeys = [37, 39];
-                if (arrowKeys.indexOf(e.which) !== -1) {
-                    $(this).blur();
-                    return false;
-                }
-            }
-        }
 
         $(document).keydown(disableArrowKeys);
 
         document.onkeyup =
-            function(e) {
+            function (e) {
+                if ($("textarea[id=Text]").is(':focus'))
+                    return;
                 if (e.keyCode == 37) {
-                    submitAnswer();
                     if (!$(".prev-btn").hasClass("disabled")) {
+                        submitAnswer();
                         var tmp = getActiveAnswerOrder() - 1;
                         $(".active").removeClass("active");
                         $("li[btn-order=" + tmp + "]").addClass("active");
+                        var activeOrder = getActiveAnswerOrder();
+                        if (activeOrder == firstOrder)
+                            $(".prev-btn").addClass("disabled");
+                        else
+                            $(".prev-btn").removeClass("disabled");
+                        if (activeOrder == lastOrder)
+                            $(".next-btn").addClass("disabled");
+                        else
+                            $(".next-btn").removeClass("disabled");
+                        loadAnswer();
                     }
-                    var activeOrder = getActiveAnswerOrder();
-                    if (activeOrder == firstOrder)
-                        $(".prev-btn").addClass("disabled");
-                    else
-                        $(".prev-btn").removeClass("disabled");
-                    if (activeOrder == lastOrder)
-                        $(".next-btn").addClass("disabled");
-                    else
-                        $(".next-btn").removeClass("disabled");
-                    loadAnswer();
                 }
                 else if (e.keyCode == 39) {
-                    submitAnswer();
                     if (!$(".next-btn").hasClass("disabled")) {
+                        submitAnswer();
                         var tmp = getActiveAnswerOrder() - -1;
                         $(".active").removeClass("active");
                         $("li[btn-order=" + tmp + "]").addClass("active");
+                        var activeOrder = getActiveAnswerOrder();
+                        if (activeOrder == firstOrder)
+                            $(".prev-btn").addClass("disabled");
+                        else
+                            $(".prev-btn").removeClass("disabled");
+                        if (activeOrder == lastOrder)
+                            $(".next-btn").addClass("disabled");
+                        else
+                            $(".next-btn").removeClass("disabled");
+                        loadAnswer();
                     }
-                    var activeOrder = getActiveAnswerOrder();
-                    if (activeOrder == firstOrder)
-                        $(".prev-btn").addClass("disabled");
-                    else
-                        $(".prev-btn").removeClass("disabled");
-                    if (activeOrder == lastOrder)
-                        $(".next-btn").addClass("disabled");
-                    else
-                        $(".next-btn").removeClass("disabled");
-                    loadAnswer();
                 }
             };
     </script>

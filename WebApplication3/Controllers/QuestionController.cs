@@ -72,6 +72,8 @@ namespace WebApplication3.Controllers
                     return View("AddTextQuestion",new AddTextQuestionViewModel());
                 case (int)Question.QuestionTypeEnum.DragAndDropQuestion:
                     return View("AddDragAndDropQuestion",new AddDragAndDropQuestionViewModel());
+                case (int)Question.QuestionTypeEnum.CodeQuestion:
+                    return View("AddCodeQuestion", new AddCodeQuestionViewModel());
                 default:
                     return View("AddSingleChoiceQuestion",new AddSingleChoiceQuestionViewModel());
             }

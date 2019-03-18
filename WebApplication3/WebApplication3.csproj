@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <UserSecretsId>aspnet-WebApplication3-ADC2B6DF-B793-40F8-839A-CBB8A68D244D</UserSecretsId>
+    <TypeScriptToolsVersion>3.3</TypeScriptToolsVersion>
   </PropertyGroup>
   <ItemGroup>
     <None Update="app.db" CopyToOutputDirectory="PreserveNewest" />
@@ -27,6 +28,9 @@
     <Folder Include="Pages\Test" />
   </ItemGroup>
   <ItemGroup>
+    <Content Update="Views\Question\AddDragAndDropQuestion - Копировать.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\Question\AddDragAndDropQuestion.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

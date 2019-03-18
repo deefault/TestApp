@@ -6,7 +6,6 @@ namespace WebApplication3.Models.QuestionViewModels
 {
     public class AddTextQuestionViewModel : QuestionViewModel
     {
-
         [Required]
         [OptionsValidation]
         public List<OptionViewModel> Options { get; set; }

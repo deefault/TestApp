@@ -133,13 +133,14 @@ function getActiveAnswerId() {
     return activeID;
 }
 
+function getActiveAnswerOrder() {
+    var activeOrder = $($("li").filter($(".active"))[0])[0].getAttribute("btn-order");
+    return activeOrder;
+}
+
 function getActiveAnswerType() {
     var activeType = $($("li").filter($(".active"))[0])[0].getAttribute("answer-type");
     return activeType;
-}
-
-function getActiveAnswerOrder() {
-    return $("#" + getActiveAnswerId()).children()[0].text;
 }
 
 function submitAnswer() {
@@ -204,30 +205,30 @@ function submitAnswer() {
 function switchAnswer(e) {
     if (e.target.parentElement.classList.contains("next-btn")) {
         if (!e.target.parentElement.classList.contains("disabled")) {
-            var tmp = getActiveAnswerId() - -1;
+            var tmp = getActiveAnswerOrder() - -1;
             $(".active").removeClass("active");
-            $("li[btn-id=" + tmp + "]").addClass("active");
+            $("li[btn-order=" + tmp + "]").addClass("active");
         }
     }
     else
         if (e.target.parentElement.classList.contains("prev-btn")) {
             if (!e.target.parentElement.classList.contains("disabled")) {
-                var tmp = getActiveAnswerId() - 1;
+                var tmp = getActiveAnswerOder() - 1;
                 $(".active").removeClass("active");
-                $("li[btn-id=" + tmp + "]").addClass("active");
+                $("li[btn-order=" + tmp + "]").addClass("active");
             }
         }
         else
             if (e.target.parentElement.classList.contains("num-btn")) {
                 $(".active").removeClass("active");
-                $("li[btn-id=" + e.target.parentElement.getAttribute("btn-id") + "]").addClass("active");
+                $("li[btn-Order=" + e.target.parentElement.getAttribute("btn-Order") + "]").addClass("active");
             }
-    var activeId = getActiveAnswerId();
-    if (activeId == firstId)
+    var activeOrder = getActiveAnswerOrder();
+    if (activeOrder == firstOrder)
         $(".prev-btn").addClass("disabled");
     else
         $(".prev-btn").removeClass("disabled");
-    if (activeId == lastId)
+    if (activeOrder == lastOrder)
         $(".next-btn").addClass("disabled");
     else
         $(".next-btn").removeClass("disabled");

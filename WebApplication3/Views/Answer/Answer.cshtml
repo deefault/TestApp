@@ -16,7 +16,7 @@
         </li>
         @foreach (var a in Model)
         {
-            <li class="page-item num-btn" btn-id="@a.Id" answer-type="@a.AnswerType">
+            <li class="page-item num-btn" btn-order="@a.Order" btn-id="@a.Id" answer-type="@a.AnswerType">
                 <a class="page-link unselectable">@a.Order</a>
             </li>
         }
@@ -53,18 +53,18 @@
     {
     <script src="~/lib/Sortable/Sortable.js"></script>
     <script type="text/javascript">
-        var firstId = $("nav ul").children().filter(".num-btn")[0].getAttribute("btn-id");
-        var lastId = $("nav ul").children().filter(".num-btn")[$("nav ul").children().filter(".num-btn").length - 1].getAttribute("btn-id");
+        var firstOrder = $("nav ul").children().filter(".num-btn")[0].getAttribute("btn-order");
+        var lastOrder = $("nav ul").children().filter(".num-btn")[$("nav ul").children().filter(".num-btn").length - 1].getAttribute("btn-order");
 
-        $("li[btn-id=" + firstId + "]").addClass("active");
+        $("li[btn-order=" + firstOrder + "]").addClass("active");
 
-        var activeId = getActiveAnswerId();
+        var activeOrder = getActiveAnswerOrder();
 
-        if (activeId == firstId)
+        if (activeOrder == firstOrder)
             $(".prev-btn").addClass("disabled");
         else
             $(".prev-btn").removeClass("disabled");
-        if (activeId == lastId)
+        if (activeOrder == lastOrder)
             $(".next-btn").addClass("disabled");
         else
             $(".next-btn").removeClass("disabled");
@@ -93,19 +93,19 @@
 
         document.onkeyup =
             function(e) {
-                if (e.which == 37) {
+                if (e.keyCode == 37) {
                     submitAnswer();
                     if (!$(".prev-btn").hasClass("disabled")) {
-                        var tmp = getActiveAnswerId() - 1;
+                        var tmp = getActiveAnswerOrder() - 1;
                         $(".active").removeClass("active");
-                        $("li[btn-id=" + tmp + "]").addClass("active");
+                        $("li[btn-order=" + tmp + "]").addClass("active");
                     }
-                    var activeId = getActiveAnswerId();
-                    if (activeId == firstId)
+                    var activeOrder = getActiveAnswerOrder();
+                    if (activeOrder == firstOrder)
                         $(".prev-btn").addClass("disabled");
                     else
                         $(".prev-btn").removeClass("disabled");
-                    if (activeId == lastId)
+                    if (activeOrder == lastOrder)
                         $(".next-btn").addClass("disabled");
                     else
                         $(".next-btn").removeClass("disabled");
@@ -114,22 +114,21 @@
                 else if (e.keyCode == 39) {
                     submitAnswer();
                     if (!$(".next-btn").hasClass("disabled")) {
-                        var tmp = getActiveAnswerId() - -1;
+                        var tmp = getActiveAnswerOrder() - -1;
                         $(".active").removeClass("active");
-                        $("li[btn-id=" + tmp + "]").addClass("active");
+                        $("li[btn-order=" + tmp + "]").addClass("active");
                     }
-                    var activeId = getActiveAnswerId();
-                    if (activeId == firstId)
+                    var activeOrder = getActiveAnswerOrder();
+                    if (activeOrder == firstOrder)
                         $(".prev-btn").addClass("disabled");
                     else
                         $(".prev-btn").removeClass("disabled");
-                    if (activeId == lastId)
+                    if (activeOrder == lastOrder)
                         $(".next-btn").addClass("disabled");
                     else
                         $(".next-btn").removeClass("disabled");
                     loadAnswer();
                 }
             };
-            
     </script>
 }

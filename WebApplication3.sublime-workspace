@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"bott",
+				"border-bottom\tproperty"
+			],
+			[
 				"text",
 				"textarea\tTag"
 			],
@@ -24,29 +28,29 @@
 	"buffers":
 	[
 		{
-			"file": "WebApplication3/Models/Question.cs",
-			"settings":
-			{
-				"buffer_size": 1900,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "WebApplication3/Views/Test/Details.cshtml",
-			"settings":
-			{
-				"buffer_size": 6457,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
 			"file": "WebApplication3/Views/Test/Tests.cshtml",
 			"settings":
 			{
-				"buffer_size": 6089,
+				"buffer_size": 8947,
 				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "WebApplication3/Views/Answer/Answer.cshtml",
+			"settings":
+			{
+				"buffer_size": 4870,
+				"encoding": "UTF-8 with BOM",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "WebApplication3/wwwroot/js/site.js",
+			"settings":
+			{
+				"buffer_size": 7646,
+				"encoding": "UTF-8 with BOM",
 				"line_ending": "Unix"
 			}
 		}
@@ -115,8 +119,32 @@
 		"selected_items":
 		[
 			[
+				"pull",
+				"git: pull"
+			],
+			[
+				"reset",
+				"git: reset"
+			],
+			[
+				"git ",
+				"git: pull"
+			],
+			[
 				"comm",
 				"git: commit including unstaged files"
+			],
+			[
+				"push",
+				"git: push"
+			],
+			[
+				"comut",
+				"git: commit including unstaged files"
+			],
+			[
+				"fold",
+				"SyntaxFold: Fold All"
 			],
 			[
 				"pu",
@@ -125,14 +153,6 @@
 			[
 				"fol",
 				"SyntaxFold: Fold All"
-			],
-			[
-				"fold",
-				"SyntaxFold: Fold All"
-			],
-			[
-				"push",
-				"git: push"
 			],
 			[
 				"commit",
@@ -152,10 +172,6 @@
 			],
 			[
 				"git p",
-				"git: pull"
-			],
-			[
-				"pull",
 				"git: pull"
 			],
 			[
@@ -252,34 +268,42 @@
 	"expanded_folders":
 	[
 		"/home/kochkin/GitHub/TestsApp",
-		"/home/kochkin/GitHub/TestsApp/WebApplication3"
+		"/home/kochkin/GitHub/TestsApp/WebApplication3",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Answer",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Test",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/wwwroot",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/wwwroot/js"
 	],
 	"file_history":
 	[
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/wwwroot/css/site.css",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/WebApplication3.sqlite",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Answer/_LoadTextAnswer.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/wwwroot/js/site.js",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Test/Tests.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Test/Details.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Test/TestResults.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Answer/_LoadSingleChoiceAnswer.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Answer/_LoadDragAndDropAnswer.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Answer/_LoadMultiChoiceAnswer.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/EditDragAndDropQuestion.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/EditMultiChoiceQuestion.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/EditSingleChoiceQuestion.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/AddSingleChoiceQuestion.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/AddTextQuestion.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/EditTextQuestion.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/AddMultiChoiceQuestion.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/AddDragAndDropQuestion.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/Details.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Models/Question.cs",
 		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Test/Start.cshtml",
 		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Test/TRDetails.cshtml",
 		"/home/kochkin/GitHub/TestsApp/WebApplication3/Models/QuestionViewModels/QuestionViewModel.cs",
-		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/AddSingleChoiceQuestion.cshtml",
-		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/AddMultiChoiceQuestion.cshtml",
-		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/AddDragAndDropQuestion.cshtml",
-		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/AddTextQuestion.cshtml",
-		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/EditSingleChoiceQuestion.cshtml",
-		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/EditTextQuestion.cshtml",
-		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/EditMultiChoiceQuestion.cshtml",
-		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/EditDragAndDropQuestion.cshtml",
 		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/User/Login.cshtml",
-		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Test/Tests.cshtml",
-		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Test/TestResults.cshtml",
-		"/home/kochkin/GitHub/TestsApp/WebApplication3/Models/Question.cs",
 		"/home/kochkin/GitHub/TestsApp/WebApplication3/Controllers/TestController.cs",
-		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Test/Details.cshtml",
 		"/home/kochkin/GitHub/TestsApp/WebApplication3/Models/TestViewModels/AddTestViewModel.cs",
-		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Answer/_LoadDragAndDropAnswer.cshtml",
-		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question/Details.cshtml",
 		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Shared/_Layout.cshtml",
-		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Answer/_LoadSingleChoiceAnswer.cshtml",
-		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Answer/_LoadMultiChoiceAnswer.cshtml",
-		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Answer/_LoadTextAnswer.cshtml",
 		"/home/kochkin/GitHub/TestsApp/WebApplication3/Controllers/QuestionController.cs",
 		"/home/kochkin/Downloads/test.txt",
 		"/home/kochkin/GitHub/TestsApp/WebApplication3/Controllers/TestController.Utils.cs",
@@ -347,30 +371,30 @@
 			[
 				{
 					"buffer": 0,
-					"file": "WebApplication3/Models/Question.cs",
+					"file": "WebApplication3/Views/Test/Tests.cshtml",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1900,
+						"buffer_size": 8947,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1449,
-								1449
+								5207,
+								5207
 							]
 						],
 						"settings":
 						{
 							"git_savvy.repo_path": "/home/kochkin/GitHub/TestsApp",
-							"syntax": "Packages/C#/C#.sublime-syntax",
+							"syntax": "Packages/Razor/Razor.tmLanguage",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1056.12998523,
+						"translation.y": 2375.92319055,
 						"zoom_level": 1.0
 					},
 					"stack_index": 2,
@@ -378,30 +402,33 @@
 				},
 				{
 					"buffer": 1,
-					"file": "WebApplication3/Views/Test/Details.cshtml",
+					"file": "WebApplication3/Views/Answer/Answer.cshtml",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6457,
+						"buffer_size": 4870,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								446,
-								446
+								3023,
+								3023
 							]
 						],
 						"settings":
 						{
+							"SL.26.region_keys":
+							[
+							],
 							"git_savvy.repo_path": "/home/kochkin/GitHub/TestsApp",
 							"syntax": "Packages/Razor/Razor.tmLanguage",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1936.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -409,30 +436,30 @@
 				},
 				{
 					"buffer": 2,
-					"file": "WebApplication3/Views/Test/Tests.cshtml",
-					"semi_transient": false,
+					"file": "WebApplication3/wwwroot/js/site.js",
+					"semi_transient": true,
 					"settings":
 					{
-						"buffer_size": 6089,
+						"buffer_size": 7646,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								691,
-								691
+								4078,
+								4078
 							]
 						],
 						"settings":
 						{
 							"git_savvy.repo_path": "/home/kochkin/GitHub/TestsApp",
-							"syntax": "Packages/Razor/Razor.tmLanguage",
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 2375.92319055,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,

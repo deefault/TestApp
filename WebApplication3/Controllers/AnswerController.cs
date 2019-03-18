@@ -54,8 +54,8 @@ namespace WebApplication3.Controllers
         #region Входная точка
         [Authorize]
         [HttpGet]
-        [Route("/{testResultId}/Question/{answerOrder}/")]
-        public async Task<IActionResult> Answer(int testResultId, ushort answerOrder)
+        [Route("/{testResultId}/Question/{answerId}/")]
+        public async Task<IActionResult> Answer(int testResultId, ushort answerId)
         {
             var testResult = await _context.TestResults
                 .Include(tr => tr.Answers)
@@ -67,8 +67,8 @@ namespace WebApplication3.Controllers
         }
         [Authorize]
         [HttpGet]
-        [Route("/{testResultId}/Results/Question/{answerOrder}/")]
-        public async Task<IActionResult> AnswerResults(int testResultId, ushort answerOrder)
+        [Route("/{testResultId}/Results/Question/{answerId}/")]
+        public async Task<IActionResult> AnswerResults(int testResultId, ushort answerId)
         {
             var testResult = await _context.TestResults
                 .Include(tr => tr.Answers)

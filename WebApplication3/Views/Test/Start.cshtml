@@ -15,7 +15,7 @@
     @if (ViewBag.IsStarted)
     {
             <a class="btn btn-primary" role="button"
-               href="@Url.Action("Answer", "Answer", new {testResultId = Model.Id, answerOrder = 1})">
+               href="@Url.Action("Answer", "Answer", new {testResultId = Model.Id, answerId = ViewBag.AnswerId})">
                 Продолжить
             </a>
     }

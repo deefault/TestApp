@@ -213,7 +213,7 @@ function switchAnswer(e) {
     else
         if (e.target.parentElement.classList.contains("prev-btn")) {
             if (!e.target.parentElement.classList.contains("disabled")) {
-                var tmp = getActiveAnswerOder() - 1;
+                var tmp = getActiveAnswerOrder() - 1;
                 $(".active").removeClass("active");
                 $("li[btn-order=" + tmp + "]").addClass("active");
             }

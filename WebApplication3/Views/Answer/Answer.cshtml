@@ -56,7 +56,8 @@
         var firstOrder = $("nav ul").children().filter(".num-btn")[0].getAttribute("btn-order");
         var lastOrder = $("nav ul").children().filter(".num-btn")[$("nav ul").children().filter(".num-btn").length - 1].getAttribute("btn-order");
 
-        $("li[btn-order=" + firstOrder + "]").addClass("active");
+        var id = @ViewContext.RouteData.Values["answerId"];
+        $("li[btn-id=" + id + "]").addClass("active");
 
         var activeOrder = getActiveAnswerOrder();
 
@@ -76,8 +77,6 @@
             switchAnswer(e);
             loadAnswer();
         });
-
-
 
         var disableArrowKeys = function (e) {
             if ($("input[type=radio]").is(':focus')) {

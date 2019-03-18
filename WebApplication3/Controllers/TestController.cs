@@ -400,8 +400,8 @@ namespace WebApplication3.Controllers
             if (_context.Answers.Any(a => a.TestResult == testResult))
             {
                 ViewBag.IsStarted = true;
+                ViewBag.AnswerId = _context.Answers.Where(a => a.TestResult == testResult).SingleOrDefault(a => a.Order == 1).Id;
             }
-
             ViewBag.UserId = user.Id;
             ViewBag.QuestionsCount = _context.Questions.Count(q => q.Test == testResult.Test);
             return View(testResult);
@@ -425,7 +425,7 @@ namespace WebApplication3.Controllers
             if (questions.Count == 0) return NotFound();
             if (_context.Answers.Any(a => a.TestResult == testResult))
             {
-                return RedirectToAction("Answer", "Answer", new { testResultId = testResult.Id, answerOrder = 1 });
+                return RedirectToAction("Answer", "Answer", new { testResultId = testResult.Id, answerId = _context.Answers.Where(a => a.TestResult == testResult).SingleOrDefault(a => a.Order == 1).Id });
             }
             List<Answer> answers = new List<Answer>();
             Answer answer = null;
@@ -464,7 +464,7 @@ namespace WebApplication3.Controllers
 
             // TODO: redirect to first answer (question)
             //throw new NotImplementedException();
-            return RedirectToAction("Answer", "Answer", new { testResultId = testResult.Id, answerOrder = 1 });
+            return RedirectToAction("Answer", "Answer", new { testResultId = testResult.Id, answerId = answers.SingleOrDefault(a => a.Order == 1).Id });
         }
 
         [ValidateAntiForgeryToken]

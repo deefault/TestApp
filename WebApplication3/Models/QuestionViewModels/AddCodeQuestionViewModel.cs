@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-
 namespace WebApplication3.Models.QuestionViewModels
 {
-    public class AddTextQuestionViewModel : QuestionViewModel
+    public class AddCodeQuestionViewModel : QuestionViewModel
     {
         [Required]
         [OptionsValidation]
@@ -19,6 +18,4 @@ namespace WebApplication3.Models.QuestionViewModels
             }
         }
     }
-
-
 }

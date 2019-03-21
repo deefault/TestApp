@@ -207,3 +207,8 @@ button.collapse-btn {
     border-radius: 5px;
     overflow: hidden;
 }
+.aside {
+    font-size: 0.7em;
+    float: right;
+    margin-top: 0.4em;
+}

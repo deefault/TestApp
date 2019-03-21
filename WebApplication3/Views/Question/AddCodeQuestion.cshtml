@@ -11,6 +11,9 @@
 
 
 <div class="container">
+    <link rel="stylesheet" href="~/lib/codemirror/theme/material.css" />
+    <link rel="stylesheet" href="~/lib/codemirror/lib/codemirror.css" />
+    <link rel="stylesheet" href="~/lib/codemirror/addon/fold/foldgutter.css" />
     <div class="form-group" id="fields">
         <div class="">
             <form asp-controller="Question" asp-action="AddCodeQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
@@ -19,31 +22,46 @@
                 <hr />
                 <ul class="text-danger" id="validation-summary"></ul>
                 @*<div asp-validation-summary="All" class="text-danger"></div>*@
-                <div class="form-group row">
-                    <label asp-for="Title" class="col-md-2 col-lg-2"></label>
-                    <div class="col-md-10 col-lg-4">
-                        <textarea asp-for="Title" class="form-control" placeholder="Текст вопроса"></textarea>
+                <b>Текст вопроса:</b>
+                <div>
+                    @*<label asp-for="Title" class="col-md-2 col-lg-2"></label>*@
+                    <div class="form-group clearfix contentwrapper">
+                        <textarea asp-for="Title" class="form-control"></textarea>
                         <span asp-validation-for="Title" class="text-danger"></span>
                     </div>
                 </div>
-                <div class="form-group row">
-                    <label asp-for="Score" class="col-md-2 col-lg-2"></label>
-                    <div class="col-md-10 col-lg-4">
+                <b>Балл:</b>
+                <div>
+                    <div class="form-group clearfix contentwrapper">
                         <input asp-for="Score" class="form-control" placeholder="1..100" min="1" max="100" />
                         <span asp-validation-for="Score" class="text-danger"></span>
                     </div>
                 </div>
-                
-                <div class="items">
-                    <table class="table item-table" style="margin-bottom: 1rem;">
-                        <tbody id="item-table__body">
-                            <tr>
-                                <td class="item-table__cell">
-                                    <div id="code"></div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="main">
+                    <div class="form-group clearfix contentwrapper">
+                        <textarea class="form-control" id="code">
+#include <iostream>
+using namespace std;
+
+int main() 
+{
+    cout << "Hello, World!";
+    return 0;
+}</textarea>
+                    </div>
+                    <div>
+                        <b>Аргументы:</b>
+                        <div class="input-group">
+                            <input id="args" type="text" value="" class="form-control">
+                            <span class="input-group-append">
+                                <button class="btn btn-success" id="compile">Запуск</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <b>Вывод:</b>
+                    <pre id="output" class="form-control" readonly=""></pre>
                 </div>
                 <input type="hidden" value="@ViewContext.RouteData.Values["testId"]" asp-for="TestId" />
 
@@ -53,34 +71,69 @@
                     </div>
                 </div>
             </form>
-
             <br>
         </div>
     </div>
-
 </div>
-
 @section Scripts {
-    <script src="~/lib/ace/src/ace.js"></script>
+    <script src="~/lib/codemirror/lib/codemirror.js"></script>
+    <script src="~/lib/codemirror/mode/clike/clike.js"></script>
+    <script src="~/lib/codemirror/mode/python/python.js"></script>
+    <script src="~/lib/codemirror/keymap/sublime.js"></script>
+    <script src="~/lib/codemirror/addon/fold/foldcode.js"></script>
+    <script src="~/lib/codemirror/addon/fold/foldgutter.js"></script>
+    <script src="~/lib/codemirror/addon/fold/brace-fold.js"></script>
+    <script src="~/lib/codemirror/addon/fold/comment-fold.js"></script>
+    <script src=~/lib/codemirror/addon/edit/closebrackets.js></script>
+    <script src=~/lib/codemirror/addon/edit/trailingspace.js></script>
+    <script src="~/lib/codemirror/addon/edit/matchbrackets.js"></script>
     <script>
-        var code;
-
-        $(function () {
-            code = ace.edit("code");
-            code.setTheme("ace/theme/textmate");
-            code.getSession().setMode("ace/mode/c_cpp");
-            code.setShowPrintMargin(false);
-            code.setOptions({
-                maxLines: Infinity,
-                fontSize: "12pt",
+        var elements =
+        {
+            args: $("#args"),
+            compile: $("#compile"),
+            output: $("#output"),
+            code: $("#code"),
+        };
+        // Editor Objects
+        var editor = CodeMirror.fromTextArea(document.getElementById('code'),
+            {
+                lineNumbers: true,
+                mode: "text/x-c++src",
+                theme: "material",
+                autoCloseBrackets: true,
+                matchBrackets: true,
+                showCursorWhenSelecting: true,
+                indentUnit: 4,
+                tabSize: 4,
+                keyMap: "sublime",
+                rulers: [{ column: 80, lineStyle: "dashed" }],
+                foldGutter: true,
+                gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
             });
-            code.$blockScrolling = Infinity;
+        elements.compile.click(function (e) {
+            e.preventDefault();
+            ShowOutput("Waiting for server...");
+            Compile();
         });
+        function ShowOutput(output) {
+            elements.output.html(output);
+        }
+        function ShowSuccess(reply) {
+            console.log("OUTPUT: " + reply);
+            ShowOutput(reply);
+        }
+        function ShowError(err) {
+            console.error(err);
+            ShowOutput(err);
+        }
+        function Compile() {
+        }
     </script>
     <script>
         $("form").submit(function(event) {
             event.preventDefault();
-            submitQuestion('@Url.RouteUrl("AddText", new {testId = Context.GetRouteData().Values["testId"]})');
+            submitQuestion('@Url.RouteUrl("AddCode", new {testId = Context.GetRouteData().Values["testId"]})');
 
         });
     </script>

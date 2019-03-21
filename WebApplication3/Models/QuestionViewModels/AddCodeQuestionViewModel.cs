@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace WebApplication3.Models.QuestionViewModels
@@ -8,6 +9,9 @@ namespace WebApplication3.Models.QuestionViewModels
         [Required]
         [OptionsValidation]
         public List<OptionViewModel> Options { get; set; }
+        //[Required]
+        //[DisplayName("Код")]
+        //public bool Code { get; set; }
 
         public class OptionsValidationAttribute : ValidationAttribute
         {

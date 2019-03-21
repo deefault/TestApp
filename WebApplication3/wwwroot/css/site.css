@@ -199,9 +199,11 @@ button.collapse-btn {
         color: CaptionText;
         text-decoration: none;
     }
-#code {
-    width: 100%;
-    float: left;
-    min-height: 100px;
+#output {
+    min-height: 6em;
+}
+.contentwrapper {
+    margin-top: 0.2em;
+    border-radius: 5px;
     overflow: hidden;
 }

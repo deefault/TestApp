@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="~/lib/codemirror/theme/material.css" />
     <link rel="stylesheet" href="~/lib/codemirror/lib/codemirror.css" />
     <link rel="stylesheet" href="~/lib/codemirror/addon/fold/foldgutter.css" />
+    <link rel="stylesheet" href="~/lib/codemirror/addon/hint/show-hint.css" />
     <div class="form-group" id="fields">
         <div class="">
             <form asp-controller="Question" asp-action="AddCodeQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
@@ -40,14 +41,21 @@
                 <div class="main">
                     <div class="form-group clearfix contentwrapper">
                         <textarea class="form-control" id="code">
-#include <iostream>
-using namespace std;
-
-int main() 
+// A Hello World! program in C#.
+using System;
+namespace HelloWorld
 {
-    cout << "Hello, World!";
-    return 0;
+    class Hello 
+    {
+        static void Main() 
+        {
+            Console.WriteLine("Hello World!");
+        }
+    }
 }</textarea>
+                        <span class="aside">
+                            <em><b>Ctrl-Space</b>: autocomplete</em>
+                        </span>
                     </div>
                     <div>
                         <b>Аргументы:</b>
@@ -87,6 +95,8 @@ int main()
     <script src=~/lib/codemirror/addon/edit/closebrackets.js></script>
     <script src=~/lib/codemirror/addon/edit/trailingspace.js></script>
     <script src="~/lib/codemirror/addon/edit/matchbrackets.js"></script>
+    <script src="~/lib/codemirror/addon/hint/anyword-hint.js"></script>
+    <script src="~/lib/codemirror/addon/hint/show-hint.js"></script>
     <script>
         var elements =
         {
@@ -99,7 +109,7 @@ int main()
         var editor = CodeMirror.fromTextArea(document.getElementById('code'),
             {
                 lineNumbers: true,
-                mode: "text/x-c++src",
+                mode: "text/x-csharp",
                 theme: "material",
                 autoCloseBrackets: true,
                 matchBrackets: true,
@@ -109,7 +119,8 @@ int main()
                 keyMap: "sublime",
                 rulers: [{ column: 80, lineStyle: "dashed" }],
                 foldGutter: true,
-                gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
+                gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+                extraKeys: { "Ctrl-Space": "autocomplete" }
             });
         elements.compile.click(function (e) {
             e.preventDefault();

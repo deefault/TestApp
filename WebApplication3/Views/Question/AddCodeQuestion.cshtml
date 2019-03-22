@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="~/lib/codemirror/lib/codemirror.css" />
     <link rel="stylesheet" href="~/lib/codemirror/addon/fold/foldgutter.css" />
     <link rel="stylesheet" href="~/lib/codemirror/addon/hint/show-hint.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.css" />
     <div class="form-group" id="fields">
         <div class="">
             <form asp-controller="Question" asp-action="AddCodeQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
@@ -34,22 +35,22 @@
                 <b>Балл:</b>
                 <div>
                     <div class="form-group clearfix contentwrapper">
-                        <input asp-for="Score" class="form-control" placeholder="1..100" min="1" max="100" />
+                        <input id="score" asp-for="Score" type="text" class="form-control" placeholder="1..100" min="1" max="100" />
                         <span asp-validation-for="Score" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="main">
-                    <div class="form-group clearfix contentwrapper">
+                    <div class="form-group clearfix contentwrapper" id="item-table__body">
                         <textarea class="form-control" id="code">
-// A Hello World! program in C#.
 using System;
-namespace HelloWorld
+
+namespace TestsApp
 {
-    class Hello 
+    public class Program
     {
-        static void Main() 
+        public string Main(string message)
         {
-            Console.WriteLine("Hello World!");
+            return message;
         }
     }
 }</textarea>
@@ -57,19 +58,22 @@ namespace HelloWorld
                             <em><b>Ctrl-Space</b>: autocomplete</em>
                         </span>
                     </div>
+
                     <div>
                         <b>Аргументы:</b>
                         <div class="input-group">
-                            <input id="args" type="text" value="" class="form-control">
+                            <input id="args" value="Hello World" class="form-control">
                             <span class="input-group-append">
                                 <button class="btn btn-success" id="compile">Запуск</button>
                             </span>
                         </div>
                     </div>
                 </div>
-                <div>
-                    <b>Вывод:</b>
-                    <pre id="output" class="form-control" readonly=""></pre>
+                <div id="formDiv">
+                    <div>
+                        <b>Вывод:</b>
+                        <pre id="output" class="form-control" readonly=""></pre>
+                    </div>
                 </div>
                 <input type="hidden" value="@ViewContext.RouteData.Values["testId"]" asp-for="TestId" />
 
@@ -92,12 +96,16 @@ namespace HelloWorld
     <script src="~/lib/codemirror/addon/fold/foldgutter.js"></script>
     <script src="~/lib/codemirror/addon/fold/brace-fold.js"></script>
     <script src="~/lib/codemirror/addon/fold/comment-fold.js"></script>
-    <script src=~/lib/codemirror/addon/edit/closebrackets.js></script>
-    <script src=~/lib/codemirror/addon/edit/trailingspace.js></script>
+    <script src="~/lib/codemirror/addon/edit/closebrackets.js"></script>
+    <script src="~/lib/codemirror/addon/edit/trailingspace.js"></script>
     <script src="~/lib/codemirror/addon/edit/matchbrackets.js"></script>
     <script src="~/lib/codemirror/addon/hint/anyword-hint.js"></script>
     <script src="~/lib/codemirror/addon/hint/show-hint.js"></script>
+    <script src="~/lib/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.js"></script>
     <script>
+        $("#score").TouchSpin({
+            verticalbuttons: true,
+        });
         var elements =
         {
             args: $("#args"),
@@ -127,6 +135,7 @@ namespace HelloWorld
             ShowOutput("Waiting for server...");
             Compile();
         });
+        $(".CodeMirror").addClass("contentwrapper");
         function ShowOutput(output) {
             elements.output.html(output);
         }
@@ -139,14 +148,57 @@ namespace HelloWorld
             ShowOutput(err);
         }
         function Compile() {
+            submitCode();
+            loadCode();
         }
     </script>
     <script>
-        $("form").submit(function(event) {
-            event.preventDefault();
-            submitQuestion('@Url.RouteUrl("AddCode", new {testId = Context.GetRouteData().Values["testId"]})');
+        loadCode();
+        function submitCode() {
+            var data = {};
+            data.Value = editor.getValue();
+            data.Args = elements.args.val();
+            var actionUrl = "/Code/";
+            console.log(data);
+            // запрос
+            $.ajax({
+                method: "POST",
+                url: actionUrl,
+                beforeSend: function (xhr) {
+                    $("#output").html("Waiting for server...");
+                    xhr.setRequestHeader("RequestVerificationToken",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                success: function (response) {
+                    console.log(response);
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    //console.log(textStatus + ": Couldn't add control. " + errorThrown);
+                    console.log(xhr);
+                },
+            });
+        }
+        function loadCode() {
+            var actionUrl = "/Code/";
+            $.ajax({
+                cache: false,
+                method: "GET",
+                url: actionUrl,
+                dataType: "html",
+                beforeSend: function () {
 
-        });
+                },
+                success: function (response) {
+                    //заменить html код формой внутри div
+                    $("#formDiv").html(response);
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log(xhr.responseJSON);
+                }
+            });
+        }
     </script>
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }

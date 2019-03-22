@@ -339,10 +339,18 @@ namespace WebApplication3.Controllers
             ViewData["question"] = questions;
             if (test.CreatedBy == user)
             {
-                 
-                string link =  Url.Link("AddTestToUser", new {testId = test.Id});
-                var qrCode = "data:image/png;base64, " + Utils.Utils.GenerateBase64QRCodeFromLink(link);
-                ViewBag.qrCodeBase64 = qrCode;
+
+                try
+                {
+                    string link =  Url.Link("AddTestToUser", new {testId = test.Id});
+                    var qrCode = "data:image/png;base64, " + Utils.Utils.GenerateBase64QRCodeFromLink(link);
+                    ViewBag.qrCodeBase64 = qrCode;
+                }
+                catch (DllNotFoundException e)
+                {
+                    ViewBag.qrCodeBase64 = "";
+                }
+                    
                 
                 return View(test);
             }

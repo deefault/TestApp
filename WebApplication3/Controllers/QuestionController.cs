@@ -850,5 +850,10 @@ namespace WebApplication3.Controllers
 
         }
         #endregion
+
+        public IActionResult AddCodeQuestion()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

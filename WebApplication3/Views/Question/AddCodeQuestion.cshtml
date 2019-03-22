@@ -102,7 +102,7 @@ namespace TestsApp
     <script src="~/lib/codemirror/addon/hint/anyword-hint.js"></script>
     <script src="~/lib/codemirror/addon/hint/show-hint.js"></script>
     <script src="~/lib/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.js"></script>
-    <script>
+    <script async>
         $("#score").TouchSpin({
             verticalbuttons: true,
         });
@@ -162,6 +162,7 @@ namespace TestsApp
             console.log(data);
             // запрос
             $.ajax({
+                async: false,
                 method: "POST",
                 url: actionUrl,
                 beforeSend: function (xhr) {
@@ -183,6 +184,7 @@ namespace TestsApp
         function loadCode() {
             var actionUrl = "/Code/";
             $.ajax({
+                async: false,
                 cache: false,
                 method: "GET",
                 url: actionUrl,

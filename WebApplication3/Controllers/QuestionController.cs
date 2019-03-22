@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.AspNetCore.Authorization;
@@ -10,6 +13,9 @@ using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Emit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -623,6 +629,110 @@ namespace WebApplication3.Controllers
             _context.Questions.Remove(question);
             await _context.SaveChangesAsync();
             return RedirectToAction("Details", "Test", new { id = testId });
+        }
+        #endregion
+
+        #region Code
+        [Authorize]
+        [HttpGet]
+        [Route("/Code/")]
+        public async Task<IActionResult> GetCode()
+        {
+            Code code;
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            try
+            {
+                code = await _context.Codes.SingleAsync(c => c.User == user);
+            }
+            catch (Exception)
+            {
+                using (var ts = _context.Database.BeginTransaction())
+                {
+                    code = new Code { Output = "Output", User = user };
+                    code = (await _context.AddAsync(code)).Entity;
+                    await _context.SaveChangesAsync();
+                    ts.Commit();
+                }
+            }
+            return PartialView("CodeOutput", code);
+        }
+        [Authorize]
+        [HttpPost]
+        [Route("/Code/")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PostCode(int answerId, [FromBody]Code model)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            Code code;
+            try
+            {
+                code = await _context.Codes.SingleAsync(c => c.User == user);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+            code.Value = model.Value;
+            code.Args = model.Args;
+            object[] args = model.Args.Split(',').Select(arg => arg.Trim()).ToArray();
+            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(model.Value);
+            string assemblyName = Path.GetRandomFileName();
+            MetadataReference[] references = new MetadataReference[]
+            {
+                MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location)
+            };
+
+            CSharpCompilation compilation = CSharpCompilation.Create(
+                assemblyName,
+                syntaxTrees: new[] { syntaxTree },
+                references: references,
+                options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+            StringBuilder message = new StringBuilder();
+            using (var ms = new MemoryStream())
+            {
+                EmitResult result = compilation.Emit(ms);
+
+                if (!result.Success)
+                {
+                    IEnumerable<Diagnostic> failures = result.Diagnostics.Where(diagnostic =>
+                        diagnostic.IsWarningAsError ||
+                        diagnostic.Severity == DiagnosticSeverity.Error);
+
+                    foreach (Diagnostic diagnostic in failures)
+                    {
+                        message.AppendFormat("{0}: {1}\n", diagnostic.Id, diagnostic.GetMessage());
+                        code.Output = message.ToString();
+                    }
+                }
+                else
+                {
+                    ms.Seek(0, SeekOrigin.Begin);
+                    Assembly assembly = Assembly.Load(ms.ToArray());
+                    Type type = assembly.GetType("TestsApp.Program");
+                    object obj = Activator.CreateInstance(type);
+                    try
+                    {
+                        code.Output = type.InvokeMember("Main",
+                        BindingFlags.Default | BindingFlags.InvokeMethod,
+                        null,
+                        obj,
+                        args).ToString();
+                    }
+                    catch(Exception e)
+                    {
+                        code.Output = e.Message;
+                    }
+                }
+            }
+            using (var ts = _context.Database.BeginTransaction())
+            {
+                _context.Codes.Update(code);
+                await _context.SaveChangesAsync();
+                ts.Commit();
+            }
+            await _context.SaveChangesAsync();
+            return new JsonResult("");
         }
         #endregion
 

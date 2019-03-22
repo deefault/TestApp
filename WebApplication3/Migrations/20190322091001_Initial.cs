@@ -163,7 +163,8 @@ namespace WebApplication3.Migrations
                     Name = table.Column<string>(nullable: false),
                     CreatedById = table.Column<int>(nullable: false),
                     CreatedOn = table.Column<DateTime>(nullable: false),
-                    IsEnabled = table.Column<bool>(nullable: false)
+                    IsEnabled = table.Column<bool>(nullable: false),
+                    Shuffled = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -224,10 +225,10 @@ namespace WebApplication3.Migrations
                 name: "DragAndDropAnswerOption",
                 columns: table => new
                 {
-                    AnswerId = table.Column<int>(nullable: false),
-                    OptionId = table.Column<int>(nullable: false),
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    AnswerId = table.Column<int>(nullable: false),
+                    OptionId = table.Column<int>(nullable: false),
                     RightOptionId = table.Column<int>(nullable: false),
                     ChosenOrder = table.Column<int>(nullable: false)
                 },
@@ -284,6 +285,35 @@ namespace WebApplication3.Migrations
                         principalTable: "Test",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Codes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Value = table.Column<string>(nullable: true),
+                    Output = table.Column<string>(nullable: true),
+                    QuestionId = table.Column<int>(nullable: true),
+                    UserId = table.Column<int>(nullable: true),
+                    Args = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Codes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Codes_Question_QuestionId",
+                        column: x => x.QuestionId,
+                        principalTable: "Question",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Codes_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -353,6 +383,16 @@ namespace WebApplication3.Migrations
                 name: "IX_AspNetUserRoles_RoleId",
                 table: "AspNetUserRoles",
                 column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Codes_QuestionId",
+                table: "Codes",
+                column: "QuestionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Codes_UserId",
+                table: "Codes",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DragAndDropAnswerOption_AnswerId",
@@ -485,6 +525,9 @@ namespace WebApplication3.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Codes");
 
             migrationBuilder.DropTable(
                 name: "DragAndDropAnswerOption");

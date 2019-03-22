@@ -9,7 +9,7 @@ using WebApplication3.Data;
 namespace WebApplication3.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190301110555_Initial")]
+    [Migration("20190322091001_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -166,6 +166,30 @@ namespace WebApplication3.Migrations
                     b.ToTable("AnswerOptions");
                 });
 
+            modelBuilder.Entity("WebApplication3.Models.Code", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Args");
+
+                    b.Property<string>("Output");
+
+                    b.Property<int?>("QuestionId");
+
+                    b.Property<int?>("UserId");
+
+                    b.Property<string>("Value");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Codes");
+                });
+
             modelBuilder.Entity("WebApplication3.Models.DragAndDropAnswerOption", b =>
                 {
                     b.Property<int>("Id")
@@ -251,6 +275,8 @@ namespace WebApplication3.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired();
+
+                    b.Property<bool>("Shuffled");
 
                     b.HasKey("Id");
 
@@ -495,6 +521,17 @@ namespace WebApplication3.Migrations
                         .WithMany("AnswerOptions")
                         .HasForeignKey("OptionId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("WebApplication3.Models.Code", b =>
+                {
+                    b.HasOne("WebApplication3.Models.Question", "Question")
+                        .WithMany()
+                        .HasForeignKey("QuestionId");
+
+                    b.HasOne("WebApplication3.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("WebApplication3.Models.DragAndDropAnswerOption", b =>

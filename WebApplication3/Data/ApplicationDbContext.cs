@@ -30,6 +30,7 @@ namespace WebApplication3.Data
         public DbSet<DragAndDropAnswer> DragAndDropAnswers { get; set; }
         public DbSet<DragAndDropAnswerOption> DragAndDropAnswerOptions { get; set; }
         public DbSet<AnswerOption> AnswerOptions { get; set; }
+        public DbSet<Code> Codes { get; set; }
         
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -65,6 +66,7 @@ namespace WebApplication3.Data
             builder.Entity<TestResult>().ToTable("TestResult");
             builder.Entity<User>().ToTable("User");
             builder.Entity<AnswerOption>().ToTable("AnswerOptions");
+            builder.Entity<Code>().ToTable("Codes");
             
             // many-to-many
             builder.Entity<AnswerOption>()

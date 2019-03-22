@@ -82,4 +82,14 @@ namespace WebApplication3.Models
 
         public ICollection<AnswerOption> AnswerOptions { get; set; }
     }
+
+    public class Code
+    {
+        public int Id { get; set; }
+        public string Value { get; set; }
+        public string Output { get; set; }
+        public Question Question { get; set; }
+        public User User { get; set; }
+        public string Args { get; set; }
+    }
 }

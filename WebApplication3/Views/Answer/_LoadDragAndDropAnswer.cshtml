@@ -13,17 +13,43 @@
                         if (Model.DragAndDropAnswerOptions.Count != 0)
                         {
                             var dndOptions = Model.DragAndDropAnswerOptions.OrderBy(o => o.ChosenOrder).ToList();
-                            foreach (var option in dndOptions)
+                            if (Model.TestResult.IsCompleted)
                             {
-                                <tr class="item-table__row">
-                                    <td class="drag-handler"></td>
-                                    <td class="item-table__cell">
-                                        <label name="option" class="form-check-label" option-id="@Model.Question.Options.Single(o => o.Id == option.OptionId).Id">
-                                            @(Model.Question.Options.Single(o => o.Id == option.OptionId).Text)
-                                        </label>
-                                    </td>
-                                </tr>
+                                foreach( var option in dndOptions)
+                                {
+                                    <tr class="item-table__row">
+                                        <td class="drag-handler"></td>
+                                        <!-- порядок  TODO: -->
+                                        <td class="item-table__cell">
+                                            
+                                            <span class="@(option.ChosenOrder == @option.RightOption.Order ? "bg-success text-white" : "")">
+                                                @option.RightOption.Order
+                                            </span>
+                                        </td>
+                                        <td class="item-table__cell">
+                                            <label name="option" option-id="@Model.Question.Options.Single(o => o.Id == option.OptionId).Id"
+                                                   class="form-check-label">
+                                                @Model.Question.Options.Single(o => o.Id == option.OptionId).Text
+                                            </label>
+                                        </td>
+                                    </tr>
+                                }
                             }
+                            else
+                            {
+                                foreach (var option in dndOptions)
+                                {
+                                    <tr class="item-table__row">
+                                        <td class="drag-handler"></td>
+                                        <td class="item-table__cell">
+                                            <label name="option" class="form-check-label" option-id="@Model.Question.Options.Single(o => o.Id == option.OptionId).Id">
+                                                @(Model.Question.Options.Single(o => o.Id == option.OptionId).Text)
+                                            </label>
+                                        </td>
+                                    </tr>
+                                } 
+                            }
+                            
                         }
                         else
                         {

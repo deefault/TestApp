@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.AspNetCore.Authorization;
@@ -9,6 +12,9 @@ using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Emit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -173,6 +179,28 @@ namespace WebApplication3.Controllers
                 return NotFound();
             }
             return PartialView("_LoadDragAndDropAnswer", answer);
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("/CodeAnswer/{answerId}")]
+        public async Task<IActionResult> LoadCodeAnswer(int answerId)
+        {
+            var answer = await _context.CodeAnswers
+                    .Include(a => a.TestResult)
+                    .Include(a => a.Code)
+                    .Include(a => a.Question)
+                        .ThenInclude(q => q.Options)
+                .SingleAsync(a => a.Id == answerId)
+                ;
+            if (answer == null) return NotFound();
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && tr.CompletedByUser == user) == 0)
+            {
+                return NotFound();
+            }
+
+            return PartialView("_LoadCodeAnswer", answer);
         }
         #endregion
 
@@ -358,6 +386,166 @@ namespace WebApplication3.Controllers
                 }
             }
             _context.Answers.Update(answer);
+            await _context.SaveChangesAsync();
+            return new JsonResult("");
+        }
+        [Authorize]
+        [HttpPost]
+        [Route("/CodeAnswer/{answerId}/")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CodeAnswer(int answerId, [FromBody]CodeAnswerViewModel model)
+        {
+
+            var answer = await _context.CodeAnswers
+                    .Include(a => a.TestResult)
+                    .Include(a => a.Code)
+                    .Include(a => a.Question)
+                    .SingleAsync(a => a.Id == answerId)
+                ;
+            if (answer == null) return NotFound();
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            //проверить что пользоавтель может проходить тест
+            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && tr.CompletedByUser == user) == 0)
+            {
+                return NotFound();
+            }
+
+            var option = await _context.Options.SingleAsync(o => o.Question == answer.Question);
+            // проверить что опшн принадлежит к вопросу
+            if (!answer.Question.Options.Contains(option))
+            {
+                return BadRequest();
+            }
+            var code = await _context.Codes.SingleAsync(c => c.Answer == answer);
+            code.Args = model.Code.Args; code.Value = model.Code.Value; code.Output = model.Code.Output;
+            _context.Codes.Update(code);
+            answer.Code = code;
+            answer.Option = option;
+            _context.Answers.Update(answer);
+            await _context.SaveChangesAsync();
+            return new JsonResult("");
+        }
+        #endregion
+
+        #region Code
+        [Authorize]
+        [HttpGet]
+        [Route("/Code/{answerId}")]
+        public async Task<IActionResult> GetCode(int answerId)
+        {
+            var answer = await _context.CodeAnswers
+                    .Include(a => a.TestResult)
+                    .Include(a => a.Question)
+                        .ThenInclude(q => q.Options)
+                .SingleAsync(a => a.Id == answerId)
+                ;
+            if (answer == null) return NotFound();
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && tr.CompletedByUser == user) == 0)
+            {
+                return NotFound();
+            }
+            Code code;
+            try
+            {
+                code = await _context.Codes.SingleAsync(c => c.Answer == answer);
+            }
+            catch (Exception)
+            {
+                using (var ts = _context.Database.BeginTransaction())
+                {
+                    code = new Code { Output = "Output", Answer = answer };
+                    code = (await _context.AddAsync(code)).Entity;
+                    await _context.SaveChangesAsync();
+                    ts.Commit();
+                }
+            }
+            return PartialView("CodeOutput", code);
+        }
+        [Authorize]
+        [HttpPost]
+        [Route("/Code/{answerId}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PostCode(int answerId, [FromBody]Code model)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var answer = await _context.CodeAnswers
+                    .Include(a => a.TestResult)
+                    .Include(a => a.Question)
+                    .SingleAsync(a => a.Id == answerId)
+                ;
+            Code code;
+            try
+            {
+                code = await _context.Codes.SingleAsync(c => c.Answer == answer);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+            code.Value = model.Value;
+            code.Args = model.Args;
+            object[] args;
+            if (!string.IsNullOrEmpty(model.Args))
+                args = model.Args.Split(',').Select(arg => arg.Trim()).ToArray();
+            else
+                args = null;
+            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(model.Value);
+            string assemblyName = Path.GetRandomFileName();
+            MetadataReference[] references = new MetadataReference[]
+            {
+                MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location)
+            };
+
+            CSharpCompilation compilation = CSharpCompilation.Create(
+                assemblyName,
+                syntaxTrees: new[] { syntaxTree },
+                references: references,
+                options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+            StringBuilder message = new StringBuilder();
+            using (var ms = new MemoryStream())
+            {
+                EmitResult result = compilation.Emit(ms);
+
+                if (!result.Success)
+                {
+                    IEnumerable<Diagnostic> failures = result.Diagnostics.Where(diagnostic =>
+                        diagnostic.IsWarningAsError ||
+                        diagnostic.Severity == DiagnosticSeverity.Error);
+
+                    foreach (Diagnostic diagnostic in failures)
+                    {
+                        message.AppendFormat("{0}: {1}\n", diagnostic.Id, diagnostic.GetMessage());
+                        code.Output = message.ToString();
+                    }
+                }
+                else
+                {
+                    ms.Seek(0, SeekOrigin.Begin);
+                    Assembly assembly = Assembly.Load(ms.ToArray());
+                    Type type = assembly.GetType("TestsApp.Program");
+                    object obj = Activator.CreateInstance(type);
+                    try
+                    {
+                        code.Output = type.InvokeMember("Main",
+                        BindingFlags.Default | BindingFlags.InvokeMethod,
+                        null,
+                        obj,
+                        args).ToString();
+                    }
+                    catch (Exception e)
+                    {
+                        code.Output = e.Message;
+                    }
+                }
+            }
+            using (var ts = _context.Database.BeginTransaction())
+            {
+                _context.Codes.Update(code);
+                await _context.SaveChangesAsync();
+                ts.Commit();
+            }
             await _context.SaveChangesAsync();
             return new JsonResult("");
         }

@@ -70,13 +70,14 @@ body {
     box-shadow: 0 15px 10px -10px rgba(31, 31, 31, 0.5);
     z-index: 10;
     table-layout: auto;
-    width: 100%;*/
+    width: 100%;
     border-bottom: 1px solid #DDD;
-    margin-bottom: 0;
+    margin-bottom: 0;*/
+    width: 100%;
  }
 /*
 .item-table__row {
-        padding: 3px; 
+        padding: 3px;
         border: 1px solid #DDD;
     }*/
 
@@ -147,6 +148,9 @@ textarea.item__text-field {
         background: #FF0000;
         color: #fff;
     }
+.items {
+    width: 100%;
+}
 /*#endregion*/
 
 .unselectable {
@@ -188,7 +192,7 @@ button.collapse-btn {
     width: 100%;
     text-align: left;
     text-decoration: none;
-    
+
 }
     button.collapse-btn:focus {
         color: CaptionText;
@@ -211,4 +215,10 @@ button.collapse-btn {
     font-size: 0.7em;
     float: right;
     margin-top: 0.4em;
+}
+ .center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 25%;
 }

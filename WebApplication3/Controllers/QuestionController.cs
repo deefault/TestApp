@@ -71,17 +71,17 @@ namespace WebApplication3.Controllers
             switch (type)
             {
                 case (int)Question.QuestionTypeEnum.SingleChoiceQuestion:
-                    return View("AddSingleChoiceQuestion",new AddSingleChoiceQuestionViewModel());
+                    return View("AddSingleChoiceQuestion", new AddSingleChoiceQuestionViewModel());
                 case (int)Question.QuestionTypeEnum.MultiChoiceQuestion:
-                    return View("AddMultiChoiceQuestion",new AddMultiChoiceQuestionViewModel());
+                    return View("AddMultiChoiceQuestion", new AddMultiChoiceQuestionViewModel());
                 case (int)Question.QuestionTypeEnum.TextQuestion:
-                    return View("AddTextQuestion",new AddTextQuestionViewModel());
+                    return View("AddTextQuestion", new AddTextQuestionViewModel());
                 case (int)Question.QuestionTypeEnum.DragAndDropQuestion:
-                    return View("AddDragAndDropQuestion",new AddDragAndDropQuestionViewModel());
+                    return View("AddDragAndDropQuestion", new AddDragAndDropQuestionViewModel());
                 case (int)Question.QuestionTypeEnum.CodeQuestion:
                     return View("AddCodeQuestion", new AddCodeQuestionViewModel());
                 default:
-                    return View("AddSingleChoiceQuestion",new AddSingleChoiceQuestionViewModel());
+                    return View("AddSingleChoiceQuestion", new AddSingleChoiceQuestionViewModel());
             }
         }
         #endregion
@@ -339,6 +339,65 @@ namespace WebApplication3.Controllers
             Response.StatusCode = StatusCodes.Status400BadRequest;
             return new JsonResult(errors);
         }
+        [HttpPost]
+        [Authorize]
+        [Route("/Tests/{testId}/Question/Add/Code/", Name = "AddCode")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddCodeQuestion([FromBody]AddCodeQuestionViewModel model)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
+            if (test == null)
+            {
+                return NotFound();
+            }
+
+            if (test.CreatedBy != user)
+            {
+                return Forbid();
+            }
+            model.TestId = test.Id;
+            TryValidateModel(model);
+            if (ModelState.IsValid)
+            {
+                using (var ts = _context.Database.BeginTransaction())
+                {
+                    var question = new CodeQuestion
+                    {
+                        Title = model.Title,
+                        QuestionType = Enum.GetName(typeof(Question.QuestionTypeEnum), 5),
+                        Test = test,
+                        Score = model.Score
+                    };
+                    question = (await _context.AddAsync(question)).Entity;
+                    await _context.SaveChangesAsync();
+                    await _context.AddAsync(
+                        new Code { Args = model.Code.Args, Question = question, Output = model.Code.Output, Value = model.Code.Value });
+                    await _context.AddAsync(
+                        new Option { Text = model.Code.Output, Question = question });                 
+                    try
+                    {
+                        _context.Remove(await _context.Codes.SingleAsync(c => c.User == user));
+                    }
+                    catch { }
+                    await _context.SaveChangesAsync();
+                    ts.Commit();
+                }
+
+                var redirectUrl = Url.Action("Details", "Test", new { id = test.Id });
+                return new JsonResult(redirectUrl);
+            }
+            var errors = new List<ModelError>();
+            foreach (var modelState in ViewData.ModelState.Values)
+            {
+                foreach (ModelError error in modelState.Errors)
+                {
+                    errors.Add(error);
+                }
+            }
+            Response.StatusCode = StatusCodes.Status400BadRequest;
+            return new JsonResult(errors);
+        }
         #endregion
 
         #region Редактирование GET
@@ -538,7 +597,7 @@ namespace WebApplication3.Controllers
                     await _context.SaveChangesAsync();
                     ts.Commit();
                 }
-  
+
                 var redirectUrl = Url.Action("Details", "Test", new { id = test.Id });
                 return new JsonResult(redirectUrl);
             }
@@ -660,7 +719,7 @@ namespace WebApplication3.Controllers
         [HttpPost]
         [Route("/Code/")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PostCode(int answerId, [FromBody]Code model)
+        public async Task<IActionResult> PostCode([FromBody]Code model)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
             Code code;
@@ -674,7 +733,11 @@ namespace WebApplication3.Controllers
             }
             code.Value = model.Value;
             code.Args = model.Args;
-            object[] args = model.Args.Split(',').Select(arg => arg.Trim()).ToArray();
+            object[] args;
+            if (!string.IsNullOrEmpty(model.Args))
+                args = model.Args.Split(',').Select(arg => arg.Trim()).ToArray();
+            else
+                args = null;
             SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(model.Value);
             string assemblyName = Path.GetRandomFileName();
             MetadataReference[] references = new MetadataReference[]
@@ -719,7 +782,7 @@ namespace WebApplication3.Controllers
                         obj,
                         args).ToString();
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         code.Output = e.Message;
                     }

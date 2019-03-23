@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace WebApplication3.Migrations
 {
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -249,6 +249,8 @@ namespace WebApplication3.Migrations
                     TestResultId = table.Column<int>(nullable: false),
                     Order = table.Column<ushort>(nullable: false),
                     OptionId = table.Column<int>(nullable: true),
+                    CodeId = table.Column<int>(nullable: true),
+                    SingleChoiceAnswer_OptionId = table.Column<int>(nullable: true),
                     Text = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -273,6 +275,7 @@ namespace WebApplication3.Migrations
                     question_type = table.Column<string>(maxLength: 50, nullable: false),
                     Score = table.Column<int>(nullable: false, defaultValue: 1)
                         .Annotation("Sqlite:Autoincrement", true),
+                    CodeId = table.Column<int>(nullable: true),
                     RightAnswerId = table.Column<int>(nullable: true),
                     TextRightAnswer = table.Column<string>(nullable: true)
                 },
@@ -349,9 +352,19 @@ namespace WebApplication3.Migrations
                 column: "TestResultId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Answer_CodeId",
+                table: "Answer",
+                column: "CodeId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Answer_OptionId",
                 table: "Answer",
                 column: "OptionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Answer_SingleChoiceAnswer_OptionId",
+                table: "Answer",
+                column: "SingleChoiceAnswer_OptionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AnswerOptions_OptionId",
@@ -408,6 +421,11 @@ namespace WebApplication3.Migrations
                 name: "IX_Option_QuestionId",
                 table: "Option",
                 column: "QuestionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Question_CodeId",
+                table: "Question",
+                column: "CodeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Question_TestId",
@@ -486,10 +504,34 @@ namespace WebApplication3.Migrations
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
+                name: "FK_Answer_Codes_CodeId",
+                table: "Answer",
+                column: "CodeId",
+                principalTable: "Codes",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
                 name: "FK_Answer_Option_OptionId",
                 table: "Answer",
                 column: "OptionId",
                 principalTable: "Option",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Answer_Option_SingleChoiceAnswer_OptionId",
+                table: "Answer",
+                column: "SingleChoiceAnswer_OptionId",
+                principalTable: "Option",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Question_Codes_CodeId",
+                table: "Question",
+                column: "CodeId",
+                principalTable: "Codes",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
 
@@ -504,6 +546,10 @@ namespace WebApplication3.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Codes_Question_QuestionId",
+                table: "Codes");
+
             migrationBuilder.DropForeignKey(
                 name: "FK_Option_Question_QuestionId",
                 table: "Option");
@@ -527,9 +573,6 @@ namespace WebApplication3.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Codes");
-
-            migrationBuilder.DropTable(
                 name: "DragAndDropAnswerOption");
 
             migrationBuilder.DropTable(
@@ -543,6 +586,9 @@ namespace WebApplication3.Migrations
 
             migrationBuilder.DropTable(
                 name: "Question");
+
+            migrationBuilder.DropTable(
+                name: "Codes");
 
             migrationBuilder.DropTable(
                 name: "Test");

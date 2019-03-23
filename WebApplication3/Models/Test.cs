@@ -31,7 +31,9 @@ namespace WebApplication3.Models
             [Display(Name = "С вводом текста")]
             TextQuestion=3,
             [Display(Name = "На восстановление последовательности")]
-            DragAndDropQuestion = 4
+            DragAndDropQuestion = 4,
+            [Display(Name = "На написание кода")]
+            CodeQuestion = 5
         }        
     }
     public class AddTestModel

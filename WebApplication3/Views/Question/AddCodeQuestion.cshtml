@@ -15,7 +15,6 @@
     <link rel="stylesheet" href="~/lib/codemirror/lib/codemirror.css" />
     <link rel="stylesheet" href="~/lib/codemirror/addon/fold/foldgutter.css" />
     <link rel="stylesheet" href="~/lib/codemirror/addon/hint/show-hint.css" />
-    <link rel="stylesheet" href="~/lib/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.css" />
     <div class="form-group" id="fields">
         <div class="">
             <form asp-controller="Question" asp-action="AddCodeQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
@@ -48,9 +47,9 @@ namespace TestsApp
 {
     public class Program
     {
-        public string Main(string message)
+        public string Main()
         {
-            return message;
+            return "Hello World";
         }
     }
 }</textarea>
@@ -62,14 +61,14 @@ namespace TestsApp
                     <div>
                         <b>Аргументы:</b>
                         <div class="input-group">
-                            <input id="args" value="Hello World" class="form-control">
+                            <input id="args" class="form-control">
                             <span class="input-group-append">
                                 <button class="btn btn-success" id="compile">Запуск</button>
                             </span>
                         </div>
                     </div>
                 </div>
-                <div id="formDiv">
+                <div id="outputDiv">
                     <div>
                         <b>Вывод:</b>
                         <pre id="output" class="form-control" readonly=""></pre>
@@ -101,11 +100,8 @@ namespace TestsApp
     <script src="~/lib/codemirror/addon/edit/matchbrackets.js"></script>
     <script src="~/lib/codemirror/addon/hint/anyword-hint.js"></script>
     <script src="~/lib/codemirror/addon/hint/show-hint.js"></script>
-    <script src="~/lib/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.js"></script>
-    <script async>
-        $("#score").TouchSpin({
-            verticalbuttons: true,
-        });
+    <script>
+        //loadOutput();
         var elements =
         {
             args: $("#args"),
@@ -113,7 +109,6 @@ namespace TestsApp
             output: $("#output"),
             code: $("#code"),
         };
-        // Editor Objects
         var editor = CodeMirror.fromTextArea(document.getElementById('code'),
             {
                 lineNumbers: true,
@@ -137,70 +132,18 @@ namespace TestsApp
         });
         $(".CodeMirror").addClass("contentwrapper");
         function ShowOutput(output) {
-            elements.output.html(output);
-        }
-        function ShowSuccess(reply) {
-            console.log("OUTPUT: " + reply);
-            ShowOutput(reply);
-        }
-        function ShowError(err) {
-            console.error(err);
-            ShowOutput(err);
+            $("#output").html(output);
         }
         function Compile() {
             submitCode();
-            loadCode();
+            loadOutput();
         }
-    </script>
-    <script>
-        loadCode();
-        function submitCode() {
-            var data = {};
-            data.Value = editor.getValue();
-            data.Args = elements.args.val();
-            var actionUrl = "/Code/";
-            console.log(data);
-            // запрос
-            $.ajax({
-                async: false,
-                method: "POST",
-                url: actionUrl,
-                beforeSend: function (xhr) {
-                    $("#output").html("Waiting for server...");
-                    xhr.setRequestHeader("RequestVerificationToken",
-                        $('input:hidden[name="__RequestVerificationToken"]').val());
-                },
-                contentType: "application/json",
-                data: JSON.stringify(data),
-                success: function (response) {
-                    console.log(response);
-                },
-                error: function (xhr, textStatus, errorThrown) {
-                    //console.log(textStatus + ": Couldn't add control. " + errorThrown);
-                    console.log(xhr);
-                },
-            });
-        }
-        function loadCode() {
-            var actionUrl = "/Code/";
-            $.ajax({
-                async: false,
-                cache: false,
-                method: "GET",
-                url: actionUrl,
-                dataType: "html",
-                beforeSend: function () {
+        
+        $("form").submit(function(event) {
+            event.preventDefault();
+            submitCodeQuestion('@Url.RouteUrl("AddCode", new {testId = Context.GetRouteData().Values["testId"]})');
 
-                },
-                success: function (response) {
-                    //заменить html код формой внутри div
-                    $("#formDiv").html(response);
-                },
-                error: function (xhr, textStatus, errorThrown) {
-                    console.log(xhr.responseJSON);
-                }
-            });
-        }
+        });
     </script>
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }

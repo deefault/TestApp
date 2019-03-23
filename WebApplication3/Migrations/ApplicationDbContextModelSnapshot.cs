@@ -361,6 +361,23 @@ namespace WebApplication3.Migrations
                     b.ToTable("User");
                 });
 
+            modelBuilder.Entity("WebApplication3.Models.CodeAnswer", b =>
+                {
+                    b.HasBaseType("WebApplication3.Models.Answer");
+
+                    b.Property<int?>("CodeId");
+
+                    b.Property<int?>("OptionId");
+
+                    b.HasIndex("CodeId");
+
+                    b.HasIndex("OptionId");
+
+                    b.ToTable("CodeAnswer");
+
+                    b.HasDiscriminator().HasValue("CodeAnswer");
+                });
+
             modelBuilder.Entity("WebApplication3.Models.DragAndDropAnswer", b =>
                 {
                     b.HasBaseType("WebApplication3.Models.Answer");
@@ -385,7 +402,8 @@ namespace WebApplication3.Migrations
                 {
                     b.HasBaseType("WebApplication3.Models.Answer");
 
-                    b.Property<int?>("OptionId");
+                    b.Property<int?>("OptionId")
+                        .HasColumnName("SingleChoiceAnswer_OptionId");
 
                     b.HasIndex("OptionId");
 
@@ -403,6 +421,19 @@ namespace WebApplication3.Migrations
                     b.ToTable("TextAnswer");
 
                     b.HasDiscriminator().HasValue("TextAnswer");
+                });
+
+            modelBuilder.Entity("WebApplication3.Models.CodeQuestion", b =>
+                {
+                    b.HasBaseType("WebApplication3.Models.Question");
+
+                    b.Property<int?>("CodeId");
+
+                    b.HasIndex("CodeId");
+
+                    b.ToTable("CodeQuestion");
+
+                    b.HasDiscriminator().HasValue("CodeQuestion");
                 });
 
             modelBuilder.Entity("WebApplication3.Models.DragAndDropQuestion", b =>
@@ -582,11 +613,29 @@ namespace WebApplication3.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("WebApplication3.Models.CodeAnswer", b =>
+                {
+                    b.HasOne("WebApplication3.Models.Code", "Code")
+                        .WithMany()
+                        .HasForeignKey("CodeId");
+
+                    b.HasOne("WebApplication3.Models.Option", "Option")
+                        .WithMany()
+                        .HasForeignKey("OptionId");
+                });
+
             modelBuilder.Entity("WebApplication3.Models.SingleChoiceAnswer", b =>
                 {
                     b.HasOne("WebApplication3.Models.Option", "Option")
                         .WithMany()
                         .HasForeignKey("OptionId");
+                });
+
+            modelBuilder.Entity("WebApplication3.Models.CodeQuestion", b =>
+                {
+                    b.HasOne("WebApplication3.Models.Code", "Code")
+                        .WithMany()
+                        .HasForeignKey("CodeId");
                 });
 
             modelBuilder.Entity("WebApplication3.Models.SingleChoiceQuestion", b =>

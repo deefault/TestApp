@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"attr",
+				"setAttribute\t( name: DOMString, value: DOMString ): void Element"
+			],
+			[
+				"remove",
+				"removeAttribute\t( name: DOMString ): void Element"
+			],
+			[
 				"bott",
 				"border-bottom\tproperty"
 			],
@@ -28,19 +36,19 @@
 	"buffers":
 	[
 		{
-			"file": "WebApplication3/Views/Test/Tests.cshtml",
+			"file": "WebApplication3/Views/Question/AddCodeQuestion.cshtml",
 			"settings":
 			{
-				"buffer_size": 8947,
-				"encoding": "UTF-8",
+				"buffer_size": 8145,
+				"encoding": "UTF-8 with BOM",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "WebApplication3/Views/Answer/Answer.cshtml",
+			"file": "WebApplication3/Controllers/QuestionController.cs",
 			"settings":
 			{
-				"buffer_size": 4870,
+				"buffer_size": 33853,
 				"encoding": "UTF-8 with BOM",
 				"line_ending": "Unix"
 			}
@@ -49,7 +57,16 @@
 			"file": "WebApplication3/wwwroot/js/site.js",
 			"settings":
 			{
-				"buffer_size": 7646,
+				"buffer_size": 9257,
+				"encoding": "UTF-8 with BOM",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "WebApplication3/wwwroot/css/site.css",
+			"settings":
+			{
+				"buffer_size": 4811,
 				"encoding": "UTF-8 with BOM",
 				"line_ending": "Unix"
 			}
@@ -119,12 +136,28 @@
 		"selected_items":
 		[
 			[
+				"fold",
+				"SyntaxFold: Fold All"
+			],
+			[
 				"pull",
 				"git: pull"
 			],
 			[
+				"rese",
+				"git: reset"
+			],
+			[
 				"reset",
 				"git: reset"
+			],
+			[
+				"push",
+				"git: push"
+			],
+			[
+				"commit",
+				"git: commit including unstaged files"
 			],
 			[
 				"git ",
@@ -135,16 +168,8 @@
 				"git: commit including unstaged files"
 			],
 			[
-				"push",
-				"git: push"
-			],
-			[
 				"comut",
 				"git: commit including unstaged files"
-			],
-			[
-				"fold",
-				"SyntaxFold: Fold All"
 			],
 			[
 				"pu",
@@ -153,10 +178,6 @@
 			[
 				"fol",
 				"SyntaxFold: Fold All"
-			],
-			[
-				"commit",
-				"git: commit including unstaged files"
 			],
 			[
 				"comit",
@@ -269,19 +290,22 @@
 	[
 		"/home/kochkin/GitHub/TestsApp",
 		"/home/kochkin/GitHub/TestsApp/WebApplication3",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Controllers",
 		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views",
-		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Answer",
-		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Test",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Question",
 		"/home/kochkin/GitHub/TestsApp/WebApplication3/wwwroot",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/wwwroot/css",
 		"/home/kochkin/GitHub/TestsApp/WebApplication3/wwwroot/js"
 	],
 	"file_history":
 	[
-		"/home/kochkin/GitHub/TestsApp/WebApplication3/wwwroot/css/site.css",
 		"/home/kochkin/GitHub/TestsApp/WebApplication3/WebApplication3.sqlite",
-		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Answer/_LoadTextAnswer.cshtml",
 		"/home/kochkin/GitHub/TestsApp/WebApplication3/wwwroot/js/site.js",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Models/QuestionViewModels/AddCodeQuestionViewModel.cs",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Answer/Answer.cshtml",
 		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Test/Tests.cshtml",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/wwwroot/css/site.css",
+		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Answer/_LoadTextAnswer.cshtml",
 		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Test/Details.cshtml",
 		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Test/TestResults.cshtml",
 		"/home/kochkin/GitHub/TestsApp/WebApplication3/Views/Answer/_LoadSingleChoiceAnswer.cshtml",
@@ -371,55 +395,24 @@
 			[
 				{
 					"buffer": 0,
-					"file": "WebApplication3/Views/Test/Tests.cshtml",
+					"file": "WebApplication3/Views/Question/AddCodeQuestion.cshtml",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 8947,
+						"buffer_size": 8145,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5207,
-								5207
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"git_savvy.repo_path": "/home/kochkin/GitHub/TestsApp",
-							"syntax": "Packages/Razor/Razor.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 2375.92319055,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "WebApplication3/Views/Answer/Answer.cshtml",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4870,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3023,
-								3023
-							]
-						],
-						"settings":
-						{
-							"SL.26.region_keys":
+							"SL.25.region_keys":
 							[
 							],
 							"git_savvy.repo_path": "/home/kochkin/GitHub/TestsApp",
@@ -428,7 +421,39 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1936.0,
+						"translation.y": 3265.8788774,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "WebApplication3/Controllers/QuestionController.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 33853,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"SL.14.region_keys":
+							[
+							],
+							"git_savvy.repo_path": "/home/kochkin/GitHub/TestsApp",
+							"syntax": "Packages/C#/C#.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1366.32200886,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -437,18 +462,18 @@
 				{
 					"buffer": 2,
 					"file": "WebApplication3/wwwroot/js/site.js",
-					"semi_transient": true,
+					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 7646,
+						"buffer_size": 9257,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4078,
-								4078
+								5715,
+								5715
 							]
 						],
 						"settings":
@@ -459,10 +484,42 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2375.92319055,
+						"translation.y": 3497.78434269,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "WebApplication3/wwwroot/css/site.css",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4811,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4809,
+								4809
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/User/Color Highlighter/themes/ayu-mirage.tmTheme",
+							"git_savvy.repo_path": "/home/kochkin/GitHub/TestsApp",
+							"syntax": "Packages/CSS/CSS.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 4160.26587888,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
 					"type": "text"
 				}
 			]

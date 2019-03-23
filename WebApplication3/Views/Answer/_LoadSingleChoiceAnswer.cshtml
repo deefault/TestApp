@@ -1,39 +1,81 @@
 ﻿@model SingleChoiceAnswer
-
+@{
+    var Question = Model.Question as SingleChoiceQuestion;
+}
 <form method="post">
     <div>
         <h5 style="margin-top: 1rem;">@Model.Question.Title</h5>
+        @if (Model.TestResult.IsCompleted)
+        {
+            <h5>Балл: @Model.Score/@Model.Question.Score</h5>
+        }
     </div>
     <input type="hidden" value="@Model.Id">
     <fieldset class="form-group row" id="options">
         <div class="items card" style="margin-bottom: 0;">
             <table class="table table-borderless" style="margin-bottom: 0;">
                 <tbody id="item-table__body">
-                    @foreach (var option in Model.Question.Options)
+                @foreach (var option in Model.Question.Options)
+                {
+                    if (Model.Option != null)
                     {
-                        if (Model.Option != null)
+                        if (Model.TestResult.IsCompleted)
                         {
-                            <tr class="item-table__row">
-                                <td class="item-table__cell">
-                                    <label id="inputContainer" class="form-check-label">
-                                        <input name="option" type="radio" option-id="@option.Id" group="Options" @((Model.Option.Id == option.Id) ? "checked" : "" )>
-                                        @option.Text
-                                    </label>
-                                </td>
-                            </tr>
+                                if (Model.Option.Id == option.Id)
+                                {
+                                    <tr class="item-table__row @(Question.RightAnswer == option 
+                                                                 && !Model.TestResult.Test.HideRightAnswers
+                                                                     ? "bg-success text-white" 
+                                                                     : "bg-danger text-white")">
+                                        <td class="item-table__cell">
+                                            <label id="inputContainer" class="form-check-label">
+                                                <input name="option" type="radio" option-id="@option.Id"
+                                                       group="Options" checked>
+                                                @option.Text
+                                            </label>
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    <tr class="item-table__row @(Question.RightAnswer == option 
+                                                                 && !Model.TestResult.Test.HideRightAnswers
+                                                                     ? "bg-success text-white" 
+                                                                     : "")">
+                                        <td class="item-table__cell">
+                                            <label id="inputContainer" class="form-check-label">
+                                                <input name="option" type="radio" option-id="@option.Id"
+                                                       group="Options">
+                                                @option.Text
+                                            </label>
+                                        </td>
+                                    </tr>
+                                } 
                         }
                         else
                         {
                             <tr class="item-table__row">
                                 <td class="item-table__cell">
-                                    <label class="form-check-label">
-                                        <input name="option" type="radio" option-id="@option.Id" group="options">
+                                    <label id="inputContainer" class="form-check-label">
+                                        <input name="option" type="radio" option-id="@option.Id" group="Options" @(Model.Option.Id == option.Id ? "checked" : "")>
                                         @option.Text
                                     </label>
                                 </td>
                             </tr>
                         }
                     }
+                    else
+                    {
+                        <tr class="item-table__row">
+                            <td class="item-table__cell">
+                                <label class="form-check-label">
+                                    <input name="option" type="radio" option-id="@option.Id" group="options">
+                                    @option.Text
+                                </label>
+                            </td>
+                        </tr>
+                    }
+                }
                 </tbody>
             </table>
         </div>

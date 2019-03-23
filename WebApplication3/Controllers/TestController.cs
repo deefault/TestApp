@@ -303,6 +303,21 @@ namespace WebApplication3.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction("Tests");
         }
+        
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [Route("/Tests/{testId}/Hide/")]
+        public async Task<IActionResult> Hide(int testId)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
+            if (test.CreatedBy != user) return Forbid();
+            test.HideRightAnswers = !test.HideRightAnswers;
+            _context.Tests.Update(test);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Tests");
+        }
         #endregion
 
         #region Список тестов
@@ -339,10 +354,18 @@ namespace WebApplication3.Controllers
             ViewData["question"] = questions;
             if (test.CreatedBy == user)
             {
-                 
-                string link =  Url.Link("AddTestToUser", new {testId = test.Id});
-                var qrCode = "data:image/png;base64, " + Utils.Utils.GenerateBase64QRCodeFromLink(link);
-                ViewBag.qrCodeBase64 = qrCode;
+
+                try
+                {
+                    string link =  Url.Link("AddTestToUser", new {testId = test.Id});
+                    var qrCode = "data:image/png;base64, " + Utils.Utils.GenerateBase64QRCodeFromLink(link);
+                    ViewBag.qrCodeBase64 = qrCode;
+                }
+                catch (DllNotFoundException e)
+                {
+                    ViewBag.qrCodeBase64 = "";
+                }
+                    
                 
                 return View(test);
             }

@@ -28,6 +28,7 @@ else
                 <th>Название</th>
                 <th>Включен</th>
                 <th>Перемешивать</th>
+                <th>Спрятать ответы</th>
                 @*<th>Создатель</th>*@
                 <th>Управление</th>
             </tr>
@@ -70,6 +71,24 @@ else
                         else
                         {
                             <button asp-controller="Test" class="btn-link" asp-action="Shuffle"
+                                    asp-route-testId="@item.Id" type="submit">
+                                <span class="badge badge-danger">Нет</span>
+                            </button>
+                        }
+                    </form>
+                </td>
+                <td>
+                    <form method="post">
+                        @if (item.HideRightAnswers)
+                        {
+                            <button asp-controller="Test" class="btn-link" asp-action="Hide"
+                                    asp-route-testId="@item.Id" type="submit">
+                                <span class="badge badge-success">Да</span>
+                            </button>
+                        }
+                        else
+                        {
+                            <button asp-controller="Test" class="btn-link" asp-action="Hide"
                                     asp-route-testId="@item.Id" type="submit">
                                 <span class="badge badge-danger">Нет</span>
                             </button>

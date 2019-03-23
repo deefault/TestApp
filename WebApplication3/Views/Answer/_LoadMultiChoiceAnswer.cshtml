@@ -1,19 +1,74 @@
 ﻿@model MultiChoiceAnswer
 @{
-    List<int> checkedOptionsIds = ViewBag.checkedOptionsIds;
+    List<int> checkedOptionIds = ViewBag.checkedOptionIds;
+    List<int> rightOptionIds = ViewBag.rightOptionIds;
+    var Quesion = Model.Question as MultiChoiceQuestion;
 }
+
 <form method="post">
     <div>
-    <h5 style="margin-top: 1rem;">@Model.Question.Title</h5>
+        <h5 style="margin-top: 1rem;">@Model.Question.Title</h5>
+        @if (Model.TestResult.IsCompleted)
+        {
+            <h5>Балл: @Model.Score/@Model.Question.Score</h5>
+        }
     </div>
     <input type="hidden" value="@Model.Id">
     <fieldset class="form-group row" id="options">
         <div class="items card" style="margin-bottom: 0;">
             <table class="table table-borderless" style="margin-bottom: 0;">
                 <tbody id="item-table__body">
-                    @foreach (var option in Model.Question.Options)
+                @if (Model.AnswerOptions.Count != 0)
+                {
+                    foreach (var option in Model.AnswerOptions)
+                     {
+                         if (Model.TestResult.IsCompleted)
+                         {
+                             if (option.Checked == option.Option.IsRight)
+                             {
+                                 <tr class="item-table__row @(option.Checked ?"bg-success text-white" : "")">
+                                     <td class="item-table__cell">
+                                         <label id="inputContainer" class="form-check-label">
+                                             <input name="option" type="checkbox" option-id="@option.OptionId"
+                                                    group="Options" @(option.Checked ? "checked" : "")>
+                                             @option.Option.Text
+                                         </label>
+                                     </td>
+                                 </tr>
+                             }
+                             else
+                             {
+                                 <tr class="item-table__row @(option.Checked
+                                                                  ? "bg-danger text-white"
+                                                                  : (Model.TestResult.Test.HideRightAnswers ? "" :"bg-warning text-white"))">
+                                     <td class="item-table__cell">
+                                         <label id="inputContainer" class="form-check-label">
+                                             <input name="option" type="checkbox" option-id="@option.OptionId"
+                                                    group="Options" @(option.Checked ? "checked" : "")>
+                                             @option.Option.Text
+                                         </label>
+                                     </td>
+                                 </tr>
+                             }
+                         }
+                         else
+                         {
+                             <tr class="item-table__row">
+                                 <td class="item-table__cell">
+                                     <label class="form-check-label">
+                                         <input name="option" type="checkbox" @(option.Checked ?"checked":"") option-id="@option.Option.Id" group="Options">
+                                         @option.Option.Text
+                                     </label>
+                                 </td>
+                             </tr>
+                         }
+                     }
+                }
+                else
+                {
+                    foreach (var option in Model.AnswerOptions)
                     {
-                        if (Model.AnswerOptions.Count != 0)
+                        if (Model.AnswerOptions.Count !=0)
                         {
                             <tr class="item-table__row">
                                 <td class="item-table__cell">
@@ -35,7 +90,8 @@
                                 </td>
                             </tr>
                         }
-                    }
+                        */
+                }
                 </tbody>
             </table>
         </div>

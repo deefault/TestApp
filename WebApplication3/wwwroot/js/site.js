@@ -335,11 +335,10 @@ function loadAnswerOutput() {
         }
     });
 }
-function submitCode() {
+function submitCode(actionUrl) {
     var data = {};
     data.Value = editor.getValue();
     data.Args = elements.args.val();
-    var actionUrl = "/Code/";
     console.log(data);
     // запрос
     $.ajax({
@@ -362,8 +361,7 @@ function submitCode() {
         },
     });
 }
-function loadOutput() {
-    var actionUrl = "/Code/";
+function loadOutput(actionUrl) {
     $.ajax({
         async: false,
         cache: false,

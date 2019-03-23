@@ -1,14 +1,11 @@
 ﻿@using Microsoft.AspNetCore.Mvc
 @using Microsoft.AspNetCore.Mvc.Rendering
 @using Microsoft.AspNetCore.Routing
-@model WebApplication3.Models.QuestionViewModels.AddCodeQuestionViewModel
-
+@model WebApplication3.Models.CodeQuestion
 @{
     ViewBag.Title = "Добавить вопрос";
     Layout = "_Layout";
 }
-
-
 
 <div class="container">
     <link rel="stylesheet" href="~/lib/codemirror/theme/material.css" />
@@ -17,9 +14,9 @@
     <link rel="stylesheet" href="~/lib/codemirror/addon/hint/show-hint.css" />
     <div class="form-group" id="fields">
         <div class="">
-            <form asp-controller="Question" asp-action="AddCodeQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
+            <form asp-controller="Question" asp-action="EditCodeQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
                 <hr />
-                <h4 class="text-center">Добавить вопрос на написание кода</h4>
+                <h4 class="text-center">Изменить вопрос на написание кода</h4>
                 <hr />
                 <ul class="text-danger" id="validation-summary"></ul>
                 @*<div asp-validation-summary="All" class="text-danger"></div>*@
@@ -41,23 +38,11 @@
                 <div class="main">
                     <div class="form-group clearfix contentwrapper" id="item-table__body">
                         <textarea class="form-control" id="code">
-using System;
-
-namespace TestsApp
-{
-    public class Program
-    {
-        public string Main()
-        {
-            return "Hello World";
-        }
-    }
-}</textarea>
+@Model.Code.Value</textarea>
                         <span class="aside">
                             <em><b>Ctrl-Space</b>: autocomplete</em>
                         </span>
                     </div>
-
                     <div>
                         <b>Аргументы:</b>
                         <div class="input-group">
@@ -71,14 +56,13 @@ namespace TestsApp
                 <div id="outputDiv">
                     <div>
                         <b>Вывод:</b>
-                        <pre id="output" class="form-control" readonly=""></pre>
+                        <pre id="output" class="form-control" readonly="">@Model.Code.Output</pre>
                     </div>
                 </div>
-                <input type="hidden" value="@ViewContext.RouteData.Values["testId"]" asp-for="TestId" />
-
+                <input type="hidden" value="@ViewContext.RouteData.Values["testId"]" asp-for="Test.Id" />
                 <div class="form-group row">
                     <div class="col-md-offset-2 col-md-10">
-                        <button type="submit" class="btn btn-primary">Добавить</button>
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
                     </div>
                 </div>
             </form>
@@ -101,7 +85,7 @@ namespace TestsApp
     <script src="~/lib/codemirror/addon/hint/anyword-hint.js"></script>
     <script src="~/lib/codemirror/addon/hint/show-hint.js"></script>
     <script>
-        loadOutput('@Url.RouteUrl("GetCode", new {testId = Context.GetRouteData().Values["testId"]})');
+        @*loadOutput('@Url.RouteUrl("EditGetCode", new {testId = Context.GetRouteData().Values["testId"], questionId = Model.Id })');*@
         var elements =
         {
             args: $("#args"),
@@ -135,16 +119,15 @@ namespace TestsApp
             $("#output").html(output);
         }
         function Compile() {
-            submitCode('@Url.RouteUrl("PostCode", new {testId = Context.GetRouteData().Values["testId"]})');
-            loadOutput('@Url.RouteUrl("GetCode", new {testId = Context.GetRouteData().Values["testId"]})');
+            submitCode('@Url.RouteUrl("EditPostCode", new {testId = Context.GetRouteData().Values["testId"], questionId = Model.Id })');
+            loadOutput('@Url.RouteUrl("EditGetCode", new {testId = Context.GetRouteData().Values["testId"], questionId = Model.Id })');
         }
-        
+
         $("form").submit(function(event) {
             event.preventDefault();
-            submitCodeQuestion('@Url.RouteUrl("AddCode", new {testId = Context.GetRouteData().Values["testId"]})');
+            submitCodeQuestion('@Url.RouteUrl("EditCode", new {testId = Context.GetRouteData().Values["testId"], questionId = Model.Id })');
 
         });
     </script>
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }
-

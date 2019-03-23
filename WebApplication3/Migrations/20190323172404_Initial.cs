@@ -232,18 +232,18 @@ namespace WebApplication3.Migrations
                     Output = table.Column<string>(nullable: true),
                     QuestionId = table.Column<int>(nullable: true),
                     AnswerId = table.Column<int>(nullable: true),
-                    UserId = table.Column<int>(nullable: true),
+                    TestId = table.Column<int>(nullable: true),
                     Args = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Codes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Codes_User_UserId",
-                        column: x => x.UserId,
-                        principalTable: "User",
+                        name: "FK_Codes_Test_TestId",
+                        column: x => x.TestId,
+                        principalTable: "Test",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -416,9 +416,9 @@ namespace WebApplication3.Migrations
                 column: "QuestionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Codes_UserId",
+                name: "IX_Codes_TestId",
                 table: "Codes",
-                column: "UserId");
+                column: "TestId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DragAndDropAnswerOption_AnswerId",
@@ -498,7 +498,7 @@ namespace WebApplication3.Migrations
                 column: "QuestionId",
                 principalTable: "Question",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
+                onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Codes_Answer_AnswerId",
@@ -506,7 +506,7 @@ namespace WebApplication3.Migrations
                 column: "AnswerId",
                 principalTable: "Answer",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
+                onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_DragAndDropAnswerOption_Option_RightOptionId",
@@ -610,19 +610,19 @@ namespace WebApplication3.Migrations
                 name: "TestResult");
 
             migrationBuilder.DropTable(
-                name: "Test");
-
-            migrationBuilder.DropTable(
                 name: "Codes");
 
             migrationBuilder.DropTable(
                 name: "Answer");
 
             migrationBuilder.DropTable(
-                name: "User");
+                name: "Test");
 
             migrationBuilder.DropTable(
                 name: "Option");
+
+            migrationBuilder.DropTable(
+                name: "User");
         }
     }
 }

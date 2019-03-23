@@ -71,6 +71,9 @@ namespace WebApplication3.Data
             builder.Entity<User>().ToTable("User");
             builder.Entity<AnswerOption>().ToTable("AnswerOptions");
             builder.Entity<Code>().ToTable("Codes");
+            builder.Entity<Code>().HasOne(c => c.Answer).WithMany().HasForeignKey("AnswerId").OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<Code>().HasOne(c => c.Test).WithMany().HasForeignKey("TestId").OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<Code>().HasOne(c => c.Question).WithMany().HasForeignKey("QuestionId").OnDelete(DeleteBehavior.Cascade);
             // many-to-many
             builder.Entity<AnswerOption>()
                 .HasKey(ao => new { ao.AnswerId, ao.OptionId });

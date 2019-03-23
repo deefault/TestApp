@@ -269,6 +269,8 @@ namespace WebApplication3.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<bool>("HideRightAnswers");
+
                     b.Property<bool>("IsEnabled");
 
                     b.Property<string>("Name")

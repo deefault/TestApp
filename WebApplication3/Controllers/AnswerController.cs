@@ -71,19 +71,6 @@ namespace WebApplication3.Controllers
 
             return View("Answer", answers);
         }
-        [Authorize]
-        [HttpGet]
-        [Route("/{testResultId}/Results/Question/{answerId}/")]
-        public async Task<IActionResult> AnswerResults(int testResultId, ushort answerId)
-        {
-            var testResult = await _context.TestResults
-                .Include(tr => tr.Answers)
-            .SingleAsync(tr => tr.Id == testResultId);
-            if (testResult == null) return NotFound();
-            var answers = testResult.Answers.OrderBy(a => a.Order).ToList();
-
-            return View("AnswerResults", answers);
-        }
         #endregion
 
         #region GET
@@ -94,6 +81,7 @@ namespace WebApplication3.Controllers
         {
             var answer = await _context.SingleChoiceAnswers
                     .Include(a => a.TestResult)
+                        .ThenInclude(tr=>tr.Test)
                     .Include(a => a.Question)
                         .ThenInclude(q => q.Options)
                 .SingleAsync(a => a.Id == answerId)
@@ -115,6 +103,7 @@ namespace WebApplication3.Controllers
         {
             var answer = await _context.TextAnswers
                     .Include(a => a.TestResult)
+                        .ThenInclude(tr=>tr.Test)
                     .Include(a => a.Question)
                 .SingleAsync(a => a.Id == answerId)
                 ;
@@ -135,9 +124,10 @@ namespace WebApplication3.Controllers
         {
             var answer = await _context.MultiChoiceAnswers
                     .Include(a => a.TestResult)
+                        .ThenInclude(tr=>tr.Test)
                     .Include(a => a.AnswerOptions)
+                        .ThenInclude(ao=> ao.Option)
                     .Include(a => a.Question)
-                        .ThenInclude(q => q.Options)
                 .SingleAsync(a => a.Id == answerId)
                 ;
             if (answer == null) return NotFound();
@@ -147,15 +137,18 @@ namespace WebApplication3.Controllers
                 return NotFound();
             }
 
-            var checkedOptionsIds = new List<int>();
+            var checkedOptionIds = new List<int>();
+            var rightOptionIds = new List<int>();
             if (answer.AnswerOptions != null)
             {
                 foreach (var answerOption in answer.AnswerOptions)
                 {
-                    if (answerOption.Checked) checkedOptionsIds.Add(answerOption.OptionId);
+                    if (answerOption.Checked) checkedOptionIds.Add(answerOption.OptionId);
+                    if (answerOption.Option.IsRight) rightOptionIds.Add(answerOption.OptionId);
                 }
             };
-            ViewBag.checkedOptionsIds = checkedOptionsIds;
+            ViewBag.checkedOptionsIds = checkedOptionIds;
+            ViewBag.rightOptionsIds = rightOptionIds;
             return PartialView("_LoadMultiChoiceAnswer", answer);
         }
 
@@ -166,7 +159,9 @@ namespace WebApplication3.Controllers
         {
             var answer = await _context.DragAndDropAnswers
                     .Include(a => a.TestResult)
+                        .ThenInclude(tr=>tr.Test)
                     .Include(a => a.DragAndDropAnswerOptions)
+                        .ThenInclude(o =>o.RightOption)
                     .Include(a => a.Question)
                         .ThenInclude(q => q.Options)
                 .SingleAsync(a => a.Id == answerId)
@@ -179,28 +174,6 @@ namespace WebApplication3.Controllers
                 return NotFound();
             }
             return PartialView("_LoadDragAndDropAnswer", answer);
-        }
-
-        [Authorize]
-        [HttpGet]
-        [Route("/CodeAnswer/{answerId}")]
-        public async Task<IActionResult> LoadCodeAnswer(int answerId)
-        {
-            var answer = await _context.CodeAnswers
-                    .Include(a => a.TestResult)
-                    .Include(a => a.Code)
-                    .Include(a => a.Question)
-                        .ThenInclude(q => q.Options)
-                .SingleAsync(a => a.Id == answerId)
-                ;
-            if (answer == null) return NotFound();
-            var user = await _userManager.GetUserAsync(HttpContext.User);
-            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && tr.CompletedByUser == user) == 0)
-            {
-                return NotFound();
-            }
-
-            return PartialView("_LoadCodeAnswer", answer);
         }
         #endregion
 

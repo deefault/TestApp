@@ -377,7 +377,7 @@ namespace WebApplication3.Controllers
                         new Option { Text = model.Code.Output, Question = question });                 
                     try
                     {
-                        _context.Remove(await _context.Codes.SingleAsync(c => c.User == user));
+                        _context.Remove(await _context.Codes.SingleAsync(c => c.Test == test));
                     }
                     catch { }
                     await _context.SaveChangesAsync();
@@ -428,6 +428,10 @@ namespace WebApplication3.Controllers
                 case nameof(Question.QuestionTypeEnum.DragAndDropQuestion):
                     question.Options = question.Options.OrderBy(o => o.Order).ToList();
                     return View("EditDragAndDropQuestion", question);
+                case nameof(Question.QuestionTypeEnum.CodeQuestion):
+                    CodeQuestion codeQuestion = await _context.CodeQuestions.SingleOrDefaultAsync(q => q.Id == questionId);
+                    codeQuestion.Code = await _context.Codes.SingleOrDefaultAsync(c => c.Question == codeQuestion);
+                    return View("EditCodeQuestion", codeQuestion);
                 default:
                     return View("EditSingleChoiceQuestion", question);
             }
@@ -675,6 +679,65 @@ namespace WebApplication3.Controllers
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
+        [Route("/Tests/{testId}/CodeQuestion/{questionId}/Edit/", Name = "EditCode")]
+        public async Task<IActionResult> EditCodeQuestion(int testId, int questionId, [FromBody] AddCodeQuestionViewModel model)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
+            if (test == null)
+            {
+                return NotFound();
+            }
+            if (test.CreatedBy != user)
+            {
+                return Forbid();
+            }
+            var question = await _context.CodeQuestions
+                .Include(q => q.Code)
+                .SingleAsync(q => q.Id == questionId);
+            if (question.Test != test)
+            {
+                return NotFound();
+            }
+
+            model.TestId = test.Id;
+            TryValidateModel(model);
+
+            if (ModelState.IsValid)
+            {
+                // транзакция
+                using (var ts = _context.Database.BeginTransaction())
+                {
+                    var code = await _context.Codes.SingleAsync(c => c.Question == question);
+                    code.Args = model.Code.Args; code.Output = model.Code.Output; code.Value = model.Code.Value;
+                    var option = await _context.Options.SingleAsync(o => o.Question == question);
+                    option.Text = model.Code.Output;
+                    _context.Codes.Update(code);
+                    _context.Options.Update(option);
+                    _context.Questions.Update(question);
+                    await _context.SaveChangesAsync();
+                    ts.Commit();
+                }
+
+                var redirectUrl = Url.Action("Details", "Test", new { id = test.Id });
+                return new JsonResult(redirectUrl);
+            }
+            var errors = new List<ModelError>();
+            foreach (var modelState in ViewData.ModelState.Values)
+            {
+                foreach (ModelError error in modelState.Errors)
+                {
+                    errors.Add(error);
+                }
+            }
+
+            Response.StatusCode = StatusCodes.Status400BadRequest;
+            return new JsonResult(errors);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
         [Route("/Tests/{testId}/Question/{questionId}/Delete/")]
         public async Task<IActionResult> Delete(int testId, int questionId)
         {
@@ -694,20 +757,21 @@ namespace WebApplication3.Controllers
         #region Code
         [Authorize]
         [HttpGet]
-        [Route("/Code/")]
-        public async Task<IActionResult> GetCode()
+        [Route("/Tests/{testId}/Code/", Name = "GetCode")]
+        public async Task<IActionResult> GetCode(int testId)
         {
             Code code;
             var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
             try
             {
-                code = await _context.Codes.SingleAsync(c => c.User == user);
+                code = await _context.Codes.SingleAsync(c => c.Test == test);
             }
             catch (Exception)
             {
                 using (var ts = _context.Database.BeginTransaction())
                 {
-                    code = new Code { Output = "Output", User = user };
+                    code = new Code { Output = "Output", Test = test };
                     code = (await _context.AddAsync(code)).Entity;
                     await _context.SaveChangesAsync();
                     ts.Commit();
@@ -717,15 +781,127 @@ namespace WebApplication3.Controllers
         }
         [Authorize]
         [HttpPost]
-        [Route("/Code/")]
+        [Route("/Tests/{testId}/Code/", Name = "PostCode")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PostCode([FromBody]Code model)
+        public async Task<IActionResult> PostCode(int testId, [FromBody]Code model)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
             Code code;
             try
             {
-                code = await _context.Codes.SingleAsync(c => c.User == user);
+                code = await _context.Codes.SingleAsync(c => c.Test == test);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+            code.Value = model.Value;
+            code.Args = model.Args;
+            object[] args;
+            if (!string.IsNullOrEmpty(model.Args))
+                args = model.Args.Split(',').Select(arg => arg.Trim()).ToArray();
+            else
+                args = null;
+            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(model.Value);
+            string assemblyName = Path.GetRandomFileName();
+            MetadataReference[] references = new MetadataReference[]
+            {
+                MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location)
+            };
+
+            CSharpCompilation compilation = CSharpCompilation.Create(
+                assemblyName,
+                syntaxTrees: new[] { syntaxTree },
+                references: references,
+                options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+            StringBuilder message = new StringBuilder();
+            using (var ms = new MemoryStream())
+            {
+                EmitResult result = compilation.Emit(ms);
+
+                if (!result.Success)
+                {
+                    IEnumerable<Diagnostic> failures = result.Diagnostics.Where(diagnostic =>
+                        diagnostic.IsWarningAsError ||
+                        diagnostic.Severity == DiagnosticSeverity.Error);
+
+                    foreach (Diagnostic diagnostic in failures)
+                    {
+                        message.AppendFormat("{0}: {1}\n", diagnostic.Id, diagnostic.GetMessage());
+                        code.Output = message.ToString();
+                    }
+                }
+                else
+                {
+                    ms.Seek(0, SeekOrigin.Begin);
+                    Assembly assembly = Assembly.Load(ms.ToArray());
+                    Type type = assembly.GetType("TestsApp.Program");
+                    object obj = Activator.CreateInstance(type);
+                    try
+                    {
+                        code.Output = type.InvokeMember("Main",
+                        BindingFlags.Default | BindingFlags.InvokeMethod,
+                        null,
+                        obj,
+                        args).ToString();
+                    }
+                    catch (Exception e)
+                    {
+                        code.Output = e.Message;
+                    }
+                }
+            }
+            using (var ts = _context.Database.BeginTransaction())
+            {
+                _context.Codes.Update(code);
+                await _context.SaveChangesAsync();
+                ts.Commit();
+            }
+            await _context.SaveChangesAsync();
+            return new JsonResult("");
+        }
+        [Authorize]
+        [HttpGet]
+        [Route("/Tests/{testId}/Code/{questionId}", Name = "EditGetCode")]
+        public async Task<IActionResult> EditGetCode(int testId, int questionId)
+        {
+            Code code;
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
+            var question = await _context.CodeQuestions
+                .SingleAsync(q => q.Id == questionId);
+            try
+            {
+                code = await _context.Codes.SingleAsync(c => c.Question == question);
+            }
+            catch (Exception)
+            {
+                using (var ts = _context.Database.BeginTransaction())
+                {
+                    code = new Code { Output = "Output", Test = test };
+                    code = (await _context.AddAsync(code)).Entity;
+                    await _context.SaveChangesAsync();
+                    ts.Commit();
+                }
+            }
+            return PartialView("CodeOutput", code);
+        }
+        [Authorize]
+        [HttpPost]
+        [Route("/Tests/{testId}/Code/{questionId}", Name = "EditPostCode")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditPostCode(int testId, int questionId, [FromBody]Code model)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
+            var question = await _context.CodeQuestions
+                .SingleAsync(q => q.Id == questionId);
+            Code code;
+            try
+            {
+                code = await _context.Codes.SingleAsync(c => c.Question == question);
             }
             catch (Exception)
             {

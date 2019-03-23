@@ -9,7 +9,7 @@ using WebApplication3.Data;
 namespace WebApplication3.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190323160101_Initial")]
+    [Migration("20190323172404_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -179,7 +179,7 @@ namespace WebApplication3.Migrations
 
                     b.Property<int?>("QuestionId");
 
-                    b.Property<int?>("UserId");
+                    b.Property<int?>("TestId");
 
                     b.Property<string>("Value");
 
@@ -189,7 +189,7 @@ namespace WebApplication3.Migrations
 
                     b.HasIndex("QuestionId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("TestId");
 
                     b.ToTable("Codes");
                 });
@@ -564,15 +564,18 @@ namespace WebApplication3.Migrations
                 {
                     b.HasOne("WebApplication3.Models.Answer", "Answer")
                         .WithMany()
-                        .HasForeignKey("AnswerId");
+                        .HasForeignKey("AnswerId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("WebApplication3.Models.Question", "Question")
                         .WithMany()
-                        .HasForeignKey("QuestionId");
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("WebApplication3.Models.User", "User")
+                    b.HasOne("WebApplication3.Models.Test", "Test")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("TestId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("WebApplication3.Models.DragAndDropAnswerOption", b =>

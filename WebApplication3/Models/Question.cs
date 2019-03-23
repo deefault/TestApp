@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Newtonsoft.Json;
 
@@ -92,9 +93,12 @@ namespace WebApplication3.Models
         public int Id { get; set; }
         public string Value { get; set; }
         public string Output { get; set; }
+        [ForeignKey("QuestionId")]
         public Question Question { get; set; }
+        [ForeignKey("AnswerId")]
         public Answer Answer { get; set; }
-        public User User { get; set; }
+        [ForeignKey("TestId")]
+        public Test Test { get; set; }
         public string Args { get; set; }
     }
 }

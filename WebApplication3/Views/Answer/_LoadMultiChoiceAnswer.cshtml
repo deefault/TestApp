@@ -18,80 +18,94 @@
         <div class="items card" style="margin-bottom: 0;">
             <table class="table table-borderless" style="margin-bottom: 0;">
                 <tbody id="item-table__body">
-                @if (Model.AnswerOptions.Count != 0)
-                {
-                    foreach (var option in Model.AnswerOptions)
-                     {
-                         if (Model.TestResult.IsCompleted)
-                         {
-                             if (option.Checked == option.Option.IsRight)
-                             {
-                                 <tr class="item-table__row @(option.Checked ?"bg-success text-white" : "")">
-                                     <td class="item-table__cell">
-                                         <label id="inputContainer" class="form-check-label">
-                                             <input name="option" type="checkbox" option-id="@option.OptionId"
-                                                    group="Options" @(option.Checked ? "checked" : "")>
-                                             @option.Option.Text
-                                         </label>
-                                     </td>
-                                 </tr>
-                             }
-                             else
-                             {
-                                 <tr class="item-table__row @(option.Checked
+                    @if (Model.AnswerOptions.Count != 0)
+                    {
+                        foreach (var option in Model.AnswerOptions)
+                        {
+                            if (Model.TestResult.IsCompleted)
+                            {
+                                if (option.Checked == option.Option.IsRight)
+                                {
+                                    <tr class="item-table__row @(option.Checked ?"bg-success text-white" : "")">
+                                        <td class="item-table__cell">
+                                            <label id="inputContainer" class="form-check-label">
+                                                <input name="option" type="checkbox" option-id="@option.OptionId"
+                                                       group="Options" @(option.Checked ? "checked" : "")>
+                                                @option.Option.Text
+                                            </label>
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    <tr class="item-table__row @(option.Checked
                                                                   ? "bg-danger text-white"
                                                                   : (Model.TestResult.Test.HideRightAnswers ? "" :"bg-warning text-white"))">
-                                     <td class="item-table__cell">
-                                         <label id="inputContainer" class="form-check-label">
-                                             <input name="option" type="checkbox" option-id="@option.OptionId"
-                                                    group="Options" @(option.Checked ? "checked" : "")>
-                                             @option.Option.Text
-                                         </label>
-                                     </td>
-                                 </tr>
-                             }
-                         }
-                         else
-                         {
-                             <tr class="item-table__row">
-                                 <td class="item-table__cell">
-                                     <label class="form-check-label">
-                                         <input name="option" type="checkbox" @(option.Checked ?"checked":"") option-id="@option.Option.Id" group="Options">
-                                         @option.Option.Text
-                                     </label>
-                                 </td>
-                             </tr>
-                         }
-                     }
-                }
-                else
-                {
-                    foreach (var option in Model.AnswerOptions)
+                                        <td class="item-table__cell">
+                                            <label id="inputContainer" class="form-check-label">
+                                                <input name="option" type="checkbox" option-id="@option.OptionId"
+                                                       group="Options" @(option.Checked ? "checked" : "")>
+                                                @option.Option.Text
+                                            </label>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr class="item-table__row">
+                                    <td class="item-table__cell">
+                                        <label class="form-check-label">
+                                            <input name="option" type="checkbox" @(option.Checked ? "checked" : "") option-id="@option.Option.Id" group="Options">
+                                            @option.Option.Text
+                                        </label>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    }
+                    else
                     {
-                        if (Model.AnswerOptions.Count !=0)
+                        foreach (var option in Model.AnswerOptions)
                         {
                             <tr class="item-table__row">
                                 <td class="item-table__cell">
                                     <label class="form-check-label">
-                                        <input name="option" type="checkbox" @(checkedOptionsIds.Contains(option.Id) ? "checked" : "") option-id="@option.Id" group="Options">
-                                        @option.Text
+                                        <input name="option" type="checkbox" option-id="@option.Option.Id" group="Options">
+                                        @option.Option.Text
                                     </label>
                                 </td>
                             </tr>
                         }
-                        else
-                        {
-                            <tr class="item-table__row">
-                                <td class="item-table__cell">
-                                    <label class="form-check-label">
-                                        <input name="option" type="checkbox" option-id="@option.Id" group="options">
-                                        @option.Text
-                                    </label>
-                                </td>
-                            </tr>
-                        }
-                        */
-                }
+                    }
+
+
+                    @{
+                        /*
+                            if (Model.AnswerOptions.Count !=0)
+                            {
+                                <tr class="item-table__row">
+                                    <td class="item-table__cell">
+                                        <label class="form-check-label">
+                                            <input name="option" type="checkbox" @(checkedOptionsIds.Contains(option.Id)?"checked":"") option-id="@option.Id" group="Options">
+                                            @option.Text
+                                        </label>
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr class="item-table__row">
+                                    <td class="item-table__cell">
+                                        <label class="form-check-label">
+                                            <input name="option" type="checkbox"  option-id="@option.Id" group="options">
+                                            @option.Text
+                                        </label>
+                                    </td>
+                                </tr>
+                            }
+                            */
+                    }
                 </tbody>
             </table>
         </div>

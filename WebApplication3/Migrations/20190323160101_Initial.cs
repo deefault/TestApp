@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace WebApplication3.Migrations
 {
-    public partial class initial : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -164,7 +164,8 @@ namespace WebApplication3.Migrations
                     CreatedById = table.Column<int>(nullable: false),
                     CreatedOn = table.Column<DateTime>(nullable: false),
                     IsEnabled = table.Column<bool>(nullable: false),
-                    Shuffled = table.Column<bool>(nullable: false)
+                    Shuffled = table.Column<bool>(nullable: false),
+                    HideRightAnswers = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -222,6 +223,30 @@ namespace WebApplication3.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Codes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Value = table.Column<string>(nullable: true),
+                    Output = table.Column<string>(nullable: true),
+                    QuestionId = table.Column<int>(nullable: true),
+                    AnswerId = table.Column<int>(nullable: true),
+                    UserId = table.Column<int>(nullable: true),
+                    Args = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Codes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Codes_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "DragAndDropAnswerOption",
                 columns: table => new
                 {
@@ -262,6 +287,12 @@ namespace WebApplication3.Migrations
                         principalTable: "TestResult",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Answer_Codes_CodeId",
+                        column: x => x.CodeId,
+                        principalTable: "Codes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -283,40 +314,17 @@ namespace WebApplication3.Migrations
                 {
                     table.PrimaryKey("PK_Question", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Question_Codes_CodeId",
+                        column: x => x.CodeId,
+                        principalTable: "Codes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_Question_Test_TestId",
                         column: x => x.TestId,
                         principalTable: "Test",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Codes",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Value = table.Column<string>(nullable: true),
-                    Output = table.Column<string>(nullable: true),
-                    QuestionId = table.Column<int>(nullable: true),
-                    UserId = table.Column<int>(nullable: true),
-                    Args = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Codes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Codes_Question_QuestionId",
-                        column: x => x.QuestionId,
-                        principalTable: "Question",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Codes_User_UserId",
-                        column: x => x.UserId,
-                        principalTable: "User",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -396,6 +404,11 @@ namespace WebApplication3.Migrations
                 name: "IX_AspNetUserRoles_RoleId",
                 table: "AspNetUserRoles",
                 column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Codes_AnswerId",
+                table: "Codes",
+                column: "AnswerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Codes_QuestionId",
@@ -480,6 +493,22 @@ namespace WebApplication3.Migrations
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
+                name: "FK_Codes_Question_QuestionId",
+                table: "Codes",
+                column: "QuestionId",
+                principalTable: "Question",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Codes_Answer_AnswerId",
+                table: "Codes",
+                column: "AnswerId",
+                principalTable: "Answer",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
                 name: "FK_DragAndDropAnswerOption_Option_RightOptionId",
                 table: "DragAndDropAnswerOption",
                 column: "RightOptionId",
@@ -504,14 +533,6 @@ namespace WebApplication3.Migrations
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Answer_Codes_CodeId",
-                table: "Answer",
-                column: "CodeId",
-                principalTable: "Codes",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
                 name: "FK_Answer_Option_OptionId",
                 table: "Answer",
                 column: "OptionId",
@@ -528,14 +549,6 @@ namespace WebApplication3.Migrations
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Question_Codes_CodeId",
-                table: "Question",
-                column: "CodeId",
-                principalTable: "Codes",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
                 name: "FK_Question_Option_RightAnswerId",
                 table: "Question",
                 column: "RightAnswerId",
@@ -547,12 +560,24 @@ namespace WebApplication3.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
+                name: "FK_Answer_Question_QuestionId",
+                table: "Answer");
+
+            migrationBuilder.DropForeignKey(
                 name: "FK_Codes_Question_QuestionId",
                 table: "Codes");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_Option_Question_QuestionId",
                 table: "Option");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Answer_TestResult_TestResultId",
+                table: "Answer");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Answer_Codes_CodeId",
+                table: "Answer");
 
             migrationBuilder.DropTable(
                 name: "AnswerOptions");
@@ -579,25 +604,25 @@ namespace WebApplication3.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Answer");
+                name: "Question");
 
             migrationBuilder.DropTable(
                 name: "TestResult");
 
             migrationBuilder.DropTable(
-                name: "Question");
+                name: "Test");
 
             migrationBuilder.DropTable(
                 name: "Codes");
 
             migrationBuilder.DropTable(
-                name: "Test");
-
-            migrationBuilder.DropTable(
-                name: "Option");
+                name: "Answer");
 
             migrationBuilder.DropTable(
                 name: "User");
+
+            migrationBuilder.DropTable(
+                name: "Option");
         }
     }
 }

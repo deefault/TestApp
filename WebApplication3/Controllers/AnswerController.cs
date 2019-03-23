@@ -65,19 +65,6 @@ namespace WebApplication3.Controllers
 
             return View("Answer", answers);
         }
-        [Authorize]
-        [HttpGet]
-        [Route("/{testResultId}/Results/Question/{answerId}/")]
-        public async Task<IActionResult> AnswerResults(int testResultId, ushort answerId)
-        {
-            var testResult = await _context.TestResults
-                .Include(tr => tr.Answers)
-            .SingleAsync(tr => tr.Id == testResultId);
-            if (testResult == null) return NotFound();
-            var answers = testResult.Answers.OrderBy(a => a.Order).ToList();
-
-            return View("AnswerResults", answers);
-        }
         #endregion
 
         #region GET
@@ -130,8 +117,8 @@ namespace WebApplication3.Controllers
             var answer = await _context.MultiChoiceAnswers
                     .Include(a => a.TestResult)
                     .Include(a => a.AnswerOptions)
+                        .ThenInclude(ao=> ao.Option)
                     .Include(a => a.Question)
-                        .ThenInclude(q => q.Options)
                 .SingleAsync(a => a.Id == answerId)
                 ;
             if (answer == null) return NotFound();
@@ -141,15 +128,18 @@ namespace WebApplication3.Controllers
                 return NotFound();
             }
 
-            var checkedOptionsIds = new List<int>();
+            var checkedOptionIds = new List<int>();
+            var rightOptionIds = new List<int>();
             if (answer.AnswerOptions != null)
             {
                 foreach (var answerOption in answer.AnswerOptions)
                 {
-                    if (answerOption.Checked) checkedOptionsIds.Add(answerOption.OptionId);
+                    if (answerOption.Checked) checkedOptionIds.Add(answerOption.OptionId);
+                    if (answerOption.Option.IsRight) rightOptionIds.Add(answerOption.OptionId);
                 }
             };
-            ViewBag.checkedOptionsIds = checkedOptionsIds;
+            ViewBag.checkedOptionsIds = checkedOptionIds;
+            ViewBag.rightOptionsIds = rightOptionIds;
             return PartialView("_LoadMultiChoiceAnswer", answer);
         }
 
@@ -161,6 +151,7 @@ namespace WebApplication3.Controllers
             var answer = await _context.DragAndDropAnswers
                     .Include(a => a.TestResult)
                     .Include(a => a.DragAndDropAnswerOptions)
+                        .ThenInclude(o =>o.RightOption)
                     .Include(a => a.Question)
                         .ThenInclude(q => q.Options)
                 .SingleAsync(a => a.Id == answerId)
@@ -174,6 +165,35 @@ namespace WebApplication3.Controllers
             }
             return PartialView("_LoadDragAndDropAnswer", answer);
         }
+        
+        [Authorize]
+        [HttpGet]
+        [Route("/{testResultId}/Results/Question/{answerId}/")]
+        public async Task<IActionResult> AnswerResults(int testResultId, ushort answerId)
+        {
+            var testResult = await _context.TestResults
+                .Include(tr => tr.Answers)
+                .SingleAsync(tr => tr.Id == testResultId);
+            if (testResult == null) return NotFound();
+            var answers = testResult.Answers.OrderBy(a => a.Order).ToList();
+
+            return View("AnswerResults", answers);
+        }
+       
+        [Authorize]
+        [HttpGet]
+        [Route("/{testResultId}/DetailedResults/Question/<answerOrder>/")]
+        public async Task<IActionResult> AnswerDetailedResults(int testResultId, ushort answerOrder)
+        {
+            var testResult = await _context.TestResults
+                .Include(tr=>tr.Answers)
+                .SingleAsync(tr => tr.Id == testResultId);
+            if (testResult == null) return NotFound();
+            
+            
+            return View("AnswerResults",testResult.Answers);
+        }
+        
         #endregion
 
         #region POST

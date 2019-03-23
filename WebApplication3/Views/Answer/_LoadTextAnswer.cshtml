@@ -1,19 +1,68 @@
-﻿@model TextAnswer
-
+﻿@using System.Net.Mime
+@model TextAnswer
+@{
+    var Question = Model.Question as TextQuestion;
+    if (String.IsNullOrWhiteSpace(Model.Text))
+    {
+        Model.Text = "";
+    }
+}
 <form method="post">
     <div>
         <h5 style="margin-top: 1rem;">@Model.Question.Title</h5>
+        
     </div>
     <input type="hidden" value="@Model.Id">
     <fieldset class="form-group row" id="options">
         <div class="col-sm-10">
             <table class="table item-table">
                 <tbody id="item-table__body">
-                    <tr class="item-table__row">
-                        <td class="item-table__cell">
-                            <textarea name="option" id="Text" class="form-control item__text-field" value="@((Model.Text != null && Model.Text != "") ? Model.Text : "")" placeholder="Ответ">@Model.Text</textarea>
-                        </td>
-                    </tr>
+                <tr class="item-table__row">
+                    
+              
+                        @if (Model.TestResult.IsCompleted)
+                        {
+                            if (Model.Text.ToLower() == Question.TextRightAnswer.ToLower())
+                             {
+                                 <td class="item-table__cell">
+                                    
+                                     <textarea name="option" id="Text" class="form-control item__text-field text-success" 
+                                        value="@((Model.Text != null && Model.Text != "") ? Model.Text : "")" 
+                                        placeholder="Ответ">@Model.Text
+                                </textarea>
+                                 </td>
+                             }
+                            else
+                            {
+                                <td class="item-table__cell">
+                                    Верный ответ:
+                                    <textarea name="option" id="Text" class="form-control item__text-field text-success" 
+                                        value="@(
+    !string.IsNullOrEmpty(Question.TextRightAnswer)
+        ? Question.TextRightAnswer : "" )" 
+                                        placeholder="Ответ">@Question.TextRightAnswer
+                                </textarea>
+                                </td>
+                                <td class="item-table__cell">
+                                    Ваш ответ:
+                                    <textarea name="option" id="Text" class="form-control item__text-field bg-danger text-white" 
+                                        value="@((Model.Text != null && Model.Text != "") ? Model.Text : "")" 
+                                        placeholder="Ответ">@Model.Text
+                                </textarea>
+                                </td>
+                            }
+                        }
+                        else
+                        {
+                            <td class="item-table__cell">
+                                
+                                <textarea name="option" id="Text" class="form-control item__text-field" value="@((Model.Text != null && Model.Text != "") ? Model.Text : "")" placeholder="Ответ">@Model.Text</textarea>
+                                
+                            </td>
+                        }
+                        
+                    
+                </tr>
                 </tbody>
             </table>
         </div>

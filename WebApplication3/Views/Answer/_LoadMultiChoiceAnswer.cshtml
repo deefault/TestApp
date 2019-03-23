@@ -4,9 +4,14 @@
     List<int> rightOptionIds = ViewBag.rightOptionIds;
     var Quesion = Model.Question as MultiChoiceQuestion;
 }
+
 <form method="post">
     <div>
-    <h5 style="margin-top: 1rem;">@Model.Question.Title</h5>
+        <h5 style="margin-top: 1rem;">@Model.Question.Title</h5>
+        @if (Model.TestResult.IsCompleted)
+        {
+            <h5>Балл: @Model.Score/@Model.Question.Score</h5>
+        }
     </div>
     <input type="hidden" value="@Model.Id">
     <fieldset class="form-group row" id="options">
@@ -19,15 +24,13 @@
                      {
                          if (Model.TestResult.IsCompleted)
                          {
-                             if (option.Checked)
+                             if (option.Checked == option.Option.IsRight)
                              {
-                                 <tr class="item-table__row @(option.Checked == option.Option.IsRight
-                                                                  ? "bg-success text-white"
-                                                                  : "bg-danger text-white")">
+                                 <tr class="item-table__row @(option.Checked ?"bg-success text-white" : "")">
                                      <td class="item-table__cell">
                                          <label id="inputContainer" class="form-check-label">
                                              <input name="option" type="checkbox" option-id="@option.OptionId"
-                                                    group="Options" checked>
+                                                    group="Options" @(option.Checked ? "checked" : "")>
                                              @option.Option.Text
                                          </label>
                                      </td>
@@ -35,13 +38,13 @@
                              }
                              else
                              {
-                                 <tr class="item-table__row @(option.Option.IsRight
-                                                                  ? "bg-warning text-white"
-                                                                  : "")">
+                                 <tr class="item-table__row @(option.Checked
+                                                                  ? "bg-danger text-white"
+                                                                  : (Model.TestResult.Test.HideRightAnswers ? "" :"bg-warning text-white"))">
                                      <td class="item-table__cell">
                                          <label id="inputContainer" class="form-check-label">
                                              <input name="option" type="checkbox" option-id="@option.OptionId"
-                                                    group="Options">
+                                                    group="Options" @(option.Checked ? "checked" : "")>
                                              @option.Option.Text
                                          </label>
                                      </td>

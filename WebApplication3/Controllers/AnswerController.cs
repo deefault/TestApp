@@ -128,6 +128,7 @@ namespace WebApplication3.Controllers
                     .Include(a => a.AnswerOptions)
                         .ThenInclude(ao => ao.Option)
                     .Include(a => a.Question)
+                        .ThenInclude(q => q.Options)
                 .SingleAsync(a => a.Id == answerId)
                 ;
             if (answer == null) return NotFound();

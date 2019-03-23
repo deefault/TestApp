@@ -2,97 +2,92 @@
 @using Microsoft.AspNetCore.Mvc.Rendering
 @using Microsoft.AspNetCore.Routing
 @model WebApplication3.Models.QuestionViewModels.AddMultiChoiceQuestionViewModel
-
 @{
     ViewBag.Title = "Добавить вопрос";
     Layout = "_Layout";
 }
 
-
 <div class="container">
-        <div class="form-group" id="fields">
-            <div class="">
-                <form asp-controller="Question" asp-action="AddMultiChoiceQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
-                    <hr />
-                    <h4 class="text-center">Добавить вопрос с выбором нескольких правильных ответов</h4>
-                    <hr />
-                    <ul class="text-danger" id="validation-summary"></ul>
-                    @*<div asp-validation-summary="All" class="text-danger"></div>*@
-                    <b>Текст вопроса:</b>
-                    <div>
-                        @*<label asp-for="Title" class="col-md-2 col-lg-2"></label>*@
-                        <div class="form-group clearfix contentwrapper">
-                            <textarea asp-for="Title" class="form-control"></textarea>
-                            <span asp-validation-for="Title" class="text-danger"></span>
-                        </div>
+    <link rel="stylesheet" href="~/lib/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.css" />
+    <div class="form-group" id="fields">
+        <div class="">
+            <form asp-controller="Question" asp-action="AddMultiChoiceQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
+                <hr />
+                <h4 class="text-center">Добавить вопрос с выбором нескольких правильных ответов</h4>
+                <hr />
+                <ul class="text-danger" id="validation-summary"></ul>
+                @*<div asp-validation-summary="All" class="text-danger"></div>*@
+                <b>Текст вопроса:</b>
+                <div>
+                    @*<label asp-for="Title" class="col-md-2 col-lg-2"></label>*@
+                    <div class="form-group clearfix contentwrapper">
+                        <textarea asp-for="Title" class="form-control"></textarea>
+                        <span asp-validation-for="Title" class="text-danger"></span>
                     </div>
-                    <b>Балл:</b>
-                    <div>
-                        <div class="form-group clearfix contentwrapper">
-                            <input asp-for="Score" class="form-control" placeholder="1..100" min="1" max="100" />
-                            <span asp-validation-for="Score" class="text-danger"></span>
-                        </div>
+                </div>
+                <b>Балл:</b>
+                <div>
+                    <div class="form-group clearfix contentwrapper">
+                        <input id="score" asp-for="Score" type="text" class="form-control" placeholder="1..100" min="1" max="100" />
+                        <span asp-validation-for="Score" class="text-danger"></span>
                     </div>
-                    <b>Варианты ответа:</b>
-                    <div class="items card" style="margin-bottom: 0;">
-                        <table class="table table-borderless" style="margin-bottom: 0;">
-                            <tbody id="item-table__body">
-                                @for (var i = 0; i < 3; i++)
-                                {
-                                    <tr>
-                                        <td class="item-table__cell">
-                                            <textarea rows="1" id="Text" asp-for="Text" class="form-control item__text-field"></textarea>
-                                        </td>
-                                        <td class="item-table__cell" align="right">
-                                            <input class="form-check-inline" type="checkbox" name="isRight" id="isRight" />
-                                            <button class="btn item-table__del-row-btn">
-                                                <span class="glyphicon glyphicon-minus"></span>
-                                            </button>
-
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-
+                </div>
+                <b>Варианты ответа:</b>
+                <div class="items card" style="margin-bottom: 0;">
+                    <table class="table table-borderless" style="margin-bottom: 0;">
+                        <tbody id="item-table__body">
+                            @for (var i = 0; i < 3; i++)
+                            {
+                                <tr>
+                                    <td class="item-table__cell">
+                                        <textarea rows="1" id="Text" asp-for="Text" class="form-control item__text-field"></textarea>
+                                    </td>
+                                    <td class="item-table__cell" align="right">
+                                        <input class="form-check-inline" type="checkbox" name="isRight" id="isRight" />
+                                        <button class="btn item-table__del-row-btn">
+                                            <span class="glyphicon glyphicon-minus"></span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="item-table__add-row">
+                    <span class="item-table__add-row-btn">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </span>
+                </div>
+                <script id="rowTemplate" type="text/template">
+                    <tr>
+                        <td class="item-table__cell">
+                            <textarea rows="1" id="Text" asp-for="Text" class="form-control item__text-field"></textarea>
+                        </td>
+                        <td class="item-table__cell" align="right">
+                            <input class="form-check-inline" type="checkbox" name="isRight" id="isRight" />
+                            <button class="btn item-table__del-row-btn">
+                                <span class="glyphicon glyphicon-minus"></span>
+                            </button>
+                        </td>
+                    </tr>
+                </script>
+                <input type="hidden" value="@ViewContext.RouteData.Values["testId"]" asp-for="TestId" />
+                <div class="form-group row">
+                    <div class="col-md-offset-2 col-md-10">
+                        <button type="submit" class="btn btn-primary">Добавить</button>
                     </div>
-                    <div class="item-table__add-row">
-                        <span class="item-table__add-row-btn">
-                            <span class="glyphicon glyphicon-plus"></span>
-                        </span>
-                    </div>
-                    <script id="rowTemplate" type="text/template">
-                        <tr>
-                            <td class="item-table__cell">
-                                <textarea rows="1" id="Text" asp-for="Text" class="form-control item__text-field"></textarea>
-                            </td>
-                            <td class="item-table__cell" align="right">
-                                <input class="form-check-inline" type="checkbox" name="isRight" id="isRight" />
-                                <button class="btn item-table__del-row-btn">
-                                    <span class="glyphicon glyphicon-minus"></span>
-                                </button>
-                            </td>
-                        </tr>
-                    </script>
-
-                    <input type="hidden" value="@ViewContext.RouteData.Values["testId"]" asp-for="TestId" />
-
-                    <div class="form-group row">
-                        <div class="col-md-offset-2 col-md-10">
-                            <button type="submit" class="btn btn-primary">Добавить</button>
-                        </div>
-                    </div>
-                </form>
-
-                <br>
-            </div>
+                </div>
+            </form>
+            <br>
         </div>
-
+    </div>
 </div>
-
 @section Scripts {
-
+    <script src="~/lib/bootstrap-touchspin/src/jquery.bootstrap-touchspin.js"></script>
     <script>
+        $("#score").TouchSpin({
+            verticalbuttons: true,
+        });
         $(function () {
             $(document).on('click', '.item-table__add-row-btn', function (e) {
                 var $tableBody = $('#item-table__body');

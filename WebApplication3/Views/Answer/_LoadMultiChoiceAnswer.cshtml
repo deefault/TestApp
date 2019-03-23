@@ -66,13 +66,13 @@
                     }
                     else
                     {
-                        foreach (var option in Model.AnswerOptions)
+                        foreach (var option in Model.Question.Options)
                         {
                             <tr class="item-table__row">
                                 <td class="item-table__cell">
                                     <label class="form-check-label">
-                                        <input name="option" type="checkbox" option-id="@option.Option.Id" group="Options">
-                                        @option.Option.Text
+                                        <input name="option" type="checkbox" option-id="@option.Id" group="Options">
+                                        @option.Text
                                     </label>
                                 </td>
                             </tr>

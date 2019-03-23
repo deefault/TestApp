@@ -188,19 +188,18 @@ textarea.item__text-field {
     }
 
 button.collapse-btn {
-    color: CaptionText;
+    color: rgb(33, 37, 41);
     width: 100%;
     text-align: left;
     text-decoration: none;
-
 }
     button.collapse-btn:focus {
-        color: CaptionText;
+        color: rgb(33, 37, 41);
         text-decoration: none;
     }
 
     button.collapse-btn:hover {
-        color: CaptionText;
+        color: rgb(33, 37, 41);
         text-decoration: none;
     }
 #output {

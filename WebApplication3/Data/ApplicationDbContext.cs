@@ -22,12 +22,14 @@ namespace WebApplication3.Data
         public DbSet<MultiChoiceQuestion> MultiChoiceQuestions { get; set; }
         public DbSet<TextQuestion> TextQuestions { get; set; }
         public DbSet<DragAndDropQuestion> DragAndDropQuestions { get; set; }
+        public DbSet<CodeQuestion> CodeQuestions { get; set; }
         public DbSet<Option> Options { get; set; }
         public DbSet<Answer> Answers { get; set; }
         public DbSet<SingleChoiceAnswer> SingleChoiceAnswers { get; set; }
         public DbSet<MultiChoiceAnswer> MultiChoiceAnswers { get; set; }
         public DbSet<TextAnswer> TextAnswers { get; set; }
         public DbSet<DragAndDropAnswer> DragAndDropAnswers { get; set; }
+        public DbSet<CodeAnswer> CodeAnswers { get; set; }
         public DbSet<DragAndDropAnswerOption> DragAndDropAnswerOptions { get; set; }
         public DbSet<AnswerOption> AnswerOptions { get; set; }
         public DbSet<Code> Codes { get; set; }
@@ -47,7 +49,8 @@ namespace WebApplication3.Data
             builder.Entity<SingleChoiceQuestion>().ToTable("SingleChoiceQuestion");
             builder.Entity<TextQuestion>().ToTable("TextQuestion");
             builder.Entity<DragAndDropQuestion>().ToTable("DragAndDropQuestion");
-            
+            builder.Entity<CodeQuestion>().ToTable("CodeQuestion");
+
             builder.Entity<Answer>(a =>
             {
                 a.HasDiscriminator<string>("AnswerType");
@@ -59,6 +62,7 @@ namespace WebApplication3.Data
             builder.Entity<SingleChoiceAnswer>().ToTable("SingleChoiceAnswer");
             builder.Entity<TextAnswer>().ToTable("TextAnswer");
             builder.Entity<DragAndDropAnswer>().ToTable("DragAndDropAnswer");
+            builder.Entity<CodeAnswer>().ToTable("CodeAnswer");
             builder.Entity<DragAndDropAnswerOption>().ToTable("DragAndDropAnswerOption");
             
             builder.Entity<Option>().ToTable("Option");
@@ -67,7 +71,6 @@ namespace WebApplication3.Data
             builder.Entity<User>().ToTable("User");
             builder.Entity<AnswerOption>().ToTable("AnswerOptions");
             builder.Entity<Code>().ToTable("Codes");
-            
             // many-to-many
             builder.Entity<AnswerOption>()
                 .HasKey(ao => new { ao.AnswerId, ao.OptionId });

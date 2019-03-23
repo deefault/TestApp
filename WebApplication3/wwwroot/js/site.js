@@ -179,6 +179,13 @@ function submitAnswer() {
             data.Options.push(o);
         }
     }
+    else if (type == "CodeAnswer") {
+        var data = {};
+        data.Code = {};
+        data.Code.Value = editor.getValue();
+        data.Code.Args = elements.args.val();
+        data.Code.Output = $("#output").html();
+    }
     else throw new exception("Not valid answer type!s");
 
     console.log(data);
@@ -187,7 +194,7 @@ function submitAnswer() {
         method: "POST",
         url: actionUrl,
         beforeSend: function (xhr) {
-            $("#formDiv").html("<img src=\"/images/loading.gif\" class=\"img-responsive\"/>");
+            $("#formDiv").html("<img src=\"/images/honkler.gif\" class=\"img-responsive center\"/>");
             xhr.setRequestHeader("RequestVerificationToken",
                 $('input:hidden[name="__RequestVerificationToken"]').val());
         },
@@ -226,7 +233,7 @@ function switchAnswer(e) {
                 $("li[btn-Order=" + e.target.parentElement.getAttribute("btn-Order") + "]").addClass("active");
                 refreshButtons();
             }
-    
+
 }
 function submitSwitchAnswer(e) {
     if (e.target.parentElement.classList.contains("next-btn")) {
@@ -275,5 +282,143 @@ var disableArrowKeys = function (e) {
             return false;
         }
     }
+}
+// #endregion
+
+// #region Code
+function submitAnswerCode() {
+    var id = getActiveAnswerId();
+    var actionUrl = "/Code/" + id + "/";
+    var data = {};
+    data.Value = editor.getValue();
+    data.Args = elements.args.val();
+    console.log(data);
+    // запрос
+    $.ajax({
+        async: false,
+        method: "POST",
+        url: actionUrl,
+        beforeSend: function (xhr) {
+            $("#output").html("Waiting for server...");
+            xhr.setRequestHeader("RequestVerificationToken",
+                $('input:hidden[name="__RequestVerificationToken"]').val());
+        },
+        contentType: "application/json",
+        data: JSON.stringify(data),
+        success: function (response) {
+            console.log(response);
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            //console.log(textStatus + ": Couldn't add control. " + errorThrown);
+            console.log(xhr);
+        },
+    });
+}
+function loadAnswerOutput() {
+    var id = getActiveAnswerId();
+    var actionUrl = "/Code/" + id + "/";
+    $.ajax({
+        async: false,
+        cache: false,
+        method: "GET",
+        url: actionUrl,
+        dataType: "html",
+        beforeSend: function () {
+
+        },
+        success: function (response) {
+            //заменить html код формой внутри div
+            $("#outputDiv").html(response);
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            console.log(xhr.responseJSON);
+        }
+    });
+}
+function submitCode() {
+    var data = {};
+    data.Value = editor.getValue();
+    data.Args = elements.args.val();
+    var actionUrl = "/Code/";
+    console.log(data);
+    // запрос
+    $.ajax({
+        async: false,
+        method: "POST",
+        url: actionUrl,
+        beforeSend: function (xhr) {
+            $("#output").html("Waiting for server...");
+            xhr.setRequestHeader("RequestVerificationToken",
+                $('input:hidden[name="__RequestVerificationToken"]').val());
+        },
+        contentType: "application/json",
+        data: JSON.stringify(data),
+        success: function (response) {
+            console.log(response);
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            //console.log(textStatus + ": Couldn't add control. " + errorThrown);
+            console.log(xhr);
+        },
+    });
+}
+function loadOutput() {
+    var actionUrl = "/Code/";
+    $.ajax({
+        async: false,
+        cache: false,
+        method: "GET",
+        url: actionUrl,
+        dataType: "html",
+        beforeSend: function () {
+
+        },
+        success: function (response) {
+            //заменить html код формой внутри div
+            $("#outputDiv").html(response);
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            console.log(xhr.responseJSON);
+        }
+    });
+}
+function getAddCodeQuestionFormData() {
+    var data = {};
+    data.Code = {};
+    data.Title = $("#Title").val();
+    data.Score = $("#Score").val();
+    data.Code.Value = editor.getValue();
+    data.Code.Args = elements.args.val();
+    data.Code.Output = $("#output").html();
+    return data;
+};
+function submitCodeQuestion(actionUrl) {
+    $.ajax({
+        type: "POST",
+        url: actionUrl,
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("RequestVerificationToken",
+                $('input:hidden[name="__RequestVerificationToken"]').val());
+        },
+        data: JSON.stringify(getAddCodeQuestionFormData()),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (response) {
+            window.location.href = response;
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            //console.log(textStatus + ": Couldn't add control. " + errorThrown);
+            var ul = $("#validation-summary");
+            ul.empty();
+            if (xhr.status == 500) {
+                ul.append('<li>HTTP 500 Ошибка на стороне сервера</li>');
+            }
+            if (xhr.status == 404) {
+                ul.append('<li>HTTP 404 Ресурс не найден</li>');
+            }
+            addFormErrors(xhr.responseJSON);
+
+        },
+    });
 }
 // #endregion

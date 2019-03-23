@@ -68,6 +68,11 @@ namespace WebApplication3.Models
 
     }
 
+    public class CodeQuestion: Question
+    {
+        public Code Code { get; set; }
+    }
+
     public class Option
     {
         public int Id { get; set; }
@@ -82,13 +87,13 @@ namespace WebApplication3.Models
 
         public ICollection<AnswerOption> AnswerOptions { get; set; }
     }
-
     public class Code
     {
         public int Id { get; set; }
         public string Value { get; set; }
         public string Output { get; set; }
         public Question Question { get; set; }
+        public Answer Answer { get; set; }
         public User User { get; set; }
         public string Args { get; set; }
     }

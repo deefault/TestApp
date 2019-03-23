@@ -452,6 +452,9 @@ namespace WebApplication3.Controllers
                     case "DragAndDropQuestion":
                         answer = new DragAndDropAnswer();
                         break;
+                    case "CodeQuestion":
+                        answer = new CodeAnswer();
+                        break;
                 }
                 if (answer == null) throw new NullReferenceException();
                 answer.Question = question;
@@ -568,6 +571,31 @@ namespace WebApplication3.Controllers
                             count--;
                             break;
                         }
+                    }
+                }
+                else if (answer is CodeAnswer)
+                {
+                    var codeAnswer = await _context.CodeAnswers
+                    .Include(a => a.Question).Include(a => a.Code).Include(a => a.Option)
+                    .SingleAsync(a => a.Id == answer.Id);
+                    var question =
+                        await _context.CodeQuestions
+                            .SingleAsync(q => q.Id == codeAnswer.QuestionId);
+                    if (codeAnswer.Code != null && codeAnswer.Option != null)
+                    {
+                        if (codeAnswer.Code.Output == codeAnswer.Option.Text)
+                        {
+                            codeAnswer.Score = question.Score;
+                            count++;
+                        }
+                        else
+                        {
+                            codeAnswer.Score = 0;
+                        }
+                    }
+                    else
+                    {
+                        codeAnswer.Score = 0;
                     }
                 }
             }

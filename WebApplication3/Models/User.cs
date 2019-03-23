@@ -11,7 +11,6 @@ namespace WebApplication3.Models
         
         public ICollection<TestResult> TestResults { get; set; } //Completed tests
         public ICollection<Test> Tests { get; set; } // uncompleted tests
-
         public User() : base()
         {  
             TestResults = new List<TestResult>();

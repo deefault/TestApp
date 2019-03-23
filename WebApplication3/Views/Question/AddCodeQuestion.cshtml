@@ -48,9 +48,9 @@ namespace TestsApp
 {
     public class Program
     {
-        public string Main()
+        public string Main(string message)
         {
-            return "Hello World";
+            return message;
         }
     }
 }</textarea>
@@ -61,7 +61,7 @@ namespace TestsApp
                     <div>
                         <b>Аргументы:</b>
                         <div class="input-group">
-                            <input id="args" class="form-control">
+                            <input id="args" value="Hello World" class="form-control">
                             <span class="input-group-append">
                                 <button class="btn btn-success" id="compile">Запуск</button>
                             </span>

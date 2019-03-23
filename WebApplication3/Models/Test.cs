@@ -20,6 +20,8 @@ namespace WebApplication3.Models
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;        
         public bool IsEnabled { get; set; }        
         public bool Shuffled { get; set; }
+        
+        public bool HideRightAnswers { get; set; } = false;
         public ICollection<Question> Questions { get; set; }
         
         public enum QuestionTypeEnum

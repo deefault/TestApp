@@ -303,6 +303,21 @@ namespace WebApplication3.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction("Tests");
         }
+        
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [Route("/Tests/{testId}/Hide/")]
+        public async Task<IActionResult> Hide(int testId)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
+            if (test.CreatedBy != user) return Forbid();
+            test.HideRightAnswers = !test.HideRightAnswers;
+            _context.Tests.Update(test);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Tests");
+        }
         #endregion
 
         #region Список тестов

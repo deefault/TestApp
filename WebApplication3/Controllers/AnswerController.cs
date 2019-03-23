@@ -75,6 +75,7 @@ namespace WebApplication3.Controllers
         {
             var answer = await _context.SingleChoiceAnswers
                     .Include(a => a.TestResult)
+                        .ThenInclude(tr=>tr.Test)
                     .Include(a => a.Question)
                         .ThenInclude(q => q.Options)
                 .SingleAsync(a => a.Id == answerId)
@@ -96,6 +97,7 @@ namespace WebApplication3.Controllers
         {
             var answer = await _context.TextAnswers
                     .Include(a => a.TestResult)
+                        .ThenInclude(tr=>tr.Test)
                     .Include(a => a.Question)
                 .SingleAsync(a => a.Id == answerId)
                 ;
@@ -116,6 +118,7 @@ namespace WebApplication3.Controllers
         {
             var answer = await _context.MultiChoiceAnswers
                     .Include(a => a.TestResult)
+                        .ThenInclude(tr=>tr.Test)
                     .Include(a => a.AnswerOptions)
                         .ThenInclude(ao=> ao.Option)
                     .Include(a => a.Question)
@@ -150,6 +153,7 @@ namespace WebApplication3.Controllers
         {
             var answer = await _context.DragAndDropAnswers
                     .Include(a => a.TestResult)
+                        .ThenInclude(tr=>tr.Test)
                     .Include(a => a.DragAndDropAnswerOptions)
                         .ThenInclude(o =>o.RightOption)
                     .Include(a => a.Question)

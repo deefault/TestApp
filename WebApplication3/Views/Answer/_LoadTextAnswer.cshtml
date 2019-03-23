@@ -10,6 +10,10 @@
 <form method="post">
     <div>
         <h5 style="margin-top: 1rem;">@Model.Question.Title</h5>
+        @if (Model.TestResult.IsCompleted)
+        {
+            <h5>Балл: @Model.Score/@Model.Question.Score</h5>
+        }
         
     </div>
     <input type="hidden" value="@Model.Id">
@@ -34,15 +38,19 @@
                              }
                             else
                             {
-                                <td class="item-table__cell">
-                                    Верный ответ:
-                                    <textarea name="option" id="Text" class="form-control item__text-field text-success" 
+                                if (Model.TestResult.Test.HideRightAnswers)
+                                {
+                                    <td class="item-table__cell">
+                                        Верный ответ:
+                                        <textarea name="option" id="Text" class="form-control item__text-field text-success" 
                                         value="@(
     !string.IsNullOrEmpty(Question.TextRightAnswer)
         ? Question.TextRightAnswer : "" )" 
                                         placeholder="Ответ">@Question.TextRightAnswer
                                 </textarea>
-                                </td>
+                                    </td>
+                                }
+                                
                                 <td class="item-table__cell">
                                     Ваш ответ:
                                     <textarea name="option" id="Text" class="form-control item__text-field bg-danger text-white" 

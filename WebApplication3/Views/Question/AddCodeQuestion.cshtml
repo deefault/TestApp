@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="~/lib/codemirror/lib/codemirror.css" />
     <link rel="stylesheet" href="~/lib/codemirror/addon/fold/foldgutter.css" />
     <link rel="stylesheet" href="~/lib/codemirror/addon/hint/show-hint.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.css" />
     <div class="form-group" id="fields">
         <div class="">
             <form asp-controller="Question" asp-action="AddCodeQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
@@ -57,7 +58,6 @@ namespace TestsApp
                             <em><b>Ctrl-Space</b>: autocomplete</em>
                         </span>
                     </div>
-
                     <div>
                         <b>Аргументы:</b>
                         <div class="input-group">
@@ -75,7 +75,6 @@ namespace TestsApp
                     </div>
                 </div>
                 <input type="hidden" value="@ViewContext.RouteData.Values["testId"]" asp-for="TestId" />
-
                 <div class="form-group row">
                     <div class="col-md-offset-2 col-md-10">
                         <button type="submit" class="btn btn-primary">Добавить</button>
@@ -100,7 +99,11 @@ namespace TestsApp
     <script src="~/lib/codemirror/addon/edit/matchbrackets.js"></script>
     <script src="~/lib/codemirror/addon/hint/anyword-hint.js"></script>
     <script src="~/lib/codemirror/addon/hint/show-hint.js"></script>
+    <script src="~/lib/bootstrap-touchspin/src/jquery.bootstrap-touchspin.js"></script>
     <script>
+        $("#score").TouchSpin({
+            verticalbuttons: true,
+        });
         loadOutput('@Url.RouteUrl("GetCode", new {testId = Context.GetRouteData().Values["testId"]})');
         var elements =
         {

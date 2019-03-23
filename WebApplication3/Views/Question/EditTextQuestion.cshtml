@@ -11,63 +11,63 @@
 
 
 <div class="container">
-
-        <div class="form-group" id="fields">
-            <div class="">
-                <form asp-controller="Question" asp-action="EditTextQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
-                    <hr />
-                    <h4 class="text-center">Изменить открытый вопрос</h4>
-                    <hr />
-                    <ul class="text-danger" id="validation-summary"></ul>
-                    @*<div asp-validation-summary="All" class="text-danger"></div>*@
-                    <b>Текст вопроса:</b>
-                    <div>
-                        @*<label asp-for="Title" class="col-md-2 col-lg-2"></label>*@
-                        <div class="form-group clearfix contentwrapper">
-                            <textarea asp-for="Title" class="form-control"></textarea>
-                            <span asp-validation-for="Title" class="text-danger"></span>
-                        </div>
+    <link rel="stylesheet" href="~/lib/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.css" />
+    <div class="form-group" id="fields">
+        <div class="">
+            <form asp-controller="Question" asp-action="EditTextQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
+                <hr />
+                <h4 class="text-center">Изменить открытый вопрос</h4>
+                <hr />
+                <ul class="text-danger" id="validation-summary"></ul>
+                @*<div asp-validation-summary="All" class="text-danger"></div>*@
+                <b>Текст вопроса:</b>
+                <div>
+                    @*<label asp-for="Title" class="col-md-2 col-lg-2"></label>*@
+                    <div class="form-group clearfix contentwrapper">
+                        <textarea asp-for="Title" class="form-control"></textarea>
+                        <span asp-validation-for="Title" class="text-danger"></span>
                     </div>
-                    <b>Балл:</b>
-                    <div>
-                        <div class="form-group clearfix contentwrapper">
-                            <input asp-for="Score" class="form-control" placeholder="1..100" min="1" max="100" />
-                            <span asp-validation-for="Score" class="text-danger"></span>
-                        </div>
+                </div>
+                <b>Балл:</b>
+                <div>
+                    <div class="form-group clearfix contentwrapper">
+                        <input id="score" asp-for="Score" type="text" class="form-control" placeholder="1..100" min="1" max="100" />
+                        <span asp-validation-for="Score" class="text-danger"></span>
                     </div>
-                    <b>Варианты ответа:</b>
-                    <div class="items card" style="margin-bottom: 1rem;">
-                        <table class="table table-borderless" id="options" style="margin-bottom: 0;">
-                            <tbody id="item-table__body">
-                                @foreach (var o in Model.Options)
-                                {
-                                    <tr>
-                                        <td class="item-table__cell">
-                                            <textarea rows="1" id="Text" option-id="@o.Id" asp-for="@o.Text" class="form-control item__text-field" value="@(o.Text)"></textarea>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
+                </div>
+                <b>Варианты ответа:</b>
+                <div class="items card" style="margin-bottom: 1rem;">
+                    <table class="table table-borderless" id="options" style="margin-bottom: 0;">
+                        <tbody id="item-table__body">
+                            @foreach (var o in Model.Options)
+                            {
+                                <tr>
+                                    <td class="item-table__cell">
+                                        <textarea rows="1" id="Text" option-id="@o.Id" asp-for="@o.Text" class="form-control item__text-field" value="@(o.Text)"></textarea>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <input type="hidden" value="@ViewContext.RouteData.Values["testId"]" asp-for="Test.Id" />
+                <div class="form-group row">
+                    <div class="col-md-offset-2 col-md-10">
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
                     </div>
-
-                    <input type="hidden" value="@ViewContext.RouteData.Values["testId"]" asp-for="Test.Id" />
-
-                    <div class="form-group row">
-                        <div class="col-md-offset-2 col-md-10">
-                            <button type="submit" class="btn btn-primary">Сохранить</button>
-                        </div>
-                    </div>
-                </form>
-
-                <br>
-            </div>
+                </div>
+            </form>
+            <br>
         </div>
-
+    </div>
 </div>
 
 @section Scripts {
 <script>
+    <script src="~/lib/bootstrap-touchspin/src/jquery.bootstrap-touchspin.js"></script>
+    $("#score").TouchSpin({
+        verticalbuttons: true,
+    });
     $("form").submit(function(event) {
             event.preventDefault();
             submitQuestion('@Url.RouteUrl("EditText", new {testId = Context.GetRouteData().Values["testId"], questionId=Model.Id})');

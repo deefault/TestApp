@@ -511,10 +511,6 @@ namespace WebApplication3.Controllers
             code.Value = model.Value;
             code.Args = model.Args;
             object[] args;
-            if (!string.IsNullOrEmpty(model.Args))
-                args = model.Args.Split(',').Select(arg => arg.Trim()).ToArray();
-            else
-                args = null;
             SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(model.Value);
             string assemblyName = Path.GetRandomFileName();
             MetadataReference[] references = new MetadataReference[]
@@ -551,6 +547,24 @@ namespace WebApplication3.Controllers
                     Assembly assembly = Assembly.Load(ms.ToArray());
                     Type type = assembly.GetType("TestsApp.Program");
                     object obj = Activator.CreateInstance(type);
+                    if (!string.IsNullOrEmpty(model.Args))
+                    {
+                        var method = type.GetMethod("Main");
+                        var parameters = method.GetParameters();
+                        args = new object[parameters.Length];
+                        List<Type> types = new List<Type>();
+                        foreach (var p in parameters)
+                        {
+                            types.Add(p.ParameterType);
+                        }
+                        string[] tmp = model.Args.Split(',').Select(arg => arg.Trim()).ToArray();
+                        for (int i = 0; i < parameters.Length; i++)
+                        {
+                            args[i] = Convert.ChangeType(tmp[i], types[i]);
+                        }
+                    }
+                    else
+                        args = null;
                     try
                     {
                         code.Output = type.InvokeMember("Main",

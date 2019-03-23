@@ -9,8 +9,8 @@ using WebApplication3.Data;
 namespace WebApplication3.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190323145131_initial")]
-    partial class initial
+    [Migration("20190323160101_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -171,6 +171,8 @@ namespace WebApplication3.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int?>("AnswerId");
+
                     b.Property<string>("Args");
 
                     b.Property<string>("Output");
@@ -182,6 +184,8 @@ namespace WebApplication3.Migrations
                     b.Property<string>("Value");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AnswerId");
 
                     b.HasIndex("QuestionId");
 
@@ -270,6 +274,8 @@ namespace WebApplication3.Migrations
 
                     b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<bool>("HideRightAnswers");
 
                     b.Property<bool>("IsEnabled");
 
@@ -556,6 +562,10 @@ namespace WebApplication3.Migrations
 
             modelBuilder.Entity("WebApplication3.Models.Code", b =>
                 {
+                    b.HasOne("WebApplication3.Models.Answer", "Answer")
+                        .WithMany()
+                        .HasForeignKey("AnswerId");
+
                     b.HasOne("WebApplication3.Models.Question", "Question")
                         .WithMany()
                         .HasForeignKey("QuestionId");

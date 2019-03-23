@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.AspNetCore.Authorization;
@@ -12,15 +9,18 @@ using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Emit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using WebApplication3.Data;
 using WebApplication3.Models;
 using WebApplication3.Models.AnswerViewModels;
+using System.Reflection;
+using System.IO;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using System.Text;
+using Microsoft.CodeAnalysis.Emit;
 
 namespace WebApplication3.Controllers
 {
@@ -81,7 +81,7 @@ namespace WebApplication3.Controllers
         {
             var answer = await _context.SingleChoiceAnswers
                     .Include(a => a.TestResult)
-                        .ThenInclude(tr=>tr.Test)
+                        .ThenInclude(tr => tr.Test)
                     .Include(a => a.Question)
                         .ThenInclude(q => q.Options)
                 .SingleAsync(a => a.Id == answerId)
@@ -103,7 +103,7 @@ namespace WebApplication3.Controllers
         {
             var answer = await _context.TextAnswers
                     .Include(a => a.TestResult)
-                        .ThenInclude(tr=>tr.Test)
+                        .ThenInclude(tr => tr.Test)
                     .Include(a => a.Question)
                 .SingleAsync(a => a.Id == answerId)
                 ;
@@ -124,9 +124,9 @@ namespace WebApplication3.Controllers
         {
             var answer = await _context.MultiChoiceAnswers
                     .Include(a => a.TestResult)
-                        .ThenInclude(tr=>tr.Test)
+                        .ThenInclude(tr => tr.Test)
                     .Include(a => a.AnswerOptions)
-                        .ThenInclude(ao=> ao.Option)
+                        .ThenInclude(ao => ao.Option)
                     .Include(a => a.Question)
                 .SingleAsync(a => a.Id == answerId)
                 ;
@@ -159,9 +159,9 @@ namespace WebApplication3.Controllers
         {
             var answer = await _context.DragAndDropAnswers
                     .Include(a => a.TestResult)
-                        .ThenInclude(tr=>tr.Test)
+                        .ThenInclude(tr => tr.Test)
                     .Include(a => a.DragAndDropAnswerOptions)
-                        .ThenInclude(o =>o.RightOption)
+                        .ThenInclude(o => o.RightOption)
                     .Include(a => a.Question)
                         .ThenInclude(q => q.Options)
                 .SingleAsync(a => a.Id == answerId)
@@ -174,6 +174,56 @@ namespace WebApplication3.Controllers
                 return NotFound();
             }
             return PartialView("_LoadDragAndDropAnswer", answer);
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("/{testResultId}/Results/Question/{answerId}/")]
+        public async Task<IActionResult> AnswerResults(int testResultId, ushort answerId)
+        {
+            var testResult = await _context.TestResults
+                .Include(tr => tr.Answers)
+                .SingleAsync(tr => tr.Id == testResultId);
+            if (testResult == null) return NotFound();
+            var answers = testResult.Answers.OrderBy(a => a.Order).ToList();
+
+            return View("AnswerResults", answers);
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("/{testResultId}/DetailedResults/Question/<answerOrder>/")]
+        public async Task<IActionResult> AnswerDetailedResults(int testResultId, ushort answerOrder)
+        {
+            var testResult = await _context.TestResults
+                .Include(tr => tr.Answers)
+                .SingleAsync(tr => tr.Id == testResultId);
+            if (testResult == null) return NotFound();
+
+
+            return View("AnswerResults", testResult.Answers);
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("/CodeAnswer/{answerId}")]
+        public async Task<IActionResult> LoadCodeAnswer(int answerId)
+        {
+            var answer = await _context.CodeAnswers
+                    .Include(a => a.TestResult)
+                    .Include(a => a.Code)
+                    .Include(a => a.Question)
+                        .ThenInclude(q => q.Options)
+                .SingleAsync(a => a.Id == answerId)
+                ;
+            if (answer == null) return NotFound();
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && tr.CompletedByUser == user) == 0)
+            {
+                return NotFound();
+            }
+
+            return PartialView("_LoadCodeAnswer", answer);
         }
         #endregion
 
@@ -205,7 +255,7 @@ namespace WebApplication3.Controllers
             {
                 return BadRequest();
             }
-            
+
 
             answer.Option = option;
             _context.Answers.Update(answer);
@@ -220,10 +270,10 @@ namespace WebApplication3.Controllers
         public async Task<IActionResult> MultiChoiceAnswer(int answerId, [FromBody]MultiChoiceAnswerViewModel model)
         {
 
-           
+
             var answer = await _context.MultiChoiceAnswers
-                    .Include(a => a.TestResult).Include(a=>a.AnswerOptions)
-                    .Include(a => a.Question).ThenInclude(a=>a.Options)
+                    .Include(a => a.TestResult).Include(a => a.AnswerOptions)
+                    .Include(a => a.Question).ThenInclude(a => a.Options)
                     .SingleAsync(a => a.Id == answerId)
                 ;
             if (answer == null) return NotFound();
@@ -238,7 +288,7 @@ namespace WebApplication3.Controllers
             // проверить что опшнsы принадлежит к вопросу
             foreach (var id in model.CheckedOptionIds)
             {
-                if (!answer.Question.Options.Exists(o=>o.Id==id))
+                if (!answer.Question.Options.Exists(o => o.Id == id))
                 {
                     return BadRequest();
                 }
@@ -256,7 +306,7 @@ namespace WebApplication3.Controllers
                         OptionId = option.Id,
                         Checked = model.CheckedOptionIds.Contains(option.Id)
                     });
-                } 
+                }
                 await _context.SaveChangesAsync();
             }
             // обновить
@@ -273,7 +323,7 @@ namespace WebApplication3.Controllers
             await _context.SaveChangesAsync();
             return new JsonResult("");
         }
-        
+
         [Authorize]
         [HttpPost]
         [Route("/TextAnswer/{answerId}/")]
@@ -362,6 +412,7 @@ namespace WebApplication3.Controllers
             await _context.SaveChangesAsync();
             return new JsonResult("");
         }
+
         [Authorize]
         [HttpPost]
         [Route("/CodeAnswer/{answerId}/")]

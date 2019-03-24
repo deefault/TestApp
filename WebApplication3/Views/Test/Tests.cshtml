@@ -7,7 +7,7 @@
 }
 
 <hr />
-<h3 class="text-center">@ViewBag.Title</h3>
+<h4 class="text-center">@ViewBag.Title</h4>
 @if (Model.Model1 == null || Model.Model1.Count == 0)
 {
     <hr />
@@ -28,7 +28,7 @@ else
                 <th>Название</th>
                 <th>Включен</th>
                 <th>Перемешивать</th>
-                <th>Прятать ответы</th>
+                <th>Ответы</th>
                 @*<th>Создатель</th>*@
                 <th>Управление</th>
             </tr>
@@ -79,7 +79,7 @@ else
                 </td>
                 <td>
                     <form method="post">
-                        @if (item.HideRightAnswers)
+                        @if (!item.HideRightAnswers)
                         {
                             <button asp-controller="Test" class="btn-link" asp-action="Hide"
                                     asp-route-testId="@item.Id" type="submit">

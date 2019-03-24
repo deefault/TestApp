@@ -125,6 +125,10 @@ namespace WebApplication3.Controllers
                 {
                     await _context.Questions.AddAsync(q);
                 }
+                foreach (var c in testData.Codes)
+                {
+                    await _context.Codes.AddAsync(c);
+                }
                 await _context.SaveChangesAsync();
                 foreach (var o in testData.Options)
                 {

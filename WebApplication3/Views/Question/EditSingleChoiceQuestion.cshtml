@@ -42,7 +42,7 @@
                                     <td class="item-table__cell">
                                         <textarea rows="1" id="Text" option-id="@o.Id" asp-for="@o.Text" class="form-control item__text-field " value="@(o.Text)"></textarea>
                                     </td>
-                                    <td class="item-table__cell" align="right">
+                                    <td class="item-table__cell" align="right" style="width:10%; min-width:7rem">
                                         <input @((o.IsRight) ? "checked" : "") class="form-check-inline" type="radio" name="isRight" id="isRight" />
                                         <button class="btn item-table__del-row-btn">
                                             <span class="glyphicon glyphicon-minus"></span>
@@ -63,7 +63,7 @@
                         <td class="item-table__cell">
                             <textarea rows="1" id="Text" asp-for="Text" class="form-control item__text-field"></textarea>
                         </td>
-                        <td class="item-table__cell" align="right">
+                        <td class="item-table__cell" align="right" style="width:10%; min-width:7rem">
                             <input class="form-check-inline" type="radio" name="isRight" id="isRight" />
                             <button class="btn item-table__del-row-btn">
                                 <span class="glyphicon glyphicon-minus"></span>

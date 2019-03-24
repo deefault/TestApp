@@ -26,7 +26,7 @@
     }
 }
 <hr />
-<h3 class="text-center text-capitalize">@ViewBag.Title</h3>
+<h4 class="text-center text-capitalize">@ViewBag.Title</h4>
 <form id="addByIdForm" method="post" class="form" role="form">
     <hr />
     <div asp-validation-summary="All" class="text-danger"></div>
@@ -50,9 +50,7 @@
 }
 else
 {
-    <dt>
-        <h4 class="text-center">Текущие тесты</h4>
-    </dt>
+    <h5 class="text-center" style="margin-bottom: 1rem">Текущие тесты</h5>
     <dd>
         <table class="table item-table">
             <tr>
@@ -86,12 +84,7 @@ else
 }
 else
 {
-    <dt>
-        @{
-            //Html.DisplayNameFor(model => model);
-                }
-        <h4 class="text-center">Завершённые тесты</h4>
-    </dt>
+    <h5 class="text-center" style="margin-bottom: 1rem">Завершённые тесты</h5>
     <dd>
         <table class="table item-table">
             <tr>

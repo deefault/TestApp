@@ -44,7 +44,7 @@ namespace TestsApp
             <div>
                 <b>Аргументы:</b>
                 <div class="input-group">
-                    <input id="args" value="Hello World" class="form-control">
+                    <input id="args" value="@(Model.Code != null ? Model.Code.Args : "Hello World")" class="form-control">
                     <span class="input-group-append">
                         <button class="btn btn-success" id="compile">Запуск</button>
                     </span>

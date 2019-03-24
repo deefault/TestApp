@@ -94,12 +94,29 @@ namespace WebApplication3.Controllers
                 Queue<Token> tokens = new Queue<Token>();
 
                 bool capturing = false;
+                bool textCapturing = false;
                 StringBuilder capturedText = new StringBuilder("");
                 while (_cs.InBounds())
                 {
                     char c = _cs.Dequeue();
-
-                    if (c == '\n')
+                    if (textCapturing)
+                    {
+                        if (c == '\"')
+                        {
+                            tokens.Enqueue(new Token(capturedText.ToString().Trim(), LexemLocation.RowNumber));
+                            SkipSpaces();
+                            capturedText = new StringBuilder("");
+                            capturing = false;
+                            textCapturing = false;
+                            continue;
+                        }
+                    }
+                    else if (c == '\"')
+                    {
+                        textCapturing = !textCapturing;
+                        continue;
+                    }
+                    else if (c == '\n')
                     {
                         tokens.Enqueue(new Token(capturedText.ToString().Trim(), LexemLocation.RowNumber));
                         SkipSpaces();
@@ -170,6 +187,7 @@ namespace WebApplication3.Controllers
             public Test Test { get; set; } = new Test();
             public List<Question> Questions { get; set; } = new List<Question>();
             public List<Option> Options { get; set; } = new List<Option>();
+            public List<Code> Codes { get; set; } = new List<Code>();
         }
         #endregion
 
@@ -232,6 +250,7 @@ namespace WebApplication3.Controllers
                 _types["multi"] = 2;
                 _types["text"] = 3;
                 _types["dnd"] = 4;
+                _types["code"] = 5;
                 try
                 {
                     TestData testData = ParseTest(tokens);
@@ -294,7 +313,7 @@ namespace WebApplication3.Controllers
             {
                 Question question;
                 int i = 1, checkedCount = 0, Row = 0;
-                bool textParsed = false, scoreParsed = false, optionParsed = false;
+                bool textParsed = false, scoreParsed = false, optionParsed = false, codeParsed = false;
                 Row = tokens.Peek().Row;
                 Consume(tokens, "question");
                 Consume(tokens, "{");
@@ -312,6 +331,9 @@ namespace WebApplication3.Controllers
                         break;
                     case (int)Question.QuestionTypeEnum.DragAndDropQuestion:
                         question = new DragAndDropQuestion();
+                        break;
+                    case (int)Question.QuestionTypeEnum.CodeQuestion:
+                        question = new CodeQuestion();
                         break;
                     default:
                         question = new SingleChoiceQuestion();
@@ -345,6 +367,22 @@ namespace WebApplication3.Controllers
                                 ParseOption(tokens, question, testData, i++, ref checkedCount);
                             optionParsed = true;
                             break;
+                        case ("code"):
+                            if (question is CodeQuestion)
+                            {
+                                if (!codeParsed)
+                                {
+                                    ParseCode(tokens, question, testData);
+                                }
+                                else
+                                    throw new Exception(String.Format("CodeQuestion поддерживает только один ответ (Quesiton (Row - {0})).", Row));
+                            }
+                            else
+                            {
+                                throw new Exception(String.Format("Данный тип вопроса не поддерживает code(Quesiton (Row - {0})).", Row));
+                            }
+                            codeParsed = true;
+                            break;
                         default:
                             throw new Exception(String.Format("Неизвестный параметр: {0} (Row - {1}).", tokens.Peek().Value, tokens.Peek().Row));
                     }
@@ -356,8 +394,14 @@ namespace WebApplication3.Controllers
                 else if (question is MultiChoiceQuestion && checkedCount < 1)
                     throw new Exception(String.Format("В данном типе вопроса нужно отметить хотя бы один верный ответ (Quesiton (Row - {0})).", Row));
                 Consume(tokens, "}");
-                if (!textParsed || !scoreParsed || !optionParsed)
-                    throw new Exception(String.Format("Заданы не все требуемые поля (Quesiton (Row - {0})). Text - {1}, Score - {2}, Option - {3}.", Row, textParsed, scoreParsed, optionParsed));
+                if (!(question is CodeQuestion))
+                {
+                    if (!textParsed || !scoreParsed || !optionParsed)
+                        throw new Exception(String.Format("Заданы не все требуемые поля (Quesiton (Row - {0})). Text - {1}, Score - {2}, Option - {3}.", Row, textParsed, scoreParsed, optionParsed));
+                }
+                else
+                    if (!textParsed || !scoreParsed || !codeParsed)
+                    throw new Exception(String.Format("Заданы не все требуемые поля (Quesiton (Row - {0})). Text - {1}, Score - {2}, Code - {3}.", Row, textParsed, scoreParsed, codeParsed));
                 testData.Questions.Add(question);
             }
             private static void ParseOption(Queue<Token> tokens, Question question, TestData testData, int i, ref int checkedCount)
@@ -403,6 +447,58 @@ namespace WebApplication3.Controllers
                     (question as TextQuestion).TextRightAnswer = option.Text;
                 testData.Options.Add(option);
             }
+            private static void ParseCode(Queue<Token> tokens, Question question, TestData testData)
+            {
+                int Row = tokens.Peek().Row;
+                bool textParsed = false, argsParsed = false, outputParsed = false;
+                Option option = new Option { Question = question };
+                Code code = new Code { Question = question };
+                Consume(tokens, "code");
+                Consume(tokens, "{");
+                while (tokens.Peek().Value != "}")
+                    switch (tokens.Peek().Value)
+                    {
+                        case ("text"):
+                            if (!textParsed)
+                            {
+                                string[] tmp = ParseText(tokens).Split("\\n");
+                                StringBuilder sb = new StringBuilder();
+                                foreach (var s in tmp)
+                                    sb.AppendLine(s);
+                                code.Value = sb.ToString();
+                            }
+                            else
+                                throw new Exception("Text already parsed");
+                            textParsed = true;
+                            break;
+                        case ("args"):
+                            if (!argsParsed)
+                            {
+                                code.Args = ParseArgs(tokens);
+                            }
+                            else
+                                throw new Exception("Args already parsed");
+                            argsParsed = true;
+                            break;
+                        case ("output"):
+                            if (!outputParsed)
+                            {
+                                code.Output = ParseOutput(tokens);
+                                option.Text = code.Output;
+                            }
+                            else
+                                throw new Exception("Output already parsed");
+                            outputParsed = true;
+                            break;
+                        default:
+                            throw new Exception(String.Format("Неизвестный параметр: {0} (Row - {1}).", tokens.Peek().Value, tokens.Peek().Row));
+                    }
+                Consume(tokens, "}");
+                if (!textParsed || !argsParsed || !outputParsed)
+                    throw new Exception(String.Format("Заданы не все требуемые поля (Code (Row - {0})). Text - {1}, Args - {2}, Output - {3}.", Row, textParsed, argsParsed, outputParsed));
+                testData.Options.Add(option);
+                testData.Codes.Add(code);
+            }
             #endregion
 
             #region ParseExrp
@@ -412,6 +508,20 @@ namespace WebApplication3.Controllers
                 Consume(tokens, "=");
                 string text = tokens.Dequeue().Value;
                 return text;
+            }
+            private static string ParseArgs(Queue<Token> tokens)
+            {
+                Consume(tokens, "args");
+                Consume(tokens, "=");
+                string args = tokens.Dequeue().Value;
+                return args;
+            }
+            private static string ParseOutput(Queue<Token> tokens)
+            {
+                Consume(tokens, "output");
+                Consume(tokens, "=");
+                string output = tokens.Dequeue().Value;
+                return output;
             }
             private static bool ParseFlag(Queue<Token> tokens)
             {
@@ -442,6 +552,7 @@ namespace WebApplication3.Controllers
                 return type;
             }
             #endregion
+
         }
         #endregion
     }

@@ -551,14 +551,14 @@ namespace WebApplication3.Controllers
                     {
                         var method = type.GetMethod("Main");
                         var parameters = method.GetParameters();
-                        args = new object[parameters.Length];
+                        var tmp = model.Args.Split(',').Select(arg => arg.Trim()).ToArray();
+                        args = new object[tmp.Length];
                         List<Type> types = new List<Type>();
                         foreach (var p in parameters)
                         {
                             types.Add(p.ParameterType);
                         }
-                        string[] tmp = model.Args.Split(',').Select(arg => arg.Trim()).ToArray();
-                        for (int i = 0; i < parameters.Length; i++)
+                        for (int i = 0; i < tmp.Length; i++)
                         {
                             args[i] = Convert.ChangeType(tmp[i], types[i]);
                         }

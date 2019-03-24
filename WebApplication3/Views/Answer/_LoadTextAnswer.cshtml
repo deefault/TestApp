@@ -14,63 +14,56 @@
         {
             <h5>Балл: @Model.Score/@Model.Question.Score</h5>
         }
-        
+
     </div>
     <input type="hidden" value="@Model.Id">
     <fieldset class="form-group row" id="options">
         <div class="items card" style="margin-bottom: 0;">
             <table class="table table-borderless" style="margin-bottom: 0;">
                 <tbody id="item-table__body">
-                <tr class="item-table__row">
-                    
-              
+                    <tr class="item-table__row">
                         @if (Model.TestResult.IsCompleted)
                         {
                             if (Model.Text.ToLower() == Question.TextRightAnswer.ToLower())
-                             {
-                                 <td class="item-table__cell">
-                                    
-                                     <textarea name="option" id="Text" class="form-control item__text-field text-success" 
-                                        value="@((Model.Text != null && Model.Text != "") ? Model.Text : "")" 
-                                        placeholder="Ответ">@Model.Text
-                                </textarea>
-                                 </td>
-                             }
+                            {
+                                <td class="item-table__cell">
+                                    <textarea name="option" id="Text" class="form-control item__text-field text-success"
+                                              value="@((Model.Text != null && Model.Text != "") ? Model.Text : "")"
+                                              placeholder="Ответ">@Model.Text</textarea>
+                                </td>
+                            }
                             else
                             {
-                                if (Model.TestResult.Test.HideRightAnswers)
+                                <td class="item-table__cell">
+                                    Ваш ответ:
+                                    <textarea name="option" id="Text" class="form-control item__text-field bg-danger text-white"
+                                              value="@((Model.Text != null && Model.Text != "") ? Model.Text : "")"
+                                              placeholder="Ответ">@Model.Text</textarea>
+                                </td>
+                                if (!Model.TestResult.Test.HideRightAnswers)
                                 {
                                     <td class="item-table__cell">
                                         Верный ответ:
-                                        <textarea name="option" id="Text" class="form-control item__text-field text-success" 
-                                        value="@(
+                                        <textarea name="option" id="Text" class="form-control item__text-field text-success"
+                                                  value="@(
     !string.IsNullOrEmpty(Question.TextRightAnswer)
-        ? Question.TextRightAnswer : "" )" 
-                                        placeholder="Ответ">@Question.TextRightAnswer
-                                </textarea>
+        ? Question.TextRightAnswer : "" )"
+                                                  placeholder="Ответ">@Question.TextRightAnswer</textarea>
                                     </td>
                                 }
-                                
-                                <td class="item-table__cell">
-                                    Ваш ответ:
-                                    <textarea name="option" id="Text" class="form-control item__text-field bg-danger text-white" 
-                                        value="@((Model.Text != null && Model.Text != "") ? Model.Text : "")" 
-                                        placeholder="Ответ">@Model.Text
-                                </textarea>
-                                </td>
+
                             }
                         }
                         else
                         {
                             <td class="item-table__cell">
-                                
+
                                 <textarea name="option" id="Text" class="form-control item__text-field" value="@((Model.Text != null && Model.Text != "") ? Model.Text : "")" placeholder="Ответ">@Model.Text</textarea>
-                                
+
                             </td>
                         }
-                        
-                    
-                </tr>
+
+                    </tr>
                 </tbody>
             </table>
         </div>

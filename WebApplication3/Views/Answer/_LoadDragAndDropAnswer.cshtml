@@ -19,28 +19,27 @@
                             var dndOptions = Model.DragAndDropAnswerOptions.OrderBy(o => o.ChosenOrder).ToList();
                             if (Model.TestResult.IsCompleted)
                             {
-                                foreach( var option in dndOptions)
+                                foreach (var option in dndOptions)
                                 {
-                                    <tr class="item-table__row">
+                                    <tr class="item-table__row @(!Model.TestResult.Test.HideRightAnswers ? option.Option.Id == option.RightOption.Id ? "bg-success text-white" : "bg-danger text-white" : "")">
                                         <td class="drag-handler"></td>
+                                        <td class="item-table__cell">
+                                            <label name="option" option-id="@Model.Question.Options.Single(o => o.Id == option.Option.Id).Id"
+                                                   class="form-check-label text-white">
+                                                @Model.Question.Options.Single(o => o.Id == option.Option.Id).Text
+                                            </label>
+                                        </td>
                                         @if (!Model.TestResult.Test.HideRightAnswers)
                                         {
                                             <!-- порядок  TODO: -->
-                                                <td class="item-table__cell">
-                                                    
-                                                <span class="@(option.ChosenOrder == @option.RightOption.Order 
-                                                                   
-                                                    ? "bg-success text-white" : "")">
-                                                @option.RightOption.Order
+                                            <td class="item-table__cell" style="text-align: right;">
+
+                                                <span class="text-white" >
+                                                    @(dndOptions.Single(o => o.RightOption.Text == option.Option.Text).ChosenOrder)
                                                 </span>
-                                                </td>
-                                         }
-                                        <td class="item-table__cell">
-                                            <label name="option" option-id="@Model.Question.Options.Single(o => o.Id == option.OptionId).Id"
-                                                   class="form-check-label">
-                                                @Model.Question.Options.Single(o => o.Id == option.OptionId).Text
-                                            </label>
-                                        </td>
+                                            </td>
+                                        }
+
                                     </tr>
                                 }
                             }
@@ -51,14 +50,14 @@
                                     <tr class="item-table__row">
                                         <td class="drag-handler"></td>
                                         <td class="item-table__cell">
-                                            <label name="option" class="form-check-label" option-id="@Model.Question.Options.Single(o => o.Id == option.OptionId).Id">
-                                                @(Model.Question.Options.Single(o => o.Id == option.OptionId).Text)
+                                            <label name="option" class="form-check-label" option-id="@Model.Question.Options.Single(o => o.Id == option.Option.Id).Id">
+                                                @(Model.Question.Options.Single(o => o.Id == option.Option.Id).Text)
                                             </label>
                                         </td>
                                     </tr>
-                                } 
+                                }
                             }
-                            
+
                         }
                         else
                         {

@@ -46,7 +46,6 @@
     <div class="alert alert-warning" role="alert">
         Не найдено непройденных тестов
     </div>
-    <hr />
 }
 else
 {
@@ -75,7 +74,7 @@ else
         </table>
     </dd>
 }
-
+<hr />
 @if (completedTests.Count == 0)
 {
     <div class="alert alert-warning" role="alert">
@@ -129,7 +128,7 @@ else
                 <h4 class="modal-title">Ошибка</h4>
             </div>
             <div class="modal-body">
-                <span class="text-danger"> <p id="modalErrorText"></p></span>
+                <p id="modalErrorText"></p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>

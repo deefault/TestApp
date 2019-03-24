@@ -392,8 +392,7 @@ namespace WebApplication3.Controllers
                         Answer = answer,
                         AnswerId = answerId,
                         RightOption = rightOption,
-                        OptionId = option.OptionId,
-                        RightOptionId = rightOption.Id,
+                        Option = await _context.Options.SingleAsync(o => o.Id == option.OptionId),
                         ChosenOrder = option.ChosenOrder
                     });
                 }
@@ -404,9 +403,8 @@ namespace WebApplication3.Controllers
                 var rightOrder = answer.Question.Options.OrderBy(o => o.Order).ToList();
                 foreach (var option in answer.DragAndDropAnswerOptions)
                 {
-                    option.ChosenOrder = model.Options.Single(o => o.OptionId == option.OptionId).ChosenOrder;
+                    option.ChosenOrder = model.Options.Single(o => o.OptionId == option.Option.Id).ChosenOrder;
                     option.RightOption = rightOrder[option.ChosenOrder - 1];
-                    option.RightOptionId = option.RightOption.Id;
                 }
             }
             _context.Answers.Update(answer);

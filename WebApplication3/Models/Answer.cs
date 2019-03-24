@@ -19,13 +19,13 @@ namespace WebApplication3.Models
         public TestResult TestResult { get; set; }
         [Required]
         public ushort Order { get; set; }
-        
-       
+
+        public Option Option { get; set; }
     }
     
     public  class SingleChoiceAnswer : Answer
     {
-        public Option Option { get; set; }
+        
     }
     
     public  class MultiChoiceAnswer : Answer
@@ -44,7 +44,6 @@ namespace WebApplication3.Models
 
     public class CodeAnswer: Answer
     {
-        public Option Option { get; set; }
         public Code Code { get; set; }
     }
 
@@ -53,9 +52,8 @@ namespace WebApplication3.Models
         public int Id { get; set; }
         public int AnswerId { get; set; }
         public DragAndDropAnswer Answer { get; set; }
-        public int OptionId { get; set; }
+        public Option Option { get; set; }
         public Option RightOption { get; set; }
-        public int RightOptionId { get; set; }
         public int ChosenOrder { get; set; }
         
     }

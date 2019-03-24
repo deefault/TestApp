@@ -5,7 +5,6 @@ using WebApplication3.Models;
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging;
 
 
 namespace WebApplication3.Data
@@ -34,12 +33,12 @@ namespace WebApplication3.Data
         {
             _context.Database.EnsureCreated();
             
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
         }
         
         // удаляет базу и создает новую
-        public async void InitializeNew()
+        public void InitializeNew()
         {
             _context.Database.EnsureDeleted();
             _context.Database.EnsureCreated();
@@ -81,7 +80,7 @@ namespace WebApplication3.Data
             _context.Tests.Add(test1);
             
             
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }

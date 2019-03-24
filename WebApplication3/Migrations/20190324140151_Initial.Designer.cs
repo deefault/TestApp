@@ -9,7 +9,7 @@ using WebApplication3.Data;
 namespace WebApplication3.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190323172404_Initial")]
+    [Migration("20190324140151_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -132,6 +132,8 @@ namespace WebApplication3.Migrations
                         .HasColumnName("answer_type")
                         .HasMaxLength(50);
 
+                    b.Property<int?>("OptionId");
+
                     b.Property<ushort>("Order");
 
                     b.Property<int>("QuestionId");
@@ -141,6 +143,8 @@ namespace WebApplication3.Migrations
                     b.Property<int>("TestResultId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OptionId");
 
                     b.HasIndex("QuestionId");
 
@@ -203,13 +207,15 @@ namespace WebApplication3.Migrations
 
                     b.Property<int>("ChosenOrder");
 
-                    b.Property<int>("OptionId");
+                    b.Property<int?>("OptionId");
 
-                    b.Property<int>("RightOptionId");
+                    b.Property<int?>("RightOptionId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AnswerId");
+
+                    b.HasIndex("OptionId");
 
                     b.HasIndex("RightOptionId");
 
@@ -375,11 +381,7 @@ namespace WebApplication3.Migrations
 
                     b.Property<int?>("CodeId");
 
-                    b.Property<int?>("OptionId");
-
                     b.HasIndex("CodeId");
-
-                    b.HasIndex("OptionId");
 
                     b.ToTable("CodeAnswer");
 
@@ -410,10 +412,6 @@ namespace WebApplication3.Migrations
                 {
                     b.HasBaseType("WebApplication3.Models.Answer");
 
-                    b.Property<int?>("OptionId")
-                        .HasColumnName("SingleChoiceAnswer_OptionId");
-
-                    b.HasIndex("OptionId");
 
                     b.ToTable("SingleChoiceAnswer");
 
@@ -536,6 +534,10 @@ namespace WebApplication3.Migrations
 
             modelBuilder.Entity("WebApplication3.Models.Answer", b =>
                 {
+                    b.HasOne("WebApplication3.Models.Option", "Option")
+                        .WithMany()
+                        .HasForeignKey("OptionId");
+
                     b.HasOne("WebApplication3.Models.Question", "Question")
                         .WithMany()
                         .HasForeignKey("QuestionId")
@@ -585,10 +587,13 @@ namespace WebApplication3.Migrations
                         .HasForeignKey("AnswerId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("WebApplication3.Models.Option", "Option")
+                        .WithMany()
+                        .HasForeignKey("OptionId");
+
                     b.HasOne("WebApplication3.Models.Option", "RightOption")
                         .WithMany()
-                        .HasForeignKey("RightOptionId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("RightOptionId");
                 });
 
             modelBuilder.Entity("WebApplication3.Models.Option", b =>
@@ -633,17 +638,6 @@ namespace WebApplication3.Migrations
                     b.HasOne("WebApplication3.Models.Code", "Code")
                         .WithMany()
                         .HasForeignKey("CodeId");
-
-                    b.HasOne("WebApplication3.Models.Option", "Option")
-                        .WithMany()
-                        .HasForeignKey("OptionId");
-                });
-
-            modelBuilder.Entity("WebApplication3.Models.SingleChoiceAnswer", b =>
-                {
-                    b.HasOne("WebApplication3.Models.Option", "Option")
-                        .WithMany()
-                        .HasForeignKey("OptionId");
                 });
 
             modelBuilder.Entity("WebApplication3.Models.CodeQuestion", b =>

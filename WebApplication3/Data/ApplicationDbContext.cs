@@ -14,7 +14,7 @@ namespace WebApplication3.Data
             : base(options)
         {
         }
-        public DbSet<User> Users { get; set; }
+        public new DbSet<User> Users { get; set; }
         public DbSet<Test> Tests { get; set; }
         public DbSet<TestResult> TestResults { get; set; }
         public DbSet<Question> Questions { get; set; }

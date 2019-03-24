@@ -333,9 +333,11 @@ namespace WebApplication3.Controllers
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var createdTests = _context.Tests.Where(t => t.CreatedBy.Id == user.Id).ToList();
             //if (createdTests == null) //return View(new ICollection<Test>);
-            AddTestModel addTestModel = new AddTestModel();
-            addTestModel.Model1 = createdTests;
-            addTestModel.Model2 = new AddTestViewModel();
+            AddTestModel addTestModel = new AddTestModel
+            {
+                Model1 = createdTests,
+                Model2 = new AddTestViewModel()
+            };
             return View(addTestModel);
 
         }
@@ -365,7 +367,7 @@ namespace WebApplication3.Controllers
                     var qrCode = "data:image/png;base64, " + Utils.Utils.GenerateBase64QRCodeFromLink(link);
                     ViewBag.qrCodeBase64 = qrCode;
                 }
-                catch (DllNotFoundException e)
+                catch (DllNotFoundException)
                 {
                     ViewBag.qrCodeBase64 = "";
                 }
@@ -590,9 +592,10 @@ namespace WebApplication3.Controllers
                     count++;
                     if (dndAnswer.DragAndDropAnswerOptions == null || dndAnswer.DragAndDropAnswerOptions.Count == 0)
                         count--;
-                    foreach (var dndOption in dndAnswer.DragAndDropAnswerOptions)
+                    var dndOptions = _context.DragAndDropAnswerOptions.Where(o => o.Answer == dndAnswer).Include(o => o.Option).Include(o => o.RightOption);
+                    foreach (var dndOption in dndOptions)
                     {
-                        if (dndOption.RightOptionId != dndOption.OptionId)
+                        if (dndOption.RightOption.Id != dndOption.Option.Id)
                         {
                             dndAnswer.Score = 0;
                             count--;

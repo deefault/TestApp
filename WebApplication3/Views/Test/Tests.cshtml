@@ -146,17 +146,23 @@ test {
 	flag = Состояние (true/false)
 	shuffled = Перемешивать (true/false)
 	question {
-		type = Тип вопроса (single/multi/text/dnd)
+		type = Тип вопроса (single/multi/text/dnd/code)
 		text = Текст вопроса
 		score = Баллов за правильный ответ
 		option {
 			text = Текст варианта ответа
 			flag = Состояние (true/false)*
-		}
+		}**
+		code {
+			text = Код
+			args = Аргументы
+			output = Вывод
+		}***
 	}
 }
 * - Только для single и multi
-                                        </pre>
+** - Для single, multi, text, dnd
+*** - Для code</pre>
                                         </div>
                                     </div>
                                 </div>

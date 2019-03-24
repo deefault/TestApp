@@ -265,7 +265,7 @@ namespace WebApplication3.Controllers
             {
                 TestData testData = new TestData();
                 var test = new Test();
-                bool textParsed = false, flagParsed = false, shuffleParsed = false;
+                bool textParsed = false, flagParsed = false, shuffleParsed = false, hideParsed = false;
                 int Row = tokens.Peek().Row;
                 Consume(tokens, "test");
                 Consume(tokens, "{");
@@ -274,24 +274,31 @@ namespace WebApplication3.Controllers
                     {
                         case ("text"):
                             if (!textParsed)
-                                test.Name = ParseText(tokens);
+                                test.Name = ParseString(tokens, "text");
                             else
                                 throw new Exception("Text already parsed");
                             textParsed = true;
                             break;
                         case ("flag"):
                             if (!flagParsed)
-                                test.IsEnabled = ParseFlag(tokens);
+                                test.IsEnabled = ParseFlag(tokens, "flag");
                             else
                                 throw new Exception("Flag already parsed");
                             flagParsed = true;
                             break;
-                        case ("shuffled"):
+                        case ("shuffle"):
                             if (!shuffleParsed)
-                                test.Shuffled = ParseShuffle(tokens);
+                                test.Shuffled = ParseFlag(tokens, "shuffle");
                             else
                                 throw new Exception("Shuffle already parsed");
                             shuffleParsed = true;
+                            break;
+                        case ("hide"):
+                            if (!hideParsed)
+                                test.HideRightAnswers = ParseFlag(tokens, "hide");
+                            else
+                                throw new Exception("Hide already parsed");
+                            hideParsed = true;
                             break;
                         case ("question"):
                             ParseQuestion(tokens, test, testData);
@@ -305,6 +312,8 @@ namespace WebApplication3.Controllers
                     test.IsEnabled = false;
                 if (!shuffleParsed)
                     test.Shuffled = false;
+                if (!hideParsed)
+                    test.HideRightAnswers = false;
                 if (!textParsed)
                     throw new Exception(String.Format("Заданы не все требуемые поля (Test (Row - {0})). Text - {1}.", Row, textParsed));
                 return testData;
@@ -345,7 +354,7 @@ namespace WebApplication3.Controllers
                     {
                         case ("text"):
                             if (!textParsed)
-                                question.Title = ParseText(tokens);
+                                question.Title = ParseString(tokens, "text");
                             else
                                 throw new Exception(String.Format("Text already parsed (Quesiton (Row - {0})).", Row));
                             textParsed = true;
@@ -401,7 +410,7 @@ namespace WebApplication3.Controllers
                 }
                 else
                     if (!textParsed || !scoreParsed || !codeParsed)
-                    throw new Exception(String.Format("Заданы не все требуемые поля (Quesiton (Row - {0})). Text - {1}, Score - {2}, Code - {3}.", Row, textParsed, scoreParsed, codeParsed));
+                        throw new Exception(String.Format("Заданы не все требуемые поля (Quesiton (Row - {0})). Text - {1}, Score - {2}, Code - {3}.", Row, textParsed, scoreParsed, codeParsed));
                 testData.Questions.Add(question);
             }
             private static void ParseOption(Queue<Token> tokens, Question question, TestData testData, int i, ref int checkedCount)
@@ -416,7 +425,7 @@ namespace WebApplication3.Controllers
                     {
                         case ("text"):
                             if (!textParsed)
-                                option.Text = ParseText(tokens);
+                                option.Text = ParseString(tokens, "text");
                             else
                                 throw new Exception("Text already parsed");
                             textParsed = true;
@@ -426,7 +435,7 @@ namespace WebApplication3.Controllers
                             {
                                 if (!flagParsed)
                                 {
-                                    option.IsRight = ParseFlag(tokens);
+                                    option.IsRight = ParseFlag(tokens, "flag");
                                     if (option.IsRight)
                                         checkedCount++;
                                 }
@@ -441,10 +450,14 @@ namespace WebApplication3.Controllers
                             throw new Exception(String.Format("Неизвестный параметр: {0} (Row - {1}).", tokens.Peek().Value, tokens.Peek().Row));
                     }
                 Consume(tokens, "}");
+                if (!textParsed)
+                    throw new Exception(String.Format("Заданы не все требуемые поля (Option (Row - {0})). Text - {1}.", Row, textParsed));
                 if (question is DragAndDropQuestion)
                     option.Order = i;
                 else if (question is TextQuestion)
                     (question as TextQuestion).TextRightAnswer = option.Text;
+                else if (!flagParsed)
+                    throw new Exception(String.Format("Заданы не все требуемые поля (Option (Row - {0})). Text - {1}, Flag - {2}.", Row, textParsed, flagParsed));
                 testData.Options.Add(option);
             }
             private static void ParseCode(Queue<Token> tokens, Question question, TestData testData)
@@ -461,7 +474,7 @@ namespace WebApplication3.Controllers
                         case ("text"):
                             if (!textParsed)
                             {
-                                string[] tmp = ParseText(tokens).Split("\\n");
+                                string[] tmp = ParseString(tokens, "text").Split("\\n");
                                 StringBuilder sb = new StringBuilder();
                                 foreach (var s in tmp)
                                     sb.AppendLine(s);
@@ -474,7 +487,7 @@ namespace WebApplication3.Controllers
                         case ("args"):
                             if (!argsParsed)
                             {
-                                code.Args = ParseArgs(tokens);
+                                code.Args = ParseString(tokens, "args");
                             }
                             else
                                 throw new Exception("Args already parsed");
@@ -483,7 +496,7 @@ namespace WebApplication3.Controllers
                         case ("output"):
                             if (!outputParsed)
                             {
-                                code.Output = ParseOutput(tokens);
+                                code.Output = ParseString(tokens, "output");
                                 option.Text = code.Output;
                             }
                             else
@@ -502,37 +515,16 @@ namespace WebApplication3.Controllers
             #endregion
 
             #region ParseExrp
-            private static string ParseText(Queue<Token> tokens)
+            private static string ParseString(Queue<Token> tokens, string tok)
             {
-                Consume(tokens, "text");
-                Consume(tokens, "=");
-                string text = tokens.Dequeue().Value;
-                return text;
-            }
-            private static string ParseArgs(Queue<Token> tokens)
-            {
-                Consume(tokens, "args");
-                Consume(tokens, "=");
-                string args = tokens.Dequeue().Value;
-                return args;
-            }
-            private static string ParseOutput(Queue<Token> tokens)
-            {
-                Consume(tokens, "output");
+                Consume(tokens, tok);
                 Consume(tokens, "=");
                 string output = tokens.Dequeue().Value;
                 return output;
             }
-            private static bool ParseFlag(Queue<Token> tokens)
+            private static bool ParseFlag(Queue<Token> tokens, string tok)
             {
-                Consume(tokens, "flag");
-                Consume(tokens, "=");
-                bool flag = ConsumeFlag(tokens);
-                return flag;
-            }
-            private static bool ParseShuffle(Queue<Token> tokens)
-            {
-                Consume(tokens, "shuffled");
+                Consume(tokens, tok);
                 Consume(tokens, "=");
                 bool flag = ConsumeFlag(tokens);
                 return flag;

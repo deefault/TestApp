@@ -506,77 +506,8 @@ namespace WebApplication3.Controllers
             {
                 return BadRequest();
             }
-            code.Value = model.Value;
-            code.Args = model.Args;
-            object[] args;
-            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(model.Value);
-            string assemblyName = Path.GetRandomFileName();
-            MetadataReference[] references = new MetadataReference[]
-            {
-                MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location)
-            };
-
-            CSharpCompilation compilation = CSharpCompilation.Create(
-                assemblyName,
-                syntaxTrees: new[] { syntaxTree },
-                references: references,
-                options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-            StringBuilder message = new StringBuilder();
-            using (var ms = new MemoryStream())
-            {
-                EmitResult result = compilation.Emit(ms);
-
-                if (!result.Success)
-                {
-                    IEnumerable<Diagnostic> failures = result.Diagnostics.Where(diagnostic =>
-                        diagnostic.IsWarningAsError ||
-                        diagnostic.Severity == DiagnosticSeverity.Error);
-
-                    foreach (Diagnostic diagnostic in failures)
-                    {
-                        message.AppendFormat("{0}: {1}\n", diagnostic.Id, diagnostic.GetMessage());
-                        code.Output = message.ToString();
-                    }
-                }
-                else
-                {
-                    ms.Seek(0, SeekOrigin.Begin);
-                    Assembly assembly = Assembly.Load(ms.ToArray());
-                    Type type = assembly.GetType("TestsApp.Program");
-                    object obj = Activator.CreateInstance(type);
-                    if (!string.IsNullOrEmpty(model.Args))
-                    {
-                        var method = type.GetMethod("Main");
-                        var parameters = method.GetParameters();
-                        var tmp = model.Args.Split(',').Select(arg => arg.Trim()).ToArray();
-                        args = new object[tmp.Length];
-                        List<Type> types = new List<Type>();
-                        foreach (var p in parameters)
-                        {
-                            types.Add(p.ParameterType);
-                        }
-                        for (int i = 0; i < tmp.Length; i++)
-                        {
-                            args[i] = Convert.ChangeType(tmp[i], types[i]);
-                        }
-                    }
-                    else
-                        args = null;
-                    try
-                    {
-                        code.Output = type.InvokeMember("Main",
-                        BindingFlags.Default | BindingFlags.InvokeMethod,
-                        null,
-                        obj,
-                        args).ToString();
-                    }
-                    catch (Exception e)
-                    {
-                        code.Output = e.Message;
-                    }
-                }
-            }
+            code.Value = model.Value; code.Args = model.Args; code.Output = Compile(code);
+            
             using (var ts = _context.Database.BeginTransaction())
             {
                 _context.Codes.Update(code);
@@ -602,6 +533,82 @@ namespace WebApplication3.Controllers
                 list[k] = list[n];
                 list[n] = value;
             }
+        }
+
+        private static string Compile(Code code)
+        {
+            StringBuilder output = new StringBuilder();
+            object[] args;
+            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(code.Value);
+            string assemblyName = Path.GetRandomFileName();
+            MetadataReference[] references = new MetadataReference[]
+            {
+                MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location)
+            };
+
+            CSharpCompilation compilation = CSharpCompilation.Create(
+                assemblyName,
+                syntaxTrees: new[] { syntaxTree },
+                references: references,
+                options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
+                reportSuppressedDiagnostics: true,
+                optimizationLevel: OptimizationLevel.Release,
+                generalDiagnosticOption: ReportDiagnostic.Error));
+            using (var ms = new MemoryStream())
+            {
+                EmitResult result = compilation.Emit(ms);
+
+                if (!result.Success)
+                {
+                    IEnumerable<Diagnostic> failures = result.Diagnostics.Where(diagnostic =>
+                        diagnostic.IsWarningAsError ||
+                        diagnostic.Severity == DiagnosticSeverity.Error);
+
+                    foreach (Diagnostic diagnostic in failures)
+                    {
+                        output.AppendFormat("{0}: {1}\n", diagnostic.Id, diagnostic.GetMessage());
+                    }
+                }
+                else
+                {
+                    ms.Seek(0, SeekOrigin.Begin);
+                    Assembly assembly = Assembly.Load(ms.ToArray());
+                    Type type = assembly.GetType("TestsApp.Program");
+                    object obj = Activator.CreateInstance(type);
+                    if (!string.IsNullOrEmpty(code.Args))
+                    {
+                        var method = type.GetMethod("Main");
+                        var parameters = method.GetParameters();
+                        var tmp = code.Args.Split(',').Select(arg => arg.Trim()).ToArray();
+                        args = new object[tmp.Length];
+                        List<Type> types = new List<Type>();
+                        foreach (var p in parameters)
+                        {
+                            types.Add(p.ParameterType);
+                        }
+                        for (int i = 0; i < tmp.Length; i++)
+                        {
+                            args[i] = Convert.ChangeType(tmp[i], types[i]);
+                        }
+                    }
+                    else
+                        args = null;
+                    try
+                    {
+                        output = new StringBuilder(type.InvokeMember("Main",
+                        BindingFlags.Default | BindingFlags.InvokeMethod,
+                        null,
+                        obj,
+                        args).ToString());
+                    }
+                    catch (Exception e)
+                    {
+                        output = new StringBuilder(e.Message);
+                    }
+                }
+            }
+            return output.ToString();
         }
         #endregion
     }

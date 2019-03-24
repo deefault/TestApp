@@ -2,6 +2,10 @@
 <form method="post">
     <div>
         <h5 style="margin-top: 1rem;">@Model.Question.Title</h5>
+        @if (Model.TestResult.IsCompleted)
+        {
+            <h5>Балл: @Model.Score/@Model.Question.Score</h5>
+        }
     </div>
     <input type="hidden" value="@Model.Id">
     <fieldset id="options">

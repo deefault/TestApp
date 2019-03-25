@@ -102,6 +102,7 @@ namespace TestsApp
     <script src="~/lib/codemirror/addon/edit/matchbrackets.js"></script>
     <script src="~/lib/codemirror/addon/hint/anyword-hint.js"></script>
     <script src="~/lib/codemirror/addon/hint/show-hint.js"></script>
+    <script src="~/lib/codemirror/addon/selection/active-line.js"></script>
     <script src="~/lib/bootstrap-touchspin/src/jquery.bootstrap-touchspin.js"></script>
     <script>
         $("#score").TouchSpin({
@@ -122,6 +123,7 @@ namespace TestsApp
                 theme: "material",
                 autoCloseBrackets: true,
                 matchBrackets: true,
+                styleActiveLine: true,
                 showCursorWhenSelecting: true,
                 indentUnit: 4,
                 tabSize: 4,
@@ -144,7 +146,7 @@ namespace TestsApp
             submitCode('@Url.RouteUrl("PostCode", new {testId = Context.GetRouteData().Values["testId"]})');
             loadOutput('@Url.RouteUrl("GetCode", new {testId = Context.GetRouteData().Values["testId"]})');
         }
-        
+
         $("form").submit(function(event) {
             event.preventDefault();
             submitCodeQuestion('@Url.RouteUrl("AddCode", new {testId = Context.GetRouteData().Values["testId"]})');

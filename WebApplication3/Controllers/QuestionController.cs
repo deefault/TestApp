@@ -1029,6 +1029,7 @@ namespace WebApplication3.Controllers
                         types.Add(p.ParameterType);
                     }
                     var multiArgs = code.Args.Split(';').Select(arg => arg.Trim()).ToArray();
+                    //var multiArgs = code.Args.Trim(new char[] { ' ', ';', ',' }).Split(';').Select(arg => arg.Trim(new char[] { ' ', ';', ',' })).ToArray();
                     string[] tmp;
                     foreach (var a in multiArgs)
                     {
@@ -1045,11 +1046,7 @@ namespace WebApplication3.Controllers
                             args = null;
                         try
                         {
-                            output.AppendLine(type.InvokeMember("Main",
-                            BindingFlags.Default | BindingFlags.InvokeMethod,
-                            null,
-                            obj,
-                            args).ToString());
+                            output.AppendLine(type.InvokeMember("Main", BindingFlags.Default | BindingFlags.InvokeMethod, null, obj, args).ToString());
                         }
                         catch (Exception e)
                         {

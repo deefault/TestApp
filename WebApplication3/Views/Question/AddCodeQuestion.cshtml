@@ -40,7 +40,7 @@
                     </div>
                 </div>
                 <div class="main">
-                    <div class="form-group clearfix contentwrapper" id="item-table__body">
+                    <div class="form-group clearfix contentwrapper">
                         <textarea class="form-control" id="code">
 using System;
 
@@ -58,7 +58,7 @@ namespace TestsApp
                             <em><b>Ctrl-Space</b>: autocomplete</em>
                         </span>
                     </div>
-                    <div>
+                    <div style="margin-bottom: 1rem">
                         <b>Аргументы:</b>
                         <div class="input-group">
                             <input id="args" value="Hello World" class="form-control">
@@ -66,6 +66,9 @@ namespace TestsApp
                                 <button class="btn btn-success" id="compile">Запуск</button>
                             </span>
                         </div>
+                        <span class="aside">
+                            <em>Use <b>;</b> to separate multiple</em>
+                        </span>
                     </div>
                 </div>
                 <div id="outputDiv">

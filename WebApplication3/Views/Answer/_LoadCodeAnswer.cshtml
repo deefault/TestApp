@@ -77,6 +77,7 @@ namespace TestsApp
         <script src="~/lib/codemirror/addon/edit/matchbrackets.js"></script>
         <script src="~/lib/codemirror/addon/hint/anyword-hint.js"></script>
         <script src="~/lib/codemirror/addon/hint/show-hint.js"></script>
+        <script src="~/lib/codemirror/addon/selection/active-line.js"></script>
         <script>
             loadAnswerOutput();
             var elements =
@@ -93,6 +94,8 @@ namespace TestsApp
                     theme: "material",
                     autoCloseBrackets: true,
                     matchBrackets: true,
+                    styleActiveLine: true,
+                    styleActiveSelected: true,
                     showCursorWhenSelecting: true,
                     indentUnit: 4,
                     tabSize: 4,

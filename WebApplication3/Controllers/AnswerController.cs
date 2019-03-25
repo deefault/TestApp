@@ -576,35 +576,40 @@ namespace WebApplication3.Controllers
                     Assembly assembly = Assembly.Load(ms.ToArray());
                     Type type = assembly.GetType("TestsApp.Program");
                     object obj = Activator.CreateInstance(type);
-                    if (!string.IsNullOrEmpty(code.Args))
+                    var method = type.GetMethod("Main");
+                    var parameters = method.GetParameters();
+                    List<Type> types = new List<Type>();
+                    foreach (var p in parameters)
                     {
-                        var method = type.GetMethod("Main");
-                        var parameters = method.GetParameters();
-                        var tmp = code.Args.Split(',').Select(arg => arg.Trim()).ToArray();
-                        args = new object[tmp.Length];
-                        List<Type> types = new List<Type>();
-                        foreach (var p in parameters)
-                        {
-                            types.Add(p.ParameterType);
-                        }
-                        for (int i = 0; i < tmp.Length; i++)
-                        {
-                            args[i] = Convert.ChangeType(tmp[i], types[i]);
-                        }
+                        types.Add(p.ParameterType);
                     }
-                    else
-                        args = null;
-                    try
+                    var multiArgs = code.Args.Split(';').Select(arg => arg.Trim()).ToArray();
+                    string[] tmp;
+                    foreach (var a in multiArgs)
                     {
-                        output = new StringBuilder(type.InvokeMember("Main",
-                        BindingFlags.Default | BindingFlags.InvokeMethod,
-                        null,
-                        obj,
-                        args).ToString());
-                    }
-                    catch (Exception e)
-                    {
-                        output = new StringBuilder(e.Message);
+                        tmp = a.Split(',').Select(arg => arg.Trim()).ToArray();
+                        if (!string.IsNullOrEmpty(a))
+                        {
+                            args = new object[tmp.Length];
+                            for (int i = 0; i < tmp.Length; i++)
+                            {
+                                args[i] = Convert.ChangeType(tmp[i], types[i]);
+                            }
+                        }
+                        else
+                            args = null;
+                        try
+                        {
+                            output.AppendLine(type.InvokeMember("Main",
+                            BindingFlags.Default | BindingFlags.InvokeMethod,
+                            null,
+                            obj,
+                            args).ToString());
+                        }
+                        catch (Exception e)
+                        {
+                            output = new StringBuilder(e.Message);
+                        }
                     }
                 }
             }

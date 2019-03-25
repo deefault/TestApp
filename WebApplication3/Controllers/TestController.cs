@@ -22,6 +22,11 @@ using WebApplication3.Models.TestViewModels;
 using Microsoft.AspNetCore.Http;
 using StatusCodes = Microsoft.AspNetCore.Http.StatusCodes;
 using WebApplication3.Utils;
+using System.Reflection;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using System.Text;
+using Microsoft.CodeAnalysis.Emit;
 
 namespace WebApplication3.Controllers
 {
@@ -577,7 +582,6 @@ namespace WebApplication3.Controllers
                     }
                     else
                         textAnswer.Score = 0;
-                    //textAnswer.Score = (textAnswer.Text == question.TextRightAnswer) ? question.Score : 0;
                     _context.TextAnswers.Update(textAnswer);
                 }
                 else if (answer is DragAndDropAnswer)
@@ -606,16 +610,20 @@ namespace WebApplication3.Controllers
                 else if (answer is CodeAnswer)
                 {
                     var codeAnswer = await _context.CodeAnswers
-                    .Include(a => a.Question).Include(a => a.Code).Include(a => a.Option)
-                    .SingleAsync(a => a.Id == answer.Id);
-                    var question =
-                        await _context.CodeQuestions
-                            .SingleAsync(q => q.Id == codeAnswer.QuestionId);
-                    if (codeAnswer.Code != null && codeAnswer.Option != null)
+                        .Include(a => a.Question)
+                            .ThenInclude(q => (q as CodeQuestion).Code)
+                        .Include(a => a.Code).Include(a => a.Option)
+                        .SingleAsync(a => a.Id == answer.Id);
+                    var userCode = codeAnswer.Code.Value;
+                    var creatorCode = (codeAnswer.Question as CodeQuestion).Code.Value;
+                    var creatorArgs = (codeAnswer.Question as CodeQuestion).Code.Args;
+                    var userOutput = Compile(userCode, creatorArgs);
+                    var creatorOutput = Compile(creatorCode, creatorArgs);
+                    if (userCode != null)
                     {
-                        if (codeAnswer.Code.Output == codeAnswer.Option.Text)
+                        if (userOutput == creatorOutput)
                         {
-                            codeAnswer.Score = question.Score;
+                            codeAnswer.Score = codeAnswer.Question.Score;
                             count++;
                         }
                         else
@@ -651,6 +659,86 @@ namespace WebApplication3.Controllers
                 list[k] = list[n];
                 list[n] = value;
             }
+        }
+        private static string Compile(string code, string args)
+        {
+            StringBuilder output = new StringBuilder();
+            object[] Args;
+            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(code);
+            string assemblyName = Path.GetRandomFileName();
+            MetadataReference[] references = new MetadataReference[]
+            {
+                MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location)
+            };
+
+            CSharpCompilation compilation = CSharpCompilation.Create(
+                assemblyName,
+                syntaxTrees: new[] { syntaxTree },
+                references: references,
+                options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
+                reportSuppressedDiagnostics: true,
+                optimizationLevel: OptimizationLevel.Release,
+                generalDiagnosticOption: ReportDiagnostic.Error));
+            using (var ms = new MemoryStream())
+            {
+                EmitResult result = compilation.Emit(ms);
+
+                if (!result.Success)
+                {
+                    IEnumerable<Diagnostic> failures = result.Diagnostics.Where(diagnostic =>
+                        diagnostic.IsWarningAsError ||
+                        diagnostic.Severity == DiagnosticSeverity.Error);
+
+                    foreach (Diagnostic diagnostic in failures)
+                    {
+                        output.AppendFormat("{0}: {1}\n", diagnostic.Id, diagnostic.GetMessage());
+                    }
+                }
+                else
+                {
+                    ms.Seek(0, SeekOrigin.Begin);
+                    Assembly assembly = Assembly.Load(ms.ToArray());
+                    Type type = assembly.GetType("TestsApp.Program");
+                    object obj = Activator.CreateInstance(type);
+                    var method = type.GetMethod("Main");
+                    var parameters = method.GetParameters();
+                    List<Type> types = new List<Type>();
+                    foreach (var p in parameters)
+                    {
+                        types.Add(p.ParameterType);
+                    }
+                    var multiArgs = args.Split(';').Select(arg => arg.Trim()).ToArray();
+                    string[] tmp;
+                    foreach (var a in multiArgs)
+                    {
+                        tmp = a.Split(',').Select(arg => arg.Trim()).ToArray();
+                        if (!string.IsNullOrEmpty(a))
+                        {
+                            Args = new object[tmp.Length];
+                            for (int i = 0; i < tmp.Length; i++)
+                            {
+                                Args[i] = Convert.ChangeType(tmp[i], types[i]);
+                            }
+                        }
+                        else
+                            Args = null;
+                        try
+                        {
+                            output.AppendLine(type.InvokeMember("Main",
+                            BindingFlags.Default | BindingFlags.InvokeMethod,
+                            null,
+                            obj,
+                            Args).ToString());
+                        }
+                        catch (Exception e)
+                        {
+                            output = new StringBuilder(e.Message);
+                        }
+                    }
+                }
+            }
+            return output.ToString();
         }
         #endregion
     }

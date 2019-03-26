@@ -285,6 +285,10 @@ namespace WebApplication3.Migrations
 
                     b.Property<bool>("HideRightAnswers");
 
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(false);
+
                     b.Property<bool>("IsEnabled");
 
                     b.Property<string>("Name")

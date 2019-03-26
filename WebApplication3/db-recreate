@@ -1,0 +1,7 @@
+#!/bin/bash
+
+rm -rd ./Migrations
+rm WebApplication3.sqlite
+
+dotnet ef migrations add "m"
+dotnet ef database update

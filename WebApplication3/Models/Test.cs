@@ -18,7 +18,10 @@ namespace WebApplication3.Models
         [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;        
-        public bool IsEnabled { get; set; }        
+        public bool IsEnabled { get; set; }
+
+        [Required] 
+        public bool IsDeleted { get; set; } = false;
         public bool Shuffled { get; set; }
         
         public bool HideRightAnswers { get; set; } = false;

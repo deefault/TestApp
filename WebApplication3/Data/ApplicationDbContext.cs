@@ -68,7 +68,12 @@ namespace WebApplication3.Data
             builder.Entity<DragAndDropAnswerOption>().ToTable("DragAndDropAnswerOption");
             
             builder.Entity<Option>().ToTable("Option");
-            builder.Entity<Test>().ToTable("Test");
+            builder.Entity<Test>(e =>
+            {
+                e.ToTable("Test");
+                e.Property("IsDeleted")
+                    .HasDefaultValue(false);
+            });
             builder.Entity<TestResult>().ToTable("TestResult");
             builder.Entity<User>().ToTable("User");
             builder.Entity<AnswerOption>().ToTable("AnswerOptions");

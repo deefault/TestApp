@@ -46,4 +46,9 @@ namespace WebApplication3.Models
         public List<Test> Model1 { get; set; }
         public AddTestViewModel Model2 { get; set; }
     }
+    public class TestResultsModel
+    {
+        public Test Test { get; set; }
+        public List<TestResult> Results { get; set; }
+    }
 }

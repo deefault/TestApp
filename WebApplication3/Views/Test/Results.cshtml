@@ -1,0 +1,50 @@
+﻿@model TestResultsModel
+@{
+    ViewBag.Title = Model.Test.Name;
+    Layout = "_Layout";
+}
+
+<hr />
+<h4 class="text-center">@ViewBag.Title</h4>
+@if (Model.Results.Count == 0 || Model.Results == null)
+{
+    <hr />
+    <div class="alert alert-warning" role="alert">
+        Тест пока ещё никто не прошёл
+    </div>
+}
+else
+{
+    <dt>
+        @Html.DisplayNameFor(model => model)
+    </dt>
+    <dd style="margin-top:1rem;">
+        <table class="table item-table">
+            <tr>
+                <th>#</th>
+                <th>Имя</th>
+                <th>Дата</th>
+                <th>Результат</th>
+            </tr>
+            @{ int i = 1;}
+            @foreach (var item in Model.Results)
+            {
+                <tr>
+                    <td>
+                        @(i++)
+                    </td>
+                    <td>
+                        @item.CompletedByUser.UserName
+                    </td>
+                    <td>
+                        @item.CompletedOn
+                    </td>
+                    <td>
+                        @(item.RightAnswersCount * 100 / item.TotalQuestions)%
+                    </td>
+                </tr>
+            }
+        </table>
+    </dd>
+}
+

@@ -1,6 +1,6 @@
 {
   "name": "asp.net",
-  "directory": "./wwwroot/lib",
+  "directory": "wwwroot/lib",
   "private": true,
   "dependencies": {
     "bootstrap": "4.1.3",

@@ -18,6 +18,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -460,13 +461,14 @@ namespace WebApplication3.Controllers
                 return Forbid();
             }
             var question = await _context.SingleChoiceQuestions
-                .Include(q => q.Options)
+                .AsNoTracking()
                 .SingleAsync(q => q.Id == questionId);
-            if (question.Test != test)
+            
+            if (question.TestId != test.Id)
             {
                 return NotFound();
             }
-
+            
             model.TestId = test.Id;
             TryValidateModel(model);
 
@@ -475,15 +477,34 @@ namespace WebApplication3.Controllers
                 // транзакция
                 using (var ts = _context.Database.BeginTransaction())
                 {
-                    //обновить опшены
-                    UpdateQuestionOptions(model.Options, question);
-                    // обновить вопрос и применить изменения
-                    question.RightAnswer = question.Options.Single(o => o.IsRight);
-                    question.Title = model.Title;
-                    question.Score = model.Score;
-
-                    _context.Questions.Update(question);
+                    // copy question
+                    question.Id = 0;
+                    
+                    _context.SingleChoiceQuestions.Add(question);
                     await _context.SaveChangesAsync();
+                    int questionCopyId = question.Id;
+                                   
+                    // заархивировать
+                    var questionOld = await _context.SingleChoiceQuestions
+                        .SingleAsync(q => q.Id == questionId);
+                    questionOld.IsDeleted = true;
+                    _context.SingleChoiceQuestions.Update(questionOld);
+                    await _context.SaveChangesAsync();
+                    
+                    UpdateQuestionOptions(model.Options, questionCopyId);
+                    //обновить опшены и копию
+                    var questionCopy =  await _context.SingleChoiceQuestions
+                        .Include(q => q.Options)
+                        .SingleAsync(q => q.Id == questionCopyId);
+                    questionCopy.Title = model.Title;
+                    questionCopy.Score = model.Score;
+                    questionCopy.RightAnswer = questionCopy.Options.Single(o => o.IsRight);
+                    _context.SingleChoiceQuestions.Update(questionCopy);
+                    
+                    
+                    
+                    await _context.SaveChangesAsync();
+                    
                     ts.Commit();
                 }
 
@@ -521,9 +542,10 @@ namespace WebApplication3.Controllers
                 return Forbid();
             }
             var question = await _context.MultiChoiceQuestions
-                .Include(q => q.Options)
-                .SingleAsync(q => q.Id == questionId);
-            if (question.Test != test)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(q => q.Id == questionId);
+            
+            if (question.TestId != test.Id)
             {
                 return NotFound();
             }
@@ -534,15 +556,34 @@ namespace WebApplication3.Controllers
             if (ModelState.IsValid)
             {
                 // транзакция
-                using (var ts = _context.Database.BeginTransaction())
+                using (var ts = _context.Database.BeginTransaction())          
                 {
-                    //обновить опшены
-                    UpdateQuestionOptions(model.Options, question);
-                    // обновить вопрос и применить изменения
-                    question.Title = model.Title;
-                    question.Score = model.Score;
-                    _context.Questions.Update(question);
+                    // copy question
+                    question.Id = 0;
+                    
+                    _context.MultiChoiceQuestions.Add(question);
                     await _context.SaveChangesAsync();
+                    int questionCopyId = question.Id;
+                                   
+                    // заархивировать
+                    var questionOld = await _context.MultiChoiceQuestions
+                        .SingleAsync(q => q.Id == questionId);
+                    questionOld.IsDeleted = true;
+                    _context.MultiChoiceQuestions.Update(questionOld);
+                    await _context.SaveChangesAsync();
+                    
+                    //обновить опшены и копию
+                    var questionCopy =  await _context.MultiChoiceQuestions
+                        .Include(q => q.Options)
+                        .SingleAsync(q => q.Id == questionCopyId);
+                    questionCopy.Title = model.Title;
+                    questionCopy.Score = model.Score;
+                    _context.MultiChoiceQuestions.Update(questionCopy);
+                    
+                    UpdateQuestionOptions(model.Options, questionCopyId);
+                    
+                    await _context.SaveChangesAsync();
+                    
                     ts.Commit();
                 }
 
@@ -579,9 +620,9 @@ namespace WebApplication3.Controllers
                 return Forbid();
             }
             var question = await _context.TextQuestions
-                .Include(q => q.Options)
+                .AsNoTracking()
                 .SingleAsync(q => q.Id == questionId);
-            if (question.Test != test)
+            if (question.TestId != testId)
             {
                 return NotFound();
             }
@@ -593,15 +634,32 @@ namespace WebApplication3.Controllers
             {
                 // транзакция
                 using (var ts = _context.Database.BeginTransaction())
-                {
-                    //обновить опшены
-                    UpdateQuestionOptions(model.Options, question);
-                    // обновить вопрос и применить изменения
-                    question.TextRightAnswer = question.Options.Single().Text;
-                    question.Title = model.Title;
-                    question.Score = model.Score;
-                    _context.Questions.Update(question);
+                {// copy question
+                    question.Id = 0;
+                    
+                    _context.TextQuestions.Add(question);
                     await _context.SaveChangesAsync();
+                    int questionCopyId = question.Id;
+                                   
+                    // заархивировать
+                    var questionOld = await _context.TextQuestions
+                        .SingleAsync(q => q.Id == questionId);
+                    questionOld.IsDeleted = true;
+                    _context.TextQuestions.Update(questionOld);
+                    await _context.SaveChangesAsync();
+                    
+                    //обновить опшены и копию
+                    var questionCopy =  await _context.TextQuestions
+                        .SingleAsync(q => q.Id == questionCopyId);
+                    questionCopy.TextRightAnswer = model.Options.Single().Text;
+                    questionCopy.Title = model.Title;
+                    questionCopy.Score = model.Score;
+                    _context.TextQuestions.Update(questionCopy);
+                    
+                    
+                    await _context.SaveChangesAsync();
+                    
+                    
                     ts.Commit();
                 }
 
@@ -638,9 +696,9 @@ namespace WebApplication3.Controllers
                 return Forbid();
             }
             var question = await _context.DragAndDropQuestions
-                .Include(q => q.Options)
+                .AsNoTracking()
                 .SingleAsync(q => q.Id == questionId);
-            if (question.Test != test)
+            if (question.TestId != test.Id)
             {
                 return NotFound();
             }
@@ -653,13 +711,32 @@ namespace WebApplication3.Controllers
                 // транзакция
                 using (var ts = _context.Database.BeginTransaction())
                 {
-                    //обновить опшены
-                    UpdateDragAndDropQuestionOptions(model.Options, question);
-                    // обновить вопрос и применить изменения
-                    question.Title = model.Title;
-                    question.Score = model.Score;
-                    _context.Questions.Update(question);
+                    // copy question
+                    question.Id = 0;
+                    
+                    _context.DragAndDropQuestions.Add(question);
                     await _context.SaveChangesAsync();
+                    int questionCopyId = question.Id;
+                                   
+                    // заархивировать
+                    var questionOld = await _context.DragAndDropQuestions
+                        .SingleAsync(q => q.Id == questionId);
+                    questionOld.IsDeleted = true;
+                    _context.DragAndDropQuestions.Update(questionOld);
+                    await _context.SaveChangesAsync();
+                    
+                    //обновить опшены и копию
+                    var questionCopy =  await _context.DragAndDropQuestions
+                        .Include(q => q.Options)
+                        .SingleAsync(q => q.Id == questionCopyId);
+                    questionCopy.Title = model.Title;
+                    questionCopy.Score = model.Score;
+                    _context.DragAndDropQuestions.Update(questionCopy);
+                    
+                    UpdateDragAndDropQuestionOptions(model.Options, questionCopyId);
+                    
+                    await _context.SaveChangesAsync();
+                    
                     ts.Commit();
                 }
 
@@ -698,7 +775,7 @@ namespace WebApplication3.Controllers
             var question = await _context.CodeQuestions
                 .Include(q => q.Code)
                 .SingleAsync(q => q.Id == questionId);
-            if (question.Test != test)
+            if (question.TestId != test.Id)
             {
                 return NotFound();
             }
@@ -752,7 +829,8 @@ namespace WebApplication3.Controllers
                 .SingleOrDefaultAsync(q => q.Id == questionId);
             if (question == null) return NotFound();
             if (question.Test != test) return NotFound();
-            _context.Questions.Remove(question);
+            question.IsDeleted = true;
+            _context.Questions.Update(question);
             await _context.SaveChangesAsync();
             return RedirectToAction("Details", "Test", new { id = testId });
         }
@@ -889,96 +967,33 @@ namespace WebApplication3.Controllers
         #endregion
 
         #region Вспомогательные методы
-        private async void UpdateQuestionOptions(List<OptionViewModel> options, Question question)
+        private async void UpdateQuestionOptions(List<OptionViewModel> options, int questionId)
         {
-
-            var optionsToCreate = new List<OptionViewModel>();
-            var otherOptions = new List<OptionViewModel>();
-            var optionsToUpdate = new List<Option>();
-            var optionsToDelete = new List<Option>();
-
-
-            foreach (var option in options)
+            foreach (var option in  options)
             {
-                if (option.Id == null) optionsToCreate.Add(option);
-                else otherOptions.Add(option);
-            }
-
-            List<int?> optionsIds = otherOptions.Select(o => o.Id).ToList();
-
-            optionsToUpdate = question.Options.Where(o => optionsIds.Contains(o.Id)).ToList();
-            optionsToDelete = question.Options.Where(o => !optionsIds.Contains(o.Id)).ToList();
-
-            foreach (var option in optionsToUpdate)
-            {
-                var optionData = options.Single(o => o.Id == option.Id);
-                option.IsRight = optionData.IsRight;
-                option.Text = optionData.Text;
-                _context.Update(option);
-            }
-
-            await _context.SaveChangesAsync();
-
-            foreach (var option in optionsToDelete)
-            {
-                _context.Options.Remove(option);
-            }
-
-            await _context.SaveChangesAsync();
-
-            foreach (var option in optionsToCreate)
-            {
-                var o = new Option { Question = question, IsRight = option.IsRight, Text = option.Text };
-                _context.Options.Add(o);
+                await _context.Options.AddAsync(new Option()
+                {
+                    IsRight = option.IsRight,
+                    QuestionId = questionId,
+                    Text = option.Text,                      
+                });
             }
             await _context.SaveChangesAsync();
-
         }
 
-        private async void UpdateDragAndDropQuestionOptions(List<OptionViewModel> options, Question question)
+        private async void UpdateDragAndDropQuestionOptions(List<OptionViewModel> options, int questionId)
         {
-
-            var optionsToCreate = new List<OptionViewModel>();
-            var otherOptions = new List<OptionViewModel>();
-            var optionsToUpdate = new List<Option>();
-            var optionsToDelete = new List<Option>();
-
-
-            foreach (var option in options)
+            foreach (var option in  options)
             {
-                if (option.Id == null) optionsToCreate.Add(option);
-                else otherOptions.Add(option);
-            }
-
-            List<int?> optionsIds = otherOptions.Select(o => o.Id).ToList();
-
-            optionsToUpdate = question.Options.Where(o => optionsIds.Contains(o.Id)).ToList();
-            optionsToDelete = question.Options.Where(o => !optionsIds.Contains(o.Id)).ToList();
-            foreach (var option in optionsToUpdate)
-            {
-                var optionData = options.Single(o => o.Id == option.Id);
-                option.IsRight = optionData.IsRight;
-                option.Text = optionData.Text;
-                option.Order = optionData.Order;
-                _context.Update(option);
-            }
-
-            await _context.SaveChangesAsync();
-
-            foreach (var option in optionsToDelete)
-            {
-                _context.Options.Remove(option);
-            }
-
-            await _context.SaveChangesAsync();
-
-            foreach (var option in optionsToCreate)
-            {
-                var o = new Option { Order = option.Order, Question = question, IsRight = option.IsRight, Text = option.Text };
-                _context.Options.Add(o);
+                await _context.Options.AddAsync(new Option()
+                {
+                    IsRight = option.IsRight,
+                    QuestionId = questionId,
+                    Text = option.Text,   
+                    Order = option.Order
+                });
             }
             await _context.SaveChangesAsync();
-
         }
         private static string Compile(Code code)
         {

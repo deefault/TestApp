@@ -19,8 +19,7 @@ namespace WebApplication3.Models.QuestionViewModels
         [Required]
         public int TestId { get; set; }
 
-        [Range(1, 100)]
-        [DisplayName("Балл")]
+        [Range(1, 100)] [DisplayName("Балл")] 
         public int Score { get; set; } = 1;
     }
 }

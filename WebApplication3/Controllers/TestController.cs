@@ -63,6 +63,7 @@ namespace WebApplication3.Controllers
         #region Добавление
         [HttpGet]
         [Route("/Tests/Add/")]
+        [Authorize]
         public IActionResult Add()
         {
             return View();
@@ -99,6 +100,7 @@ namespace WebApplication3.Controllers
 
         [HttpGet]
         [Route("/Tests/AddFromFile/")]
+        [Authorize]
         public IActionResult AddFromFile()
         {
             return View();
@@ -165,7 +167,7 @@ namespace WebApplication3.Controllers
         {
             //throw new NotImplementedException();
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.SingleAsync(t => t.Id == testId);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId && !t.IsDeleted);
             if (user == null)
             {
                 Response.StatusCode = 404;
@@ -203,7 +205,7 @@ namespace WebApplication3.Controllers
         [Route("/User/[controller]s/{testId}/AddTestToUser/", Name = "AddTestToUser")]
         public async Task<IActionResult> AddTestToUser(AddTestToUserViewModel model, int testId)
         {
-            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId && !t.IsDeleted);
             if (test == null)
             {
                 Response.StatusCode = 404;
@@ -226,7 +228,7 @@ namespace WebApplication3.Controllers
         public async Task<JsonResult> AddTestToUserAjax(int testId, int userId)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.SingleAsync(x=>x.Id==testId);
+            var test = await _context.Tests.SingleOrDefaultAsync(x=>x.Id==testId && !x.IsDeleted);
             if (user == null)
             {
                 Response.StatusCode = 404;
@@ -274,9 +276,8 @@ namespace WebApplication3.Controllers
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
             if (test.CreatedBy != user) return Forbid();
-            var trs = _context.TestResults.Where(tr => tr.Test == test).ToArray();
-            _context.TestResults.RemoveRange(trs);
-            _context.Tests.Remove(test);
+            test.IsDeleted = true;
+            _context.Update(test);
             await _context.SaveChangesAsync();
             return RedirectToAction("Tests");
         }
@@ -290,7 +291,7 @@ namespace WebApplication3.Controllers
         public async Task<IActionResult> Enable(int testId)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId && !t.IsDeleted);
             if (test.CreatedBy != user) return Forbid();
             test.IsEnabled = !test.IsEnabled;
             _context.Tests.Update(test);
@@ -305,7 +306,7 @@ namespace WebApplication3.Controllers
         public async Task<IActionResult> Shuffle(int testId)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId && !t.IsDeleted);
             if (test.CreatedBy != user) return Forbid();
             test.Shuffled = !test.Shuffled;
             _context.Tests.Update(test);
@@ -320,7 +321,7 @@ namespace WebApplication3.Controllers
         public async Task<IActionResult> Hide(int testId)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == testId && !t.IsDeleted);
             if (test.CreatedBy != user) return Forbid();
             test.HideRightAnswers = !test.HideRightAnswers;
             _context.Tests.Update(test);
@@ -336,7 +337,7 @@ namespace WebApplication3.Controllers
         public async Task<IActionResult> Tests()
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var createdTests = _context.Tests.Where(t => t.CreatedBy.Id == user.Id).ToList();
+            var createdTests = _context.Tests.Where(t => t.CreatedBy.Id == user.Id && !t.IsDeleted).ToList();
             //if (createdTests == null) //return View(new ICollection<Test>);
             AddTestModel addTestModel = new AddTestModel
             {
@@ -355,14 +356,17 @@ namespace WebApplication3.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.Include(t => t.Questions).SingleAsync(t => t.Id == id);
-            var questions = await _context.Questions.Where(q => q.Test == test).ToListAsync();
+            var test = await _context.Tests
+                .SingleOrDefaultAsync(t => t.Id == id && !t.IsDeleted);
+           
             if (test == null)
             {
                 return NotFound();
             }
+            var questions = await _context.Questions
+                .Where(q => q.Test == test && !q.IsDeleted).ToListAsync();
+            ViewBag.Questions = questions;
             ViewData["user"] = user;
-            ViewData["question"] = questions;
             if (test.CreatedBy == user)
             {
 
@@ -551,23 +555,31 @@ namespace WebApplication3.Controllers
                         await _context.MultiChoiceQuestions
                             .SingleAsync(q => q.Id == multiChoiceAnswer.QuestionId);
 
-                    // TODO: Score
-                    //int counter = 0;
-                    multiChoiceAnswer.Score = question.Score;
-                    count++;
+                    // count Score
+                    int countRightChecked = 0, countWrongChecked = 0, countRightUnchecked = 0;
+                    float countOptions = 0;
                     if (multiChoiceAnswer.AnswerOptions == null || multiChoiceAnswer.AnswerOptions.Count == 0)
-                        count--;
-                    foreach (var answerOption in multiChoiceAnswer.AnswerOptions)
+                        multiChoiceAnswer.Score = 0;
+                    else
                     {
-                        if (answerOption.Checked != question.Options.Single(o => o.Id == answerOption.OptionId).IsRight)
+                        foreach (var answerOption in multiChoiceAnswer.AnswerOptions)
                         {
-                            multiChoiceAnswer.Score = 0;
-                            count--;
-                            break;
+                            countOptions++;
+                            var rightAnswer = question.Options.Single(o => o.Id == answerOption.OptionId).IsRight;
+                            if (answerOption.Checked)
+                            {
+                                if (answerOption.Checked == rightAnswer) countRightChecked++;
+                                else countWrongChecked++;
+                            }
+                            else
+                            {
+                                if (answerOption.Checked != rightAnswer) countRightUnchecked++;
+                            }
                         }
+
+                        multiChoiceAnswer.Score = question.Score *
+                            (countRightChecked + countRightUnchecked - countWrongChecked) / countOptions;
                     }
-
-
                     _context.MultiChoiceAnswers.Update(multiChoiceAnswer);
                 }
                 else if (answer is TextAnswer textAnswer)

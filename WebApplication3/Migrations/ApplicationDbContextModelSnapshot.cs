@@ -246,6 +246,10 @@ namespace WebApplication3.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(false);
+
                     b.Property<string>("QuestionType")
                         .IsRequired()
                         .HasColumnName("question_type")

@@ -286,55 +286,6 @@ var disableArrowKeys = function (e) {
 // #endregion
 
 // #region Code
-function submitAnswerCode() {
-    var id = getActiveAnswerId();
-    var actionUrl = "/Code/" + id + "/";
-    var data = {};
-    data.Value = editor.getValue();
-    data.Args = elements.args.val();
-    console.log(data);
-    // запрос
-    $.ajax({
-        async: false,
-        method: "POST",
-        url: actionUrl,
-        beforeSend: function (xhr) {
-            $("#output").html("Waiting for server...");
-            xhr.setRequestHeader("RequestVerificationToken",
-                $('input:hidden[name="__RequestVerificationToken"]').val());
-        },
-        contentType: "application/json",
-        data: JSON.stringify(data),
-        success: function (response) {
-            console.log(response);
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            //console.log(textStatus + ": Couldn't add control. " + errorThrown);
-            console.log(xhr);
-        },
-    });
-}
-function loadAnswerOutput() {
-    var id = getActiveAnswerId();
-    var actionUrl = "/Code/" + id + "/";
-    $.ajax({
-        async: false,
-        cache: false,
-        method: "GET",
-        url: actionUrl,
-        dataType: "html",
-        beforeSend: function () {
-
-        },
-        success: function (response) {
-            //заменить html код формой внутри div
-            $("#outputDiv").html(response);
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            console.log(xhr.responseJSON);
-        }
-    });
-}
 function submitCode(actionUrl) {
     var data = {};
     data.Value = editor.getValue();
@@ -363,7 +314,6 @@ function submitCode(actionUrl) {
 }
 function loadOutput(actionUrl) {
     $.ajax({
-        async: false,
         cache: false,
         method: "GET",
         url: actionUrl,

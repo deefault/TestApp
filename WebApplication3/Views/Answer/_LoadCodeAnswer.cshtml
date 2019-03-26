@@ -58,12 +58,62 @@ namespace TestsApp
                 </span>
             </div>
         </div>
-        <div id="outputDiv">
-            <div>
-                <b>Вывод:</b>
-                <pre id="output" class="form-control" readonly=""></pre>
+        @if (Model.TestResult.IsCompleted)
+        {
+            <table class="table-borderless table">
+                <tr>
+                    <td width="50%" style="padding-left:0">
+                        <div id="outputDiv">
+                            <div>
+                                <b>Ваш вывод:</b>
+                                <pre id="userOutput" class="form-control output" readonly="">@Model.Code.Output</pre>
+                            </div>
+                        </div>
+                    </td>
+                    <td width="50%" style="padding-right:0">
+                        <div>
+                            <b>Верный вывод:</b>
+                            <pre id="creatorOutput" class="form-control output" readonly="">@((Model.Question as CodeQuestion).Code.Output)</pre>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <script>
+                $("#compile").click(function (e) {
+                    return false;
+                });</script>
+        }
+        else
+        {
+            <div id="outputDiv">
+                <div>
+                    <b>Вывод:</b>
+                    <pre id="output" class="form-control output" readonly=""></pre>
+                </div>
             </div>
-        </div>
+            <script>
+                loadOutput("/Code/" + getActiveAnswerId() + "/");
+                var elements =
+                {
+                    args: $("#args"),
+                    compile: $("#compile"),
+                    output: $("#output"),
+                    code: $("#code"),
+                };
+                elements.compile.click(function (e) {
+                    e.preventDefault();
+                    ShowOutput("Waiting for server...");
+                    Compile();
+                });
+                $(".CodeMirror").addClass("contentwrapper");
+                function ShowOutput(output) {
+                    $("#output").html(output);
+                }
+                function Compile() {
+                    submitCode("/Code/" + getActiveAnswerId() + "/");
+                    loadOutput("/Code/" + getActiveAnswerId() + "/");
+                }</script>
+        }
         <script src="~/lib/codemirror/lib/codemirror.js"></script>
         <script src="~/lib/codemirror/mode/clike/clike.js"></script>
         <script src="~/lib/codemirror/mode/python/python.js"></script>
@@ -79,14 +129,6 @@ namespace TestsApp
         <script src="~/lib/codemirror/addon/hint/show-hint.js"></script>
         <script src="~/lib/codemirror/addon/selection/active-line.js"></script>
         <script>
-            loadAnswerOutput();
-            var elements =
-            {
-                args: $("#args"),
-                compile: $("#compile"),
-                output: $("#output"),
-                code: $("#code"),
-            };
             var editor = CodeMirror.fromTextArea(document.getElementById('code'),
                 {
                     lineNumbers: true,
@@ -105,19 +147,6 @@ namespace TestsApp
                     gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
                     extraKeys: { "Ctrl-Space": "autocomplete" }
                 });
-            elements.compile.click(function (e) {
-                e.preventDefault();
-                ShowOutput("Waiting for server...");
-                Compile();
-            });
-            $(".CodeMirror").addClass("contentwrapper");
-            function ShowOutput(output) {
-                $("#output").html(output);
-            }
-            function Compile() {
-                submitAnswerCode();
-                loadAnswerOutput();
-            }
         </script>
     </fieldset>
 </form>

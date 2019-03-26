@@ -60,7 +60,7 @@
     </div>
     <hr />
     <h5 class="text-center text-capitalize" style="margin-bottom:1rem">Вопросы</h5>
-    @if (Model.Questions == null || Model.Questions.Count == 0)
+    @if (ViewBag.Questions == null || ViewBag.Questions.Count == 0)
     {
         <hr />
         <div class="alert alert-warning" role="alert">
@@ -81,7 +81,7 @@
             </thead>
             <tbody>
                 @{ int i = 0; }
-                @foreach (var q in Model.Questions)
+                @foreach (var q in ViewBag.Questions)
                 {
 
                     <tr>

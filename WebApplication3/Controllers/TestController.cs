@@ -442,7 +442,10 @@ namespace WebApplication3.Controllers
                 ViewBag.AnswerId = _context.Answers.Where(a => a.TestResult == testResult).SingleOrDefault(a => a.Order == 1).Id;
             }
             ViewBag.UserId = user.Id;
-            ViewBag.QuestionsCount = _context.Questions.Count(q => q.Test == testResult.Test);
+            if (ViewBag.IsStarted)
+                ViewBag.QuestionsCount = _context.Answers.Count(a => a.TestResult == testResult);
+            else
+                ViewBag.QuestionsCount = _context.Questions.Where(q => !q.IsDeleted).Count(q => q.Test == testResult.Test);
             return View(testResult);
         }
 
@@ -460,15 +463,15 @@ namespace WebApplication3.Controllers
                 .SingleAsync(t => t.Id == testResultId);
             if (testResult == null) return NotFound();
             if (!testResult.Test.IsEnabled) return Forbid();
-            var questions = testResult.Test.Questions;
-            if (questions.Count == 0) return NotFound();
+            var questions = testResult.Test.Questions.Where(q => !q.IsDeleted);
+            if (questions.Count() == 0) return NotFound();
             if (_context.Answers.Any(a => a.TestResult == testResult))
             {
                 return RedirectToAction("Answer", "Answer", new { testResultId = testResult.Id, answerId = _context.Answers.Where(a => a.TestResult == testResult).SingleOrDefault(a => a.Order == 1).Id });
             }
             List<Answer> answers = new List<Answer>();
             Answer answer = null;
-            ushort[] order = new ushort[questions.Count];
+            ushort[] order = new ushort[questions.Count()];
             for (int i = 0; i < order.Length; i++)
                 order[i] = (ushort)(i + 1);
             if (testResult.Test.Shuffled)
@@ -556,29 +559,21 @@ namespace WebApplication3.Controllers
                             .SingleAsync(q => q.Id == multiChoiceAnswer.QuestionId);
 
                     // count Score
-                    int countRightChecked = 0, countWrongChecked = 0, countRightUnchecked = 0;
-                    float countOptions = 0;
+                    int  countWrong = 0;
+                    float countOptions = multiChoiceAnswer.AnswerOptions.Count;
                     if (multiChoiceAnswer.AnswerOptions == null || multiChoiceAnswer.AnswerOptions.Count == 0)
                         multiChoiceAnswer.Score = 0;
                     else
                     {
                         foreach (var answerOption in multiChoiceAnswer.AnswerOptions)
                         {
-                            countOptions++;
                             var rightAnswer = question.Options.Single(o => o.Id == answerOption.OptionId).IsRight;
-                            if (answerOption.Checked)
-                            {
-                                if (answerOption.Checked == rightAnswer) countRightChecked++;
-                                else countWrongChecked++;
-                            }
-                            else
-                            {
-                                if (answerOption.Checked != rightAnswer) countRightUnchecked++;
-                            }
+                            if (answerOption.Checked != rightAnswer) countWrong++;
                         }
 
                         multiChoiceAnswer.Score = question.Score *
-                            (countRightChecked + countRightUnchecked - countWrongChecked) / countOptions;
+                            (countOptions - countWrong) / countOptions;
+                        if (multiChoiceAnswer.Score == question.Score) count++;
                     }
                     _context.MultiChoiceAnswers.Update(multiChoiceAnswer);
                 }

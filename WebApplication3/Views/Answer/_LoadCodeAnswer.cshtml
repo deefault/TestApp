@@ -48,9 +48,9 @@ namespace TestsApp
             <div style="margin-bottom: 1rem">
                 <b>Аргументы:</b>
                 <div class="input-group">
-                    <input id="args" value="@(Model.Code != null ? Model.Code.Args : "Hello World")" class="form-control">
+                    <input id="args" @(Model.TestResult.IsCompleted ? "disabled" : "") value="@(Model.Code != null ? Model.Code.Args : "Hello World")" class="form-control">
                     <span class="input-group-append">
-                        <button class="btn btn-success" id="compile">Запуск</button>
+                        <button @(Model.TestResult.IsCompleted ? "disabled" : "") class="btn btn-success" id="compile">Запуск</button>
                     </span>
                 </div>
                 <span class="aside">

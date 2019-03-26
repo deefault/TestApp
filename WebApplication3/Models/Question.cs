@@ -20,6 +20,8 @@ namespace WebApplication3.Models
         [DataType(DataType.MultilineText)]
         public string Title { get; set; }
 
+        
+        public  int TestId { get; set; }
         [Required]
         public Test Test { get; set; }
 
@@ -27,6 +29,9 @@ namespace WebApplication3.Models
         public string QuestionType { get; set; }
 
         public List<Option> Options { get; set; }
+
+        [Required]
+        public bool IsDeleted { get; set; } = false;
 
         [DisplayName("Балл")]
         public int Score { get; set; }
@@ -81,6 +86,7 @@ namespace WebApplication3.Models
         public string Text { get; set; }
         [Required]
         public bool IsRight { get; set; }
+        public int QuestionId { get; set; }
         [Required]
         public Question Question { get; set; }
         [Required]

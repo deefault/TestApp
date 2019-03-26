@@ -35,7 +35,7 @@
                 <b>Балл:</b>
                 <div>
                     <div class="form-group clearfix contentwrapper">
-                        <input id="score" asp-for="Score" type="text" class="form-control" placeholder="1..100" min="1" max="100" />
+                        <input id="Score" asp-for="Score" type="text" class="form-control" placeholder="1..100" min="1" max="100" />
                         <span asp-validation-for="Score" class="text-danger"></span>
                     </div>
                 </div>
@@ -101,7 +101,7 @@ namespace TestsApp
     <script src="~/lib/codemirror/addon/hint/show-hint.js"></script>
     <script src="~/lib/bootstrap-touchspin/src/jquery.bootstrap-touchspin.js"></script>
     <script>
-        $("#score").TouchSpin({
+        $("#Score").TouchSpin({
             verticalbuttons: true,
         });
         loadOutput('@Url.RouteUrl("GetCode", new {testId = Context.GetRouteData().Values["testId"]})');

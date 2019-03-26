@@ -44,6 +44,8 @@ namespace WebApplication3.Data
                 q.Property(e => e.QuestionType)
                     .HasMaxLength(50).HasColumnName("question_type");
                 q.Property(p => p.Score).HasDefaultValue(1);
+                q.Property(p => p.IsDeleted)
+                    .HasDefaultValue(false);
             });
             builder.Entity<MultiChoiceQuestion>().ToTable("MultiChoiceQuestion");
             builder.Entity<SingleChoiceQuestion>().ToTable("SingleChoiceQuestion");

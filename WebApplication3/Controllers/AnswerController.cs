@@ -214,7 +214,7 @@ namespace WebApplication3.Controllers
                     .Include(a => a.TestResult)
                     .Include(a => a.Code)
                     .Include(a => a.Question)
-                        .ThenInclude(q => q.Options)
+                        .ThenInclude(q => (q as CodeQuestion).Code)
                 .SingleAsync(a => a.Id == answerId)
                 ;
             if (answer == null) return NotFound();

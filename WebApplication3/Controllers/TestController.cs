@@ -619,6 +619,9 @@ namespace WebApplication3.Controllers
                     var creatorArgs = (codeAnswer.Question as CodeQuestion).Code.Args;
                     var userOutput = Compile(userCode, creatorArgs);
                     var creatorOutput = Compile(creatorCode, creatorArgs);
+                    var code = await _context.Codes.SingleOrDefaultAsync(c => c.Answer == codeAnswer);
+                    code.Args = creatorArgs; code.Output = userOutput;
+                    _context.Codes.Update(code);
                     if (userCode != null)
                     {
                         if (userOutput == creatorOutput)

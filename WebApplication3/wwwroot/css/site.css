@@ -202,7 +202,7 @@ button.collapse-btn {
         color: rgb(33, 37, 41);
         text-decoration: none;
     }
-#output {
+.output {
     min-height: 6em;
 }
 .contentwrapper {

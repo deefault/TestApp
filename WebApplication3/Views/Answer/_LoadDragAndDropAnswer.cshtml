@@ -19,6 +19,7 @@
                             var dndOptions = Model.DragAndDropAnswerOptions.OrderBy(o => o.ChosenOrder).ToList();
                             if (Model.TestResult.IsCompleted)
                             {
+
                                 foreach (var option in dndOptions)
                                 {
                                     <tr class="item-table__row @(!Model.TestResult.Test.HideRightAnswers ? option.Option.Id == option.RightOption.Id ? "bg-success text-white" : "bg-danger text-white" : "")">
@@ -34,7 +35,7 @@
                                             <!-- порядок  TODO: -->
                                             <td class="item-table__cell" style="text-align: right;">
 
-                                                <span class="text-white" >
+                                                <span class="text-white">
                                                     @(dndOptions.Single(o => o.RightOption.Text == option.Option.Text).ChosenOrder)
                                                 </span>
                                             </td>
@@ -55,6 +56,7 @@
                                             </label>
                                         </td>
                                     </tr>
+
                                 }
                             }
 

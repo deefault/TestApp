@@ -13,6 +13,8 @@ namespace WebApplication3.Models
         public int Id { get; set; }
         [Required]
         public string Name { get; set; }
+        
+        public int CreatedById { get; set; }
         [Required]
         public User  CreatedBy { get; set; }
         [Required]
@@ -27,6 +29,7 @@ namespace WebApplication3.Models
         public bool HideRightAnswers { get; set; } = false;
         public ICollection<Question> Questions { get; set; }
         
+
         public enum QuestionTypeEnum
         {
             [Display(Name = "С одним правильным ответом")]

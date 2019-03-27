@@ -180,29 +180,23 @@ namespace WebApplication3.Controllers
         [Authorize]
         [HttpGet]
         [Route("/{testResultId}/Results/Question/{answerId}/")]
-        public async Task<IActionResult> AnswerResults(int testResultId, ushort answerId)
+        public async Task<IActionResult> AnswerResults(int testResultId, int answerId)
         {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
             var testResult = await _context.TestResults
                 .Include(tr => tr.Answers)
+                .Include(tr=>tr.Test)
+                .AsNoTracking()
                 .SingleAsync(tr => tr.Id == testResultId);
+            
             if (testResult == null) return NotFound();
-            var answers = testResult.Answers.OrderBy(a => a.Order).ToList();
+            if (testResult.CompletedByUserId == user.Id | testResult.Test.CreatedById == user.Id)
+            {
+                var answers = testResult.Answers.OrderBy(a => a.Order).ToList();
 
-            return View("AnswerResults", answers);
-        }
-
-        [Authorize]
-        [HttpGet]
-        [Route("/{testResultId}/DetailedResults/Question/<answerOrder>/")]
-        public async Task<IActionResult> AnswerDetailedResults(int testResultId, ushort answerOrder)
-        {
-            var testResult = await _context.TestResults
-                .Include(tr => tr.Answers)
-                .SingleAsync(tr => tr.Id == testResultId);
-            if (testResult == null) return NotFound();
-
-
-            return View("AnswerResults", testResult.Answers);
+                return View("AnswerResults", answers);
+            }
+            return Forbid();
         }
 
         [Authorize]

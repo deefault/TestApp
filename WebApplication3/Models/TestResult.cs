@@ -23,10 +23,13 @@ namespace WebApplication3.Models
         [Required]
         public uint TotalQuestions { get; set; }
         
+        
+        public int CompletedByUserId { get; set; }
         [Required]
         public User  CompletedByUser { get; set; }
         [Required]
         public Test Test { get; set; }
-       
+
+  
     }
 }

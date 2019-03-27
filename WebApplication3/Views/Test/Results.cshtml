@@ -15,6 +15,14 @@
 }
 else
 {
+    <form asp-controller="Test" asp-action="Results" method="get">
+            <div class="form-actions no-color">
+                <p>
+                    ID пользователя: <input type="text" name="searchId" value="@ViewData["searchId"]" />
+                    <input type="submit" value="Search" class="btn btn-default" />
+                </p>
+            </div>
+    </form>
     <dt>
         @Html.DisplayNameFor(model => model)
     </dt>

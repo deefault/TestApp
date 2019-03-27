@@ -755,13 +755,24 @@ namespace WebApplication3.Controllers
         [HttpGet]
         [Authorize]
         [Route("/Tests/{id}/Results")]
-        public async Task<IActionResult> Results(int id)
+        public async Task<IActionResult> Results(int id, int? searchId)
         {
+            ViewData["searchId"] = searchId;
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == id);
             var testResults = _context.TestResults.Where(tr => tr.Test == test && tr.IsCompleted)
-                .Include(tr => tr.CompletedByUser).ToList();
-            var model = new TestResultsModel() { Results = testResults, Test = test };
+                .Include(tr => tr.CompletedByUser);
+            if (searchId != null)
+            {
+                testResults = testResults.Where(tr=> tr.CompletedByUserId == searchId)
+                    .Include(tr => tr.CompletedByUser);
+            }
+            var model = new TestResultsModel() 
+            { 
+                Results =  await testResults
+                    .AsNoTracking()
+                    .ToListAsync(), Test = test 
+            };
             return View(model);
         }
     }

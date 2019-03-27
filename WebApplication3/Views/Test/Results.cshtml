@@ -25,24 +25,33 @@ else
                 <th>Имя</th>
                 <th>Дата</th>
                 <th>Результат</th>
+                <th>ID прохождения</th>
             </tr>
             @{ int i = 1;}
             @foreach (var item in Model.Results)
             {
-                <tr>
-                    <td>
-                        @(i++)
-                    </td>
-                    <td>
-                        @item.CompletedByUser.UserName
-                    </td>
-                    <td>
-                        @item.CompletedOn
-                    </td>
-                    <td>
-                        @(item.RightAnswersCount * 100 / item.TotalQuestions)%
-                    </td>
-                </tr>
+               
+                    <tr>
+                        <td>
+                            @(i++)
+                        </td>
+                        <td>
+                            @item.CompletedByUser.UserName
+                        </td>
+                        <td>
+                            @item.CompletedOn
+                        </td>
+                        <td>
+                            @(item.RightAnswersCount * 100 / item.TotalQuestions)%
+                        </td>
+                        <td>
+                            @item.Id |
+                            <a href="@Url.Action("AnswerResults", "Answer", new {testResultId = item.Id})">
+                                 Ответы пользователя
+                            </a>
+                        </td>
+                    </tr>
+                
             }
         </table>
     </dd>

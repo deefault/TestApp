@@ -63,13 +63,36 @@ namespace WebApplication3.Controllers
         [Route("/{testResultId}/Question/{answerId}/")]
         public async Task<IActionResult> Answer(int testResultId, ushort answerId)
         {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
             var testResult = await _context.TestResults
                 .Include(tr => tr.Answers)
             .SingleAsync(tr => tr.Id == testResultId);
             if (testResult == null) return NotFound();
+            if (testResult.CompletedByUserId != user.Id) return Forbid();
             var answers = testResult.Answers.OrderBy(a => a.Order).ToList();
 
             return View("Answer", answers);
+        }
+        [Authorize]
+        [HttpGet]
+        [Route("/{testResultId}/Results/Question/{answerId}/")]
+        public async Task<IActionResult> AnswerResults(int testResultId, int answerId)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var testResult = await _context.TestResults
+                .Include(tr => tr.Answers)
+                .Include(tr => tr.Test)
+                .AsNoTracking()
+                .SingleAsync(tr => tr.Id == testResultId);
+
+            if (testResult == null) return NotFound();
+            if (testResult.CompletedByUserId == user.Id || testResult.Test.CreatedById == user.Id)
+            {
+                var answers = testResult.Answers.OrderBy(a => a.Order).ToList();
+
+                return View("AnswerResults", answers);
+            }
+            return Forbid();
         }
         #endregion
 
@@ -88,7 +111,7 @@ namespace WebApplication3.Controllers
                 ;
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && tr.CompletedByUser == user) == 0)
+            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) == 0)
             {
                 return NotFound();
             }
@@ -109,7 +132,7 @@ namespace WebApplication3.Controllers
                 ;
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && tr.CompletedByUser == user) == 0)
+            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) == 0)
             {
                 return NotFound();
             }
@@ -133,7 +156,7 @@ namespace WebApplication3.Controllers
                 ;
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && tr.CompletedByUser == user) == 0)
+            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) == 0)
             {
                 return NotFound();
             }
@@ -170,33 +193,11 @@ namespace WebApplication3.Controllers
             Shuffle(answer.Question.Options);
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && tr.CompletedByUser == user) == 0)
+            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) == 0)
             {
                 return NotFound();
             }
             return PartialView("_LoadDragAndDropAnswer", answer);
-        }
-
-        [Authorize]
-        [HttpGet]
-        [Route("/{testResultId}/Results/Question/{answerId}/")]
-        public async Task<IActionResult> AnswerResults(int testResultId, int answerId)
-        {
-            var user = await _userManager.GetUserAsync(HttpContext.User);
-            var testResult = await _context.TestResults
-                .Include(tr => tr.Answers)
-                .Include(tr=>tr.Test)
-                .AsNoTracking()
-                .SingleAsync(tr => tr.Id == testResultId);
-            
-            if (testResult == null) return NotFound();
-            if (testResult.CompletedByUserId == user.Id | testResult.Test.CreatedById == user.Id)
-            {
-                var answers = testResult.Answers.OrderBy(a => a.Order).ToList();
-
-                return View("AnswerResults", answers);
-            }
-            return Forbid();
         }
 
         [Authorize]
@@ -213,7 +214,7 @@ namespace WebApplication3.Controllers
                 ;
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && tr.CompletedByUser == user) == 0)
+            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) == 0)
             {
                 return NotFound();
             }
@@ -239,7 +240,7 @@ namespace WebApplication3.Controllers
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
             //проверить что пользоавтель может проходить тест
-            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && tr.CompletedByUser == user) == 0)
+            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) == 0)
             {
                 return NotFound();
             }
@@ -274,7 +275,7 @@ namespace WebApplication3.Controllers
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
             //проверить что пользоавтель может проходить тест
-            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && tr.CompletedByUser == user) == 0)
+            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) == 0)
             {
                 return NotFound();
             }
@@ -334,7 +335,7 @@ namespace WebApplication3.Controllers
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
             //проверить что пользоавтель может проходить тест
-            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && tr.CompletedByUser == user) == 0)
+            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) == 0)
             {
                 return NotFound();
             }
@@ -361,7 +362,7 @@ namespace WebApplication3.Controllers
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
             //проверить что пользоавтель может проходить тест
-            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && tr.CompletedByUser == user) == 0)
+            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) == 0)
             {
                 return NotFound();
             }
@@ -422,7 +423,7 @@ namespace WebApplication3.Controllers
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
             //проверить что пользоавтель может проходить тест
-            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && tr.CompletedByUser == user) == 0)
+            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) == 0)
             {
                 return NotFound();
             }
@@ -458,7 +459,7 @@ namespace WebApplication3.Controllers
                 ;
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && tr.CompletedByUser == user) == 0)
+            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) == 0)
             {
                 return NotFound();
             }

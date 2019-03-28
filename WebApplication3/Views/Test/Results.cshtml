@@ -18,7 +18,7 @@ else
     <form asp-controller="Test" asp-action="Results" method="get">
             <div class="form-actions no-color">
                 <p>
-                    ID пользователя: <input type="text" name="searchId" value="@ViewData["searchId"]" />
+                    ID пользователя: <input class="form-control" style="width:auto; display:inline" type="number" name="searchId" value="@ViewData["searchId"]" />
                     <input type="submit" value="Search" class="btn btn-default" />
                 </p>
             </div>
@@ -54,7 +54,7 @@ else
                         </td>
                         <td>
                             @item.Id |
-                            <a href="@Url.Action("AnswerResults", "Answer", new {testResultId = item.Id})">
+                            <a href="@Url.Action("AnswerResults", "Answer", new {testResultId = item.Id, answerId = item.Answers.SingleOrDefault(a => a.Order == 1).Id })">
                                  Ответы пользователя
                             </a>
                         </td>

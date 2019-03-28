@@ -760,11 +760,11 @@ namespace WebApplication3.Controllers
             ViewData["searchId"] = searchId;
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == id);
-            var testResults = _context.TestResults.Where(tr => tr.Test == test && tr.IsCompleted)
+            var testResults = _context.TestResults.Where(tr => tr.Test == test && tr.IsCompleted).Include(tr => tr.Answers)
                 .Include(tr => tr.CompletedByUser);
             if (searchId != null)
             {
-                testResults = testResults.Where(tr=> tr.CompletedByUserId == searchId)
+                testResults = testResults.Where(tr=> tr.CompletedByUserId == searchId).Include(tr => tr.Answers)
                     .Include(tr => tr.CompletedByUser);
             }
             var model = new TestResultsModel() 

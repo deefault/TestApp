@@ -4,7 +4,7 @@
 }
 <form method="post">
     <div>
-        <h5 style="margin-top: 1rem;">@Model.Question.Title</h5>
+        <h5 style="margin-top: 1rem;" class="unselectable">@Model.Question.Title</h5>
         @if (Model.TestResult.IsCompleted)
         {
             <h5>Балл: @Model.Score/@Model.Question.Score</h5>
@@ -23,9 +23,9 @@
                         {
                                 if (Model.Option.Id == option.Id)
                                 {
-                                    <tr class="item-table__row @(Question.RightAnswer == option 
+                                    <tr class="item-table__row @(Question.RightAnswer == option
                                                                  && !Model.TestResult.Test.HideRightAnswers
-                                                                     ? "bg-success text-white" 
+                                                                     ? "bg-success text-white"
                                                                      : "bg-danger text-white")">
                                         <td class="item-table__cell">
                                             <label id="inputContainer" class="form-check-label">
@@ -38,9 +38,9 @@
                                 }
                                 else
                                 {
-                                    <tr class="item-table__row @(Question.RightAnswer == option 
+                                    <tr class="item-table__row @(Question.RightAnswer == option
                                                                  && !Model.TestResult.Test.HideRightAnswers
-                                                                     ? "bg-success text-white" 
+                                                                     ? "bg-success text-white"
                                                                      : "")">
                                         <td class="item-table__cell">
                                             <label id="inputContainer" class="form-check-label">
@@ -50,7 +50,7 @@
                                             </label>
                                         </td>
                                     </tr>
-                                } 
+                                }
                         }
                         else
                         {

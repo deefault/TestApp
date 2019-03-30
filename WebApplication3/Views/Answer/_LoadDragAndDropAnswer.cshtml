@@ -26,13 +26,12 @@
                                         <td class="drag-handler"></td>
                                         <td class="item-table__cell">
                                             <label name="option" option-id="@Model.Question.Options.Single(o => o.Id == option.Option.Id).Id"
-                                                   class="form-check-label text-white">
+                                                   class="form-check-label text-white unselectable">
                                                 @Model.Question.Options.Single(o => o.Id == option.Option.Id).Text
                                             </label>
                                         </td>
                                         @if (!Model.TestResult.Test.HideRightAnswers)
                                         {
-                                            <!-- порядок  TODO: -->
                                             <td class="item-table__cell" style="text-align: right;">
 
                                                 <span class="text-white">
@@ -51,7 +50,7 @@
                                     <tr class="item-table__row">
                                         <td class="drag-handler"></td>
                                         <td class="item-table__cell">
-                                            <label name="option" class="form-check-label" option-id="@Model.Question.Options.Single(o => o.Id == option.Option.Id).Id">
+                                            <label name="option" class="form-check-label unselectable" option-id="@Model.Question.Options.Single(o => o.Id == option.Option.Id).Id">
                                                 @(Model.Question.Options.Single(o => o.Id == option.Option.Id).Text)
                                             </label>
                                         </td>
@@ -68,7 +67,7 @@
                                 <tr class="item-table__row">
                                     <td class="drag-handler"></td>
                                     <td class="item-table__cell">
-                                        <label name="option" class="form-check-label" option-id="@option.Id">
+                                        <label name="option" class="form-check-label unselectable" option-id="@option.Id">
                                             @(option.Text)
                                         </label>
                                     </td>

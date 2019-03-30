@@ -28,7 +28,7 @@
                                                                      ? "bg-success text-white"
                                                                      : "bg-danger text-white")">
                                         <td class="item-table__cell">
-                                            <label id="inputContainer" class="form-check-label">
+                                            <label id="inputContainer" class="form-check-label unselectable">
                                                 <input name="option" type="radio" option-id="@option.Id"
                                                        group="Options" checked>
                                                 @option.Text
@@ -43,7 +43,7 @@
                                                                      ? "bg-success text-white"
                                                                      : "")">
                                         <td class="item-table__cell">
-                                            <label id="inputContainer" class="form-check-label">
+                                            <label id="inputContainer" class="form-check-label unselectable">
                                                 <input name="option" type="radio" option-id="@option.Id"
                                                        group="Options">
                                                 @option.Text
@@ -56,7 +56,7 @@
                         {
                             <tr class="item-table__row">
                                 <td class="item-table__cell">
-                                    <label id="inputContainer" class="form-check-label">
+                                    <label id="inputContainer" class="form-check-label unselectable">
                                         <input name="option" type="radio" option-id="@option.Id" group="Options" @(Model.Option.Id == option.Id ? "checked" : "")>
                                         @option.Text
                                     </label>
@@ -68,7 +68,7 @@
                     {
                         <tr class="item-table__row">
                             <td class="item-table__cell">
-                                <label class="form-check-label">
+                                <label class="form-check-label unselectable">
                                     <input name="option" type="radio" option-id="@option.Id" group="options">
                                     @option.Text
                                 </label>

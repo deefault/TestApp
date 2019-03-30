@@ -194,7 +194,7 @@ function submitAnswer() {
         method: "POST",
         url: actionUrl,
         beforeSend: function (xhr) {
-            $("#formDiv").html("<img src=\"/images/loading.gif\" class=\"img-responsive center\"/>");
+            $("#formDiv").html("<img src=\"/images/honkler.gif\" class=\"img-responsive center\"/>");
             xhr.setRequestHeader("RequestVerificationToken",
                 $('input:hidden[name="__RequestVerificationToken"]').val());
         },

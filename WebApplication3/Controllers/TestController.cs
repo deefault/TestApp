@@ -422,6 +422,30 @@ namespace WebApplication3.Controllers
             ViewBag.AnswerId = _context.Answers.Where(a => a.TestResult == testResult).SingleOrDefault(a => a.Order == 1).Id;
             return View(testResult);
         }
+        [HttpGet]
+        [Authorize]
+        [Route("/Tests/{id}/Results")]
+        public async Task<IActionResult> Results(int id, int? searchId)
+        {
+            ViewData["searchId"] = searchId;
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == id);
+            var testResults = _context.TestResults.Where(tr => tr.Test == test && tr.IsCompleted).Include(tr => tr.Answers)
+                .Include(tr => tr.CompletedByUser);
+            if (searchId != null)
+            {
+                testResults = testResults.Where(tr => tr.CompletedByUserId == searchId).Include(tr => tr.Answers)
+                    .Include(tr => tr.CompletedByUser);
+            }
+            var model = new TestResultsModel()
+            {
+                Results = await testResults
+                    .AsNoTracking()
+                    .ToListAsync(),
+                Test = test
+            };
+            return View(model);
+        }
         #endregion
 
         #region Прохождение
@@ -559,7 +583,7 @@ namespace WebApplication3.Controllers
                             .SingleAsync(q => q.Id == multiChoiceAnswer.QuestionId);
 
                     // count Score
-                    int  countWrong = 0;
+                    int countChecked = 0, countWrong = 0;
                     float countOptions = multiChoiceAnswer.AnswerOptions.Count;
                     if (multiChoiceAnswer.AnswerOptions == null || multiChoiceAnswer.AnswerOptions.Count == 0)
                         multiChoiceAnswer.Score = 0;
@@ -568,11 +592,12 @@ namespace WebApplication3.Controllers
                         foreach (var answerOption in multiChoiceAnswer.AnswerOptions)
                         {
                             var rightAnswer = question.Options.Single(o => o.Id == answerOption.OptionId).IsRight;
+                            if (rightAnswer) countChecked++;
                             if (answerOption.Checked != rightAnswer) countWrong++;
                         }
-
-                        multiChoiceAnswer.Score = question.Score *
-                            (countOptions - countWrong) / countOptions;
+                        int score = question.Score *
+                            (countChecked - countWrong) / countChecked;
+                        multiChoiceAnswer.Score = score > 0 ? score : 0;
                         if (multiChoiceAnswer.Score == question.Score) count++;
                     }
                     _context.MultiChoiceAnswers.Update(multiChoiceAnswer);
@@ -751,29 +776,5 @@ namespace WebApplication3.Controllers
             return output.ToString();
         }
         #endregion
-
-        [HttpGet]
-        [Authorize]
-        [Route("/Tests/{id}/Results")]
-        public async Task<IActionResult> Results(int id, int? searchId)
-        {
-            ViewData["searchId"] = searchId;
-            var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == id);
-            var testResults = _context.TestResults.Where(tr => tr.Test == test && tr.IsCompleted).Include(tr => tr.Answers)
-                .Include(tr => tr.CompletedByUser);
-            if (searchId != null)
-            {
-                testResults = testResults.Where(tr=> tr.CompletedByUserId == searchId).Include(tr => tr.Answers)
-                    .Include(tr => tr.CompletedByUser);
-            }
-            var model = new TestResultsModel() 
-            { 
-                Results =  await testResults
-                    .AsNoTracking()
-                    .ToListAsync(), Test = test 
-            };
-            return View(model);
-        }
     }
 }

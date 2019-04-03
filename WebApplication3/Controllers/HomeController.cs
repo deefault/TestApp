@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication3.Models;
 
@@ -28,9 +24,8 @@ namespace WebApplication3.Controllers
 
             return View();
         }
-        
-        
-        
+
+
         public IActionResult Privacy()
         {
             return View();
@@ -41,7 +36,5 @@ namespace WebApplication3.Controllers
         {
             return View(new ErrorViewModel {RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier});
         }
-
-        
     }
 }

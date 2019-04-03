@@ -27,21 +27,20 @@ else
         @Html.DisplayNameFor(model => model)
     </dt>
     <dd style="margin-top:1rem;">
-        <table class="table item-table">
+        <table class="table item-table" id="results">
             <tr>
-                <th>#</th>
+                <th>ID</th>
                 <th>Имя</th>
                 <th>Дата</th>
                 <th>Результат</th>
                 <th>ID прохождения</th>
             </tr>
-            @{ int i = 1;}
             @foreach (var item in Model.Results)
             {
                
                     <tr>
                         <td>
-                            @(i++)
+                            @item.CompletedByUserId
                         </td>
                         <td>
                             @item.CompletedByUser.UserName
@@ -64,4 +63,3 @@ else
         </table>
     </dd>
 }
-

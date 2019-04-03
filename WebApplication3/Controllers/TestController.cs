@@ -595,8 +595,8 @@ namespace WebApplication3.Controllers
                             if (rightAnswer) countChecked++;
                             if (answerOption.Checked != rightAnswer) countWrong++;
                         }
-                        int score = question.Score *
-                            (countChecked - countWrong) / countChecked;
+                        float score = question.Score *
+                            (countChecked - countWrong) / (float)countChecked;
                         multiChoiceAnswer.Score = score > 0 ? score : 0;
                         if (multiChoiceAnswer.Score == question.Score) count++;
                     }
@@ -607,7 +607,7 @@ namespace WebApplication3.Controllers
                     var question =
                         await _context.TextQuestions
                             .SingleAsync(q => q.Id == textAnswer.QuestionId);
-                    if (textAnswer.Text == question.TextRightAnswer)
+                    if (textAnswer.Text.ToLower() == question.TextRightAnswer.ToLower())
                     {
                         textAnswer.Score = question.Score;
                         count++;
@@ -624,20 +624,21 @@ namespace WebApplication3.Controllers
                     var question =
                         await _context.DragAndDropQuestions
                             .SingleAsync(q => q.Id == dndAnswer.QuestionId);
-                    dndAnswer.Score = question.Score;
-                    count++;
                     if (dndAnswer.DragAndDropAnswerOptions == null || dndAnswer.DragAndDropAnswerOptions.Count == 0)
                         count--;
                     var dndOptions = _context.DragAndDropAnswerOptions.Where(o => o.Answer == dndAnswer).Include(o => o.Option).Include(o => o.RightOption);
+                    int optionsCount = dndOptions.Count(), wrongOrderCount = 0;
                     foreach (var dndOption in dndOptions)
                     {
                         if (dndOption.RightOption.Id != dndOption.Option.Id)
                         {
-                            dndAnswer.Score = 0;
-                            count--;
-                            break;
+                            wrongOrderCount++;
                         }
                     }
+                    float score = question.Score *
+                            (optionsCount - wrongOrderCount) / (float)optionsCount;
+                    dndAnswer.Score = score > 0 ? score : 0;
+                    if (dndAnswer.Score == question.Score) count++;
                 }
                 else if (answer is CodeAnswer)
                 {

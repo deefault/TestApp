@@ -13,7 +13,6 @@ namespace WebApplication3.Models
 
     public abstract class Question
     {
-
         public int Id { get; set; }
         [Required]
         [DisplayName("Вопрос")]
@@ -94,6 +93,7 @@ namespace WebApplication3.Models
 
         public ICollection<AnswerOption> AnswerOptions { get; set; }
     }
+    
     public class Code
     {
         public int Id { get; set; }

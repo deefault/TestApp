@@ -1,45 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
-using System.Transactions;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using WebApplication3.Data;
 using WebApplication3.Models;
 using WebApplication3.Models.AnswerViewModels;
-using System.Reflection;
-using System.IO;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using System.Text;
-using Microsoft.CodeAnalysis.Emit;
 
 namespace WebApplication3.Controllers
 {
     public class AnswerController : Controller
     {
-        #region Поля
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<User> _userManager;
-
-        private readonly SignInManager<User> _signInManager;
-
-        //private readonly IEmailSender _emailSender;
-        //private readonly ISmsSender _smsSender;
-        private readonly ILogger _logger;
-        #endregion
-
         #region Конструктор
-        public AnswerController(
 
+        public AnswerController(
             ApplicationDbContext context,
             UserManager<User> userManager,
             SignInManager<User> signInManager,
@@ -55,9 +38,24 @@ namespace WebApplication3.Controllers
             //_smsSender = smsSender;
             _logger = loggerFactory.CreateLogger<UserController>();
         }
+
+        #endregion
+
+        #region Поля
+
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
+
+        private readonly SignInManager<User> _signInManager;
+
+        //private readonly IEmailSender _emailSender;
+        //private readonly ISmsSender _smsSender;
+        private readonly ILogger _logger;
+
         #endregion
 
         #region Входная точка
+
         [Authorize]
         [HttpGet]
         [Route("/{testResultId}/Question/{answerId}/")]
@@ -66,13 +64,14 @@ namespace WebApplication3.Controllers
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var testResult = await _context.TestResults
                 .Include(tr => tr.Answers)
-            .SingleAsync(tr => tr.Id == testResultId);
+                .SingleAsync(tr => tr.Id == testResultId);
             if (testResult == null) return NotFound();
             if (testResult.CompletedByUserId != user.Id) return Forbid();
             var answers = testResult.Answers.OrderBy(a => a.Order).ToList();
 
             return View("Answer", answers);
         }
+
         [Authorize]
         [HttpGet]
         [Route("/{testResultId}/Results/Question/{answerId}/")]
@@ -92,11 +91,14 @@ namespace WebApplication3.Controllers
 
                 return View("AnswerResults", answers);
             }
+
             return Forbid();
         }
+
         #endregion
 
         #region GET
+
         [Authorize]
         [HttpGet]
         [Route("/SingleChoiceAnswer/{answerId}")]
@@ -104,17 +106,16 @@ namespace WebApplication3.Controllers
         {
             var answer = await _context.SingleChoiceAnswers
                     .Include(a => a.TestResult)
-                        .ThenInclude(tr => tr.Test)
+                    .ThenInclude(tr => tr.Test)
                     .Include(a => a.Question)
-                        .ThenInclude(q => q.Options)
-                .SingleAsync(a => a.Id == answerId)
+                    .ThenInclude(q => q.Options)
+                    .SingleAsync(a => a.Id == answerId)
                 ;
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) == 0)
-            {
-                return NotFound();
-            }
+            if (_context.TestResults.Count(tr =>
+                    tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) ==
+                0) return NotFound();
 
             return PartialView("_LoadSingleChoiceAnswer", answer);
         }
@@ -126,16 +127,15 @@ namespace WebApplication3.Controllers
         {
             var answer = await _context.TextAnswers
                     .Include(a => a.TestResult)
-                        .ThenInclude(tr => tr.Test)
+                    .ThenInclude(tr => tr.Test)
                     .Include(a => a.Question)
-                .SingleAsync(a => a.Id == answerId)
+                    .SingleAsync(a => a.Id == answerId)
                 ;
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) == 0)
-            {
-                return NotFound();
-            }
+            if (_context.TestResults.Count(tr =>
+                    tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) ==
+                0) return NotFound();
 
             return PartialView("_LoadTextAnswer", answer);
         }
@@ -147,30 +147,29 @@ namespace WebApplication3.Controllers
         {
             var answer = await _context.MultiChoiceAnswers
                     .Include(a => a.TestResult)
-                        .ThenInclude(tr => tr.Test)
+                    .ThenInclude(tr => tr.Test)
                     .Include(a => a.AnswerOptions)
-                        .ThenInclude(ao => ao.Option)
+                    .ThenInclude(ao => ao.Option)
                     .Include(a => a.Question)
-                        .ThenInclude(q => q.Options)
-                .SingleAsync(a => a.Id == answerId)
+                    .ThenInclude(q => q.Options)
+                    .SingleAsync(a => a.Id == answerId)
                 ;
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) == 0)
-            {
-                return NotFound();
-            }
+            if (_context.TestResults.Count(tr =>
+                    tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) ==
+                0) return NotFound();
 
             var checkedOptionIds = new List<int>();
             var rightOptionIds = new List<int>();
             if (answer.AnswerOptions != null)
-            {
                 foreach (var answerOption in answer.AnswerOptions)
                 {
                     if (answerOption.Checked) checkedOptionIds.Add(answerOption.OptionId);
                     if (answerOption.Option.IsRight) rightOptionIds.Add(answerOption.OptionId);
                 }
-            };
+
+            ;
             ViewBag.checkedOptionsIds = checkedOptionIds;
             ViewBag.rightOptionsIds = rightOptionIds;
             return PartialView("_LoadMultiChoiceAnswer", answer);
@@ -183,20 +182,19 @@ namespace WebApplication3.Controllers
         {
             var answer = await _context.DragAndDropAnswers
                     .Include(a => a.TestResult)
-                        .ThenInclude(tr => tr.Test)
+                    .ThenInclude(tr => tr.Test)
                     .Include(a => a.DragAndDropAnswerOptions)
-                        .ThenInclude(o => o.RightOption)
+                    .ThenInclude(o => o.RightOption)
                     .Include(a => a.Question)
-                        .ThenInclude(q => q.Options)
-                .SingleAsync(a => a.Id == answerId)
+                    .ThenInclude(q => q.Options)
+                    .SingleAsync(a => a.Id == answerId)
                 ;
             Shuffle(answer.Question.Options);
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) == 0)
-            {
-                return NotFound();
-            }
+            if (_context.TestResults.Count(tr =>
+                    tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) ==
+                0) return NotFound();
             return PartialView("_LoadDragAndDropAnswer", answer);
         }
 
@@ -209,28 +207,28 @@ namespace WebApplication3.Controllers
                     .Include(a => a.TestResult)
                     .Include(a => a.Code)
                     .Include(a => a.Question)
-                        .ThenInclude(q => (q as CodeQuestion).Code)
-                .SingleAsync(a => a.Id == answerId)
+                    .ThenInclude(q => (q as CodeQuestion).Code)
+                    .SingleAsync(a => a.Id == answerId)
                 ;
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) == 0)
-            {
-                return NotFound();
-            }
+            if (_context.TestResults.Count(tr =>
+                    tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) ==
+                0) return NotFound();
 
             return PartialView("_LoadCodeAnswer", answer);
         }
+
         #endregion
 
         #region POST
+
         [Authorize]
         [HttpPost]
         [Route("/SingleChoiceAnswer/{answerId}/")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SingleChoiceAnswer(int answerId, [FromBody]SingleChoiceAnswerViewModel model)
+        public async Task<IActionResult> SingleChoiceAnswer(int answerId, [FromBody] SingleChoiceAnswerViewModel model)
         {
-
             var answer = await _context.SingleChoiceAnswers
                     .Include(a => a.TestResult)
                     .Include(a => a.Question)
@@ -240,17 +238,13 @@ namespace WebApplication3.Controllers
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
             //проверить что пользоавтель может проходить тест
-            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) == 0)
-            {
-                return NotFound();
-            }
+            if (_context.TestResults.Count(tr =>
+                    tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) ==
+                0) return NotFound();
 
             var option = await _context.Options.SingleAsync(o => o.Id == model.OptionId);
             // проверить что опшн принадлежит к вопросу
-            if (!answer.Question.Options.Contains(option))
-            {
-                return BadRequest();
-            }
+            if (!answer.Question.Options.Contains(option)) return BadRequest();
 
 
             answer.Option = option;
@@ -263,10 +257,8 @@ namespace WebApplication3.Controllers
         [HttpPost]
         [Route("/MultiChoiceAnswer/{answerId}/")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> MultiChoiceAnswer(int answerId, [FromBody]MultiChoiceAnswerViewModel model)
+        public async Task<IActionResult> MultiChoiceAnswer(int answerId, [FromBody] MultiChoiceAnswerViewModel model)
         {
-
-
             var answer = await _context.MultiChoiceAnswers
                     .Include(a => a.TestResult).Include(a => a.AnswerOptions)
                     .Include(a => a.Question).ThenInclude(a => a.Options)
@@ -275,25 +267,19 @@ namespace WebApplication3.Controllers
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
             //проверить что пользоавтель может проходить тест
-            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) == 0)
-            {
-                return NotFound();
-            }
+            if (_context.TestResults.Count(tr =>
+                    tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) ==
+                0) return NotFound();
 
             //TODO ошибка
             // проверить что опшнsы принадлежит к вопросу
             foreach (var id in model.CheckedOptionIds)
-            {
                 if (!answer.Question.Options.Exists(o => o.Id == id))
-                {
                     return BadRequest();
-                }
-            }
             //создать
             if (answer.AnswerOptions.Count == 0)
             {
                 foreach (var option in answer.Question.Options)
-                {
                     _context.AnswerOptions.Add(new AnswerOption
                     {
                         Answer = answer,
@@ -302,7 +288,6 @@ namespace WebApplication3.Controllers
                         OptionId = option.Id,
                         Checked = model.CheckedOptionIds.Contains(option.Id)
                     });
-                }
                 await _context.SaveChangesAsync();
             }
             // обновить
@@ -313,8 +298,10 @@ namespace WebApplication3.Controllers
                     answerOption.Checked = model.CheckedOptionIds.Contains(answerOption.OptionId);
                     _context.AnswerOptions.Update(answerOption);
                 }
+
                 await _context.SaveChangesAsync();
             }
+
             _context.Answers.Update(answer);
             await _context.SaveChangesAsync();
             return new JsonResult("");
@@ -324,9 +311,8 @@ namespace WebApplication3.Controllers
         [HttpPost]
         [Route("/TextAnswer/{answerId}/")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> TextAnswer(int answerId, [FromBody]TextAnswerViewModel model)
+        public async Task<IActionResult> TextAnswer(int answerId, [FromBody] TextAnswerViewModel model)
         {
-
             var answer = await _context.TextAnswers
                     .Include(a => a.TestResult)
                     .Include(a => a.Question)
@@ -335,10 +321,9 @@ namespace WebApplication3.Controllers
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
             //проверить что пользоавтель может проходить тест
-            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) == 0)
-            {
-                return NotFound();
-            }
+            if (_context.TestResults.Count(tr =>
+                    tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) ==
+                0) return NotFound();
 
             answer.Text = model.Text;
             _context.Answers.Update(answer);
@@ -350,9 +335,8 @@ namespace WebApplication3.Controllers
         [HttpPost]
         [Route("/DragAndDropAnswer/{answerId}/")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DragAndDropAnswer(int answerId, [FromBody]DragAndDropAnswerViewModel model)
+        public async Task<IActionResult> DragAndDropAnswer(int answerId, [FromBody] DragAndDropAnswerViewModel model)
         {
-
             var answer = await _context.DragAndDropAnswers
                     .Include(a => a.TestResult)
                     .Include(a => a.Question)
@@ -362,22 +346,19 @@ namespace WebApplication3.Controllers
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
             //проверить что пользоавтель может проходить тест
-            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) == 0)
-            {
-                return NotFound();
-            }
+            if (_context.TestResults.Count(tr =>
+                    tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) ==
+                0) return NotFound();
             foreach (var option in model.Options)
             {
                 var optionQ = await _context.Options.SingleAsync(o => o.Id == option.OptionId);
                 // проверить что опшн принадлежит к вопросу
-                if (!answer.Question.Options.Contains(optionQ))
-                {
-                    return BadRequest();
-                }
+                if (!answer.Question.Options.Contains(optionQ)) return BadRequest();
             }
+
             if (answer.DragAndDropAnswerOptions.Count == 0)
             {
-                int i = 0;
+                var i = 0;
                 foreach (var option in model.Options)
                 {
                     var rightOrder = answer.Question.Options.OrderBy(o => o.Order).ToList();
@@ -391,6 +372,7 @@ namespace WebApplication3.Controllers
                         ChosenOrder = option.ChosenOrder
                     });
                 }
+
                 await _context.SaveChangesAsync();
             }
             else
@@ -402,6 +384,7 @@ namespace WebApplication3.Controllers
                     option.RightOption = rightOrder[option.ChosenOrder - 1];
                 }
             }
+
             _context.Answers.Update(answer);
             await _context.SaveChangesAsync();
             return new JsonResult("");
@@ -411,9 +394,8 @@ namespace WebApplication3.Controllers
         [HttpPost]
         [Route("/CodeAnswer/{answerId}/")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CodeAnswer(int answerId, [FromBody]CodeAnswerViewModel model)
+        public async Task<IActionResult> CodeAnswer(int answerId, [FromBody] CodeAnswerViewModel model)
         {
-
             var answer = await _context.CodeAnswers
                     .Include(a => a.TestResult)
                     .Include(a => a.Code)
@@ -423,19 +405,17 @@ namespace WebApplication3.Controllers
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
             //проверить что пользоавтель может проходить тест
-            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) == 0)
-            {
-                return NotFound();
-            }
+            if (_context.TestResults.Count(tr =>
+                    tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) ==
+                0) return NotFound();
 
             var option = await _context.Options.SingleAsync(o => o.Question == answer.Question);
             // проверить что опшн принадлежит к вопросу
-            if (!answer.Question.Options.Contains(option))
-            {
-                return BadRequest();
-            }
+            if (!answer.Question.Options.Contains(option)) return BadRequest();
             var code = await _context.Codes.SingleAsync(c => c.Answer == answer);
-            code.Args = model.Code.Args; code.Value = model.Code.Value; code.Output = model.Code.Output;
+            code.Args = model.Code.Args;
+            code.Value = model.Code.Value;
+            code.Output = model.Code.Output;
             _context.Codes.Update(code);
             answer.Code = code;
             answer.Option = option;
@@ -443,9 +423,11 @@ namespace WebApplication3.Controllers
             await _context.SaveChangesAsync();
             return new JsonResult("");
         }
+
         #endregion
 
         #region Code
+
         [Authorize]
         [HttpGet]
         [Route("/Code/{answerId}")]
@@ -454,15 +436,14 @@ namespace WebApplication3.Controllers
             var answer = await _context.CodeAnswers
                     .Include(a => a.TestResult)
                     .Include(a => a.Question)
-                        .ThenInclude(q => q.Options)
-                .SingleAsync(a => a.Id == answerId)
+                    .ThenInclude(q => q.Options)
+                    .SingleAsync(a => a.Id == answerId)
                 ;
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            if (_context.TestResults.Count(tr => tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) == 0)
-            {
-                return NotFound();
-            }
+            if (_context.TestResults.Count(tr =>
+                    tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) ==
+                0) return NotFound();
             Code code;
             try
             {
@@ -472,19 +453,21 @@ namespace WebApplication3.Controllers
             {
                 using (var ts = _context.Database.BeginTransaction())
                 {
-                    code = new Code { Output = "Output", Answer = answer };
+                    code = new Code {Output = "Output", Answer = answer};
                     code = (await _context.AddAsync(code)).Entity;
                     await _context.SaveChangesAsync();
                     ts.Commit();
                 }
             }
+
             return PartialView("CodeOutput", code);
         }
+
         [Authorize]
         [HttpPost]
         [Route("/Code/{answerId}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PostCode(int answerId, [FromBody]Code model)
+        public async Task<IActionResult> PostCode(int answerId, [FromBody] Code model)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var answer = await _context.CodeAnswers
@@ -501,30 +484,36 @@ namespace WebApplication3.Controllers
             {
                 return BadRequest();
             }
-            code.Value = model.Value; code.Args = model.Args; code.Output = Compile(code);
-            
+
+            code.Value = model.Value;
+            code.Args = model.Args;
+            code.Output = Compile(code);
+
             using (var ts = _context.Database.BeginTransaction())
             {
                 _context.Codes.Update(code);
                 await _context.SaveChangesAsync();
                 ts.Commit();
             }
+
             await _context.SaveChangesAsync();
             return new JsonResult("");
         }
+
         #endregion
 
         #region Вспомогательные методы
-        private static Random rng = new Random();
+
+        private static readonly Random rng = new Random();
 
         public static void Shuffle<T>(List<T> list)
         {
-            int n = list.Count;
+            var n = list.Count;
             while (n > 1)
             {
                 n--;
-                int k = rng.Next(n + 1);
-                T value = list[k];
+                var k = rng.Next(n + 1);
+                var value = list[k];
                 list[k] = list[n];
                 list[n] = value;
             }
@@ -532,52 +521,47 @@ namespace WebApplication3.Controllers
 
         private static string Compile(Code code)
         {
-            StringBuilder output = new StringBuilder();
+            var output = new StringBuilder();
             object[] args;
-            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(code.Value);
-            string assemblyName = Path.GetRandomFileName();
-            MetadataReference[] references = new MetadataReference[]
+            var syntaxTree = CSharpSyntaxTree.ParseText(code.Value);
+            var assemblyName = Path.GetRandomFileName();
+            MetadataReference[] references =
             {
                 MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location)
             };
 
-            CSharpCompilation compilation = CSharpCompilation.Create(
+            var compilation = CSharpCompilation.Create(
                 assemblyName,
-                syntaxTrees: new[] { syntaxTree },
-                references: references,
-                options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
-                reportSuppressedDiagnostics: true,
-                optimizationLevel: OptimizationLevel.Release,
-                generalDiagnosticOption: ReportDiagnostic.Error));
+                new[] {syntaxTree},
+                references,
+                new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
+                    true,
+                    optimizationLevel: OptimizationLevel.Release,
+                    generalDiagnosticOption: ReportDiagnostic.Error));
             using (var ms = new MemoryStream())
             {
-                EmitResult result = compilation.Emit(ms);
+                var result = compilation.Emit(ms);
 
                 if (!result.Success)
                 {
-                    IEnumerable<Diagnostic> failures = result.Diagnostics.Where(diagnostic =>
+                    var failures = result.Diagnostics.Where(diagnostic =>
                         diagnostic.IsWarningAsError ||
                         diagnostic.Severity == DiagnosticSeverity.Error);
 
-                    foreach (Diagnostic diagnostic in failures)
-                    {
+                    foreach (var diagnostic in failures)
                         output.AppendFormat("{0}: {1}\n", diagnostic.Id, diagnostic.GetMessage());
-                    }
                 }
                 else
                 {
                     ms.Seek(0, SeekOrigin.Begin);
-                    Assembly assembly = Assembly.Load(ms.ToArray());
-                    Type type = assembly.GetType("TestsApp.Program");
-                    object obj = Activator.CreateInstance(type);
+                    var assembly = Assembly.Load(ms.ToArray());
+                    var type = assembly.GetType("TestsApp.Program");
+                    var obj = Activator.CreateInstance(type);
                     var method = type.GetMethod("Main");
                     var parameters = method.GetParameters();
-                    List<Type> types = new List<Type>();
-                    foreach (var p in parameters)
-                    {
-                        types.Add(p.ParameterType);
-                    }
+                    var types = new List<Type>();
+                    foreach (var p in parameters) types.Add(p.ParameterType);
                     var multiArgs = code.Args.Split(';').Select(arg => arg.Trim()).ToArray();
                     string[] tmp;
                     foreach (var a in multiArgs)
@@ -586,20 +570,20 @@ namespace WebApplication3.Controllers
                         if (!string.IsNullOrEmpty(a))
                         {
                             args = new object[tmp.Length];
-                            for (int i = 0; i < tmp.Length; i++)
-                            {
-                                args[i] = Convert.ChangeType(tmp[i], types[i]);
-                            }
+                            for (var i = 0; i < tmp.Length; i++) args[i] = Convert.ChangeType(tmp[i], types[i]);
                         }
                         else
+                        {
                             args = null;
+                        }
+
                         try
                         {
                             output.AppendLine(type.InvokeMember("Main",
-                            BindingFlags.Default | BindingFlags.InvokeMethod,
-                            null,
-                            obj,
-                            args).ToString());
+                                BindingFlags.Default | BindingFlags.InvokeMethod,
+                                null,
+                                obj,
+                                args).ToString());
                         }
                         catch (Exception e)
                         {
@@ -608,8 +592,10 @@ namespace WebApplication3.Controllers
                     }
                 }
             }
+
             return output.ToString();
         }
+
         #endregion
     }
 }

@@ -945,7 +945,8 @@ namespace WebApplication3.Controllers
                 new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
                     true,
                     optimizationLevel: OptimizationLevel.Release,
-                    generalDiagnosticOption: ReportDiagnostic.Error));
+                    generalDiagnosticOption: ReportDiagnostic.Error,
+                    warningLevel: 0));
             using (var ms = new MemoryStream())
             {
                 var result = compilation.Emit(ms);

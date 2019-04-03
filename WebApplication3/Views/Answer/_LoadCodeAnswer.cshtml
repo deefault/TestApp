@@ -60,28 +60,40 @@ namespace TestsApp
         </div>
         @if (Model.TestResult.IsCompleted)
         {
-            <table class="table-borderless table">
-                <tr>
-                    <td width="50%" style="padding-left:0">
-                        <div id="outputDiv">
-                            <div>
-                                <b>Ваш вывод:</b>
-                                <pre id="userOutput" class="form-control output" readonly="">@Model.Code.Output</pre>
+            if (Model.Score != Model.Question.Score)
+            {
+                <table class="table-borderless table">
+                    <tr>
+                        <td width="50%" style="padding-left:0">
+                            <div id="outputDiv">
+                                <div>
+                                    <b>Ваш вывод:</b>
+                                    <pre id="userOutput" class="form-control output" readonly="">@Model.Code.Output</pre>
+                                </div>
                             </div>
-                        </div>
-                    </td>
-                    <td width="50%" style="padding-right:0">
-                        <div>
-                            <b>Верный вывод:</b>
-                            <pre id="creatorOutput" class="form-control output" readonly="">@((Model.Question as CodeQuestion).Code.Output)</pre>
-                        </div>
-                    </td>
-                </tr>
-            </table>
-            <script>
-                $("#compile").click(function (e) {
-                    return false;
-                });</script>
+                        </td>
+                        <td width="50%" style="padding-right:0">
+                            <div>
+                                <b>Верный вывод:</b>
+                                <pre id="creatorOutput" class="form-control output" readonly="">@((Model.Question as CodeQuestion).Code.Output)</pre>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <script>
+                    $("#compile").click(function (e) {
+                        return false;
+                    });</script>
+            }
+            else
+            {
+                <div id="outputDiv">
+                    <div>
+                        <b>Вывод:</b>
+                        <pre id="userOutput" class="form-control output" readonly="">@Model.Code.Output</pre>
+                    </div>
+                </div>
+            }
         }
         else
         {

@@ -7,7 +7,7 @@
 
 <form method="post">
     <div>
-        <h5 style="margin-top: 1rem;">@Model.Question.Title</h5>
+        <h5 style="margin-top: 1rem;" class="unselectable">@Model.Question.Title</h5>
         @if (Model.TestResult.IsCompleted)
         {
             <h5>Балл: @Model.Score/@Model.Question.Score</h5>
@@ -28,7 +28,7 @@
                                 {
                                     <tr class="item-table__row @(option.Checked ?"bg-success text-white" : "")">
                                         <td class="item-table__cell">
-                                            <label id="inputContainer" class="form-check-label">
+                                            <label id="inputContainer" class="form-check-label unselectable">
                                                 <input name="option" type="checkbox" option-id="@option.OptionId"
                                                        group="Options" @(option.Checked ? "checked" : "")>
                                                 @option.Option.Text
@@ -42,7 +42,7 @@
                                                                   ? "bg-danger text-white"
                                                                   : (Model.TestResult.Test.HideRightAnswers ? "" :"bg-warning text-white"))">
                                         <td class="item-table__cell">
-                                            <label id="inputContainer" class="form-check-label">
+                                            <label id="inputContainer" class="form-check-label unselectable">
                                                 <input name="option" type="checkbox" option-id="@option.OptionId"
                                                        group="Options" @(option.Checked ? "checked" : "")>
                                                 @option.Option.Text
@@ -55,7 +55,7 @@
                             {
                                 <tr class="item-table__row">
                                     <td class="item-table__cell">
-                                        <label class="form-check-label">
+                                        <label class="form-check-label unselectable">
                                             <input name="option" type="checkbox" @(option.Checked ? "checked" : "") option-id="@option.Option.Id" group="Options">
                                             @option.Option.Text
                                         </label>
@@ -70,7 +70,7 @@
                         {
                             <tr class="item-table__row">
                                 <td class="item-table__cell">
-                                    <label class="form-check-label">
+                                    <label class="form-check-label unselectable">
                                         <input name="option" type="checkbox" option-id="@option.Id" group="Options">
                                         @option.Text
                                     </label>

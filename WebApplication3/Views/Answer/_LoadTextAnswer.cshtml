@@ -27,7 +27,7 @@
                             if (Model.Text.ToLower() == Question.TextRightAnswer.ToLower())
                             {
                                 <td class="item-table__cell">
-                                    <textarea name="option" id="Text" class="form-control item__text-field text-success"
+                                    <textarea name="option" id="Text" class="form-control item__text-field @(!Model.TestResult.Test.HideRightAnswers ? "bg-success text-white" : "")"
                                               value="@((Model.Text != null && Model.Text != "") ? Model.Text : "")"
                                               placeholder="Ответ">@Model.Text</textarea>
                                 </td>
@@ -36,7 +36,7 @@
                             {
                                 <td class="item-table__cell">
                                     Ваш ответ:
-                                    <textarea name="option" id="Text" class="form-control item__text-field bg-danger text-white"
+                                    <textarea name="option" id="Text" class="form-control item__text-field @(!Model.TestResult.Test.HideRightAnswers ? "bg-danger text-white" : "")"
                                               value="@((Model.Text != null && Model.Text != "") ? Model.Text : "")"
                                               placeholder="Ответ">@Model.Text</textarea>
                                 </td>

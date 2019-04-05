@@ -213,7 +213,13 @@ namespace WebApplication3.Controllers
                 user.TestResults.Add(testResult);
                 await _context.SaveChangesAsync();
                 foreach (var q in testData.Questions) await _context.Questions.AddAsync(q);
-                foreach (var c in testData.Codes) await _context.Codes.AddAsync(c);
+                await _context.SaveChangesAsync();
+                foreach (var c in testData.Codes)
+                {
+                    var code = (await _context.Codes.AddAsync(c)).Entity;
+                    var question = code.Question as CodeQuestion;
+                    question.Code = code;
+                }
                 await _context.SaveChangesAsync();
                 foreach (var o in testData.Options)
                 {
@@ -738,41 +744,40 @@ namespace WebApplication3.Controllers
                 }
                 else
                 {
-                    ms.Seek(0, SeekOrigin.Begin);
-                    var assembly = Assembly.Load(ms.ToArray());
-                    var type = assembly.GetType("TestsApp.Program");
-                    var obj = Activator.CreateInstance(type);
-                    var method = type.GetMethod("Main");
-                    var parameters = method.GetParameters();
-                    var types = new List<Type>();
-                    foreach (var p in parameters) types.Add(p.ParameterType);
-                    var multiArgs = args.Split(';').Select(arg => arg.Trim()).ToArray();
-                    string[] tmp;
-                    foreach (var a in multiArgs)
+                    try
                     {
-                        tmp = a.Split(',').Select(arg => arg.Trim()).ToArray();
-                        if (!string.IsNullOrEmpty(a))
+                        ms.Seek(0, SeekOrigin.Begin);
+                        var assembly = Assembly.Load(ms.ToArray());
+                        var type = assembly.GetType("TestsApp.Program");
+                        var obj = Activator.CreateInstance(type);
+                        var method = type.GetMethod("Main");
+                        var parameters = method.GetParameters();
+                        var types = new List<Type>();
+                        foreach (var p in parameters) types.Add(p.ParameterType);
+                        var multiArgs = args.Split(';').Select(arg => arg.Trim()).ToArray();
+                        string[] tmp;
+                        foreach (var a in multiArgs)
                         {
-                            Args = new object[tmp.Length];
-                            for (var i = 0; i < tmp.Length; i++) Args[i] = Convert.ChangeType(tmp[i], types[i]);
-                        }
-                        else
-                        {
-                            Args = null;
-                        }
-
-                        try
-                        {
+                            tmp = a.Split(',').Select(arg => arg.Trim()).ToArray();
+                            if (!string.IsNullOrEmpty(a))
+                            {
+                                Args = new object[tmp.Length];
+                                for (var i = 0; i < tmp.Length; i++) Args[i] = Convert.ChangeType(tmp[i], types[i]);
+                            }
+                            else
+                            {
+                                Args = null;
+                            }
                             output.AppendLine(type.InvokeMember("Main",
                                 BindingFlags.Default | BindingFlags.InvokeMethod,
                                 null,
                                 obj,
                                 Args).ToString());
                         }
-                        catch (Exception e)
-                        {
-                            output = new StringBuilder(e.Message);
-                        }
+                    }
+                    catch (Exception e)
+                    {
+                        output = new StringBuilder(e.Message);
                     }
                 }
             }

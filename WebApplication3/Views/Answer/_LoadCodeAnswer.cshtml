@@ -60,11 +60,11 @@ namespace TestsApp
         </div>
         @if (Model.TestResult.IsCompleted)
         {
-            if (Model.Score != Model.Question.Score)
+            if (Model.Score != Model.Question.Score && !Model.TestResult.Test.HideRightAnswers)
             {
                 <table class="table-borderless table">
                     <tr>
-                        <td width="50%" style="padding-left:0">
+                        <td width="50%" style="padding-left:0;">
                             <div id="outputDiv">
                                 <div>
                                     <b>Ваш вывод:</b>

@@ -23,10 +23,9 @@
                         {
                                 if (Model.Option.Id == option.Id)
                                 {
-                                    <tr class="item-table__row @(Question.RightAnswer == option
-                                                                 && !Model.TestResult.Test.HideRightAnswers
-                                                                     ? "bg-success text-white"
-                                                                     : "bg-danger text-white")">
+                                    <tr class="item-table__row @(!Model.TestResult.Test.HideRightAnswers ? Question.RightAnswer == option ?
+                                                                      "bg-success text-white" :
+                                                                        "bg-danger text-white" : "")">
                                         <td class="item-table__cell">
                                             <label id="inputContainer" class="form-check-label unselectable">
                                                 <input name="option" type="radio" option-id="@option.Id"

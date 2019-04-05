@@ -57,15 +57,15 @@ namespace WebApplication3.Controllers
 
             switch (type)
             {
-                case (int) Question.QuestionTypeEnum.SingleChoiceQuestion:
+                case (int)Question.QuestionTypeEnum.SingleChoiceQuestion:
                     return View("AddSingleChoiceQuestion", new AddSingleChoiceQuestionViewModel());
-                case (int) Question.QuestionTypeEnum.MultiChoiceQuestion:
+                case (int)Question.QuestionTypeEnum.MultiChoiceQuestion:
                     return View("AddMultiChoiceQuestion", new AddMultiChoiceQuestionViewModel());
-                case (int) Question.QuestionTypeEnum.TextQuestion:
+                case (int)Question.QuestionTypeEnum.TextQuestion:
                     return View("AddTextQuestion", new AddTextQuestionViewModel());
-                case (int) Question.QuestionTypeEnum.DragAndDropQuestion:
+                case (int)Question.QuestionTypeEnum.DragAndDropQuestion:
                     return View("AddDragAndDropQuestion", new AddDragAndDropQuestionViewModel());
-                case (int) Question.QuestionTypeEnum.CodeQuestion:
+                case (int)Question.QuestionTypeEnum.CodeQuestion:
                     return View("AddCodeQuestion", new AddCodeQuestionViewModel());
                 default:
                     return View("AddSingleChoiceQuestion", new AddSingleChoiceQuestionViewModel());
@@ -158,7 +158,7 @@ namespace WebApplication3.Controllers
         public async Task<IActionResult> AddSingleChoiceQuestion([FromBody] AddSingleChoiceQuestionViewModel model)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int) RouteData.Values["testId"]);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
             if (test == null) return NotFound();
 
             if (test.CreatedBy != user) return Forbid();
@@ -184,7 +184,7 @@ namespace WebApplication3.Controllers
                     {
                         // добавить в базу Options
                         var optionCreated = (await _context.AddAsync(
-                                new Option {IsRight = option.IsRight, Text = option.Text, Question = questionCreated}))
+                                new Option { IsRight = option.IsRight, Text = option.Text, Question = questionCreated }))
                             .Entity;
                         //questionCreated.Options.Add(optionCreated);
 
@@ -197,14 +197,14 @@ namespace WebApplication3.Controllers
                     ts.Commit();
                 }
 
-                var redirectUrl = Url.Action("Details", "Test", new {id = test.Id});
+                var redirectUrl = Url.Action("Details", "Test", new { id = test.Id });
                 return new JsonResult(redirectUrl);
             }
 
             var errors = new List<ModelError>();
             foreach (var modelState in ViewData.ModelState.Values)
-            foreach (var error in modelState.Errors)
-                errors.Add(error);
+                foreach (var error in modelState.Errors)
+                    errors.Add(error);
             Response.StatusCode = StatusCodes.Status400BadRequest;
             return new JsonResult(errors);
         }
@@ -216,7 +216,7 @@ namespace WebApplication3.Controllers
         public async Task<IActionResult> AddMultiChoiceQuestion([FromBody] AddMultiChoiceQuestionViewModel model)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int) RouteData.Values["testId"]);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
             if (test == null) return NotFound();
 
             if (test.CreatedBy != user) return Forbid();
@@ -242,7 +242,7 @@ namespace WebApplication3.Controllers
                     {
                         // добавить в базу Options
                         var optionCreated = (await _context.AddAsync(
-                                new Option {IsRight = option.IsRight, Text = option.Text, Question = questionCreated}))
+                                new Option { IsRight = option.IsRight, Text = option.Text, Question = questionCreated }))
                             .Entity;
                     }
 
@@ -252,14 +252,14 @@ namespace WebApplication3.Controllers
                     ts.Commit();
                 }
 
-                var redirectUrl = Url.Action("Details", "Test", new {id = test.Id});
+                var redirectUrl = Url.Action("Details", "Test", new { id = test.Id });
                 return new JsonResult(redirectUrl);
             }
 
             var errors = new List<ModelError>();
             foreach (var modelState in ViewData.ModelState.Values)
-            foreach (var error in modelState.Errors)
-                errors.Add(error);
+                foreach (var error in modelState.Errors)
+                    errors.Add(error);
             Response.StatusCode = StatusCodes.Status400BadRequest;
             return new JsonResult(errors);
         }
@@ -271,7 +271,7 @@ namespace WebApplication3.Controllers
         public async Task<IActionResult> AddDragAndDropQuestion([FromBody] AddDragAndDropQuestionViewModel model)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int) RouteData.Values["testId"]);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
             if (test == null) return NotFound();
 
             if (test.CreatedBy != user) return Forbid();
@@ -297,7 +297,7 @@ namespace WebApplication3.Controllers
                     {
                         // добавить в базу Options
                         var optionCreated = (await _context.Options.AddAsync(
-                            new Option {Order = option.Order, Text = option.Text, Question = questionCreated})).Entity;
+                            new Option { Order = option.Order, Text = option.Text, Question = questionCreated })).Entity;
                     }
 
                     // обновить вопрос и применить изменения
@@ -307,14 +307,14 @@ namespace WebApplication3.Controllers
                 }
 
 
-                var redirectUrl = Url.Action("Details", "Test", new {id = test.Id});
+                var redirectUrl = Url.Action("Details", "Test", new { id = test.Id });
                 return new JsonResult(redirectUrl);
             }
 
             var errors = new List<ModelError>();
             foreach (var modelState in ViewData.ModelState.Values)
-            foreach (var error in modelState.Errors)
-                errors.Add(error);
+                foreach (var error in modelState.Errors)
+                    errors.Add(error);
             Response.StatusCode = StatusCodes.Status400BadRequest;
             return new JsonResult(errors);
         }
@@ -326,7 +326,7 @@ namespace WebApplication3.Controllers
         public async Task<IActionResult> AddTextQuestion([FromBody] AddTextQuestionViewModel model)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int) RouteData.Values["testId"]);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
             if (test == null) return NotFound();
 
             if (test.CreatedBy != user) return Forbid();
@@ -351,7 +351,7 @@ namespace WebApplication3.Controllers
                     var option = model.Options[0];
                     // добавить в базу Options
                     var optionCreated = (await _context.AddAsync(
-                        new Option {Text = option.Text, Question = questionCreated})).Entity;
+                        new Option { Text = option.Text, Question = questionCreated })).Entity;
                     //questionCreated.Options.Add(optionCreated);
                     questionCreated.TextRightAnswer = optionCreated.Text;
                     // обновить вопрос и применить изменения
@@ -360,14 +360,14 @@ namespace WebApplication3.Controllers
                     ts.Commit();
                 }
 
-                var redirectUrl = Url.Action("Details", "Test", new {id = test.Id});
+                var redirectUrl = Url.Action("Details", "Test", new { id = test.Id });
                 return new JsonResult(redirectUrl);
             }
 
             var errors = new List<ModelError>();
             foreach (var modelState in ViewData.ModelState.Values)
-            foreach (var error in modelState.Errors)
-                errors.Add(error);
+                foreach (var error in modelState.Errors)
+                    errors.Add(error);
             Response.StatusCode = StatusCodes.Status400BadRequest;
             return new JsonResult(errors);
         }
@@ -379,7 +379,7 @@ namespace WebApplication3.Controllers
         public async Task<IActionResult> AddCodeQuestion([FromBody] AddCodeQuestionViewModel model)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int) RouteData.Values["testId"]);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
             if (test == null) return NotFound();
 
             if (test.CreatedBy != user) return Forbid();
@@ -401,11 +401,13 @@ namespace WebApplication3.Controllers
                     var code = (await _context.AddAsync(
                         new Code
                         {
-                            Args = model.Code.Args, Question = question, Output = model.Code.Output,
+                            Args = model.Code.Args,
+                            Question = question,
+                            Output = model.Code.Output,
                             Value = model.Code.Value
                         })).Entity;
                     await _context.AddAsync(
-                        new Option {Text = model.Code.Output, Question = question});
+                        new Option { Text = model.Code.Output, Question = question });
                     question.Code = code;
                     try
                     {
@@ -420,14 +422,14 @@ namespace WebApplication3.Controllers
                     ts.Commit();
                 }
 
-                var redirectUrl = Url.Action("Details", "Test", new {id = test.Id});
+                var redirectUrl = Url.Action("Details", "Test", new { id = test.Id });
                 return new JsonResult(redirectUrl);
             }
 
             var errors = new List<ModelError>();
             foreach (var modelState in ViewData.ModelState.Values)
-            foreach (var error in modelState.Errors)
-                errors.Add(error);
+                foreach (var error in modelState.Errors)
+                    errors.Add(error);
             Response.StatusCode = StatusCodes.Status400BadRequest;
             return new JsonResult(errors);
         }
@@ -444,7 +446,7 @@ namespace WebApplication3.Controllers
             [FromBody] AddSingleChoiceQuestionViewModel model)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int) RouteData.Values["testId"]);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
             if (test == null) return NotFound();
             if (test.CreatedBy != user) return Forbid();
             var question = await _context.SingleChoiceQuestions
@@ -491,14 +493,14 @@ namespace WebApplication3.Controllers
                     ts.Commit();
                 }
 
-                var redirectUrl = Url.Action("Details", "Test", new {id = test.Id});
+                var redirectUrl = Url.Action("Details", "Test", new { id = test.Id });
                 return new JsonResult(redirectUrl);
             }
 
             var errors = new List<ModelError>();
             foreach (var modelState in ViewData.ModelState.Values)
-            foreach (var error in modelState.Errors)
-                errors.Add(error);
+                foreach (var error in modelState.Errors)
+                    errors.Add(error);
 
             Response.StatusCode = StatusCodes.Status400BadRequest;
             return new JsonResult(errors);
@@ -512,7 +514,7 @@ namespace WebApplication3.Controllers
             [FromBody] AddMultiChoiceQuestionViewModel model)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int) RouteData.Values["testId"]);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
             if (test == null) return NotFound();
             if (test.CreatedBy != user) return Forbid();
             var question = await _context.MultiChoiceQuestions
@@ -558,14 +560,14 @@ namespace WebApplication3.Controllers
                     ts.Commit();
                 }
 
-                var redirectUrl = Url.Action("Details", "Test", new {id = test.Id});
+                var redirectUrl = Url.Action("Details", "Test", new { id = test.Id });
                 return new JsonResult(redirectUrl);
             }
 
             var errors = new List<ModelError>();
             foreach (var modelState in ViewData.ModelState.Values)
-            foreach (var error in modelState.Errors)
-                errors.Add(error);
+                foreach (var error in modelState.Errors)
+                    errors.Add(error);
 
             Response.StatusCode = StatusCodes.Status400BadRequest;
             return new JsonResult(errors);
@@ -579,7 +581,7 @@ namespace WebApplication3.Controllers
             [FromBody] AddTextQuestionViewModel model)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int) RouteData.Values["testId"]);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
             if (test == null) return NotFound();
             if (test.CreatedBy != user) return Forbid();
             var question = await _context.TextQuestions
@@ -624,14 +626,14 @@ namespace WebApplication3.Controllers
                     ts.Commit();
                 }
 
-                var redirectUrl = Url.Action("Details", "Test", new {id = test.Id});
+                var redirectUrl = Url.Action("Details", "Test", new { id = test.Id });
                 return new JsonResult(redirectUrl);
             }
 
             var errors = new List<ModelError>();
             foreach (var modelState in ViewData.ModelState.Values)
-            foreach (var error in modelState.Errors)
-                errors.Add(error);
+                foreach (var error in modelState.Errors)
+                    errors.Add(error);
 
             Response.StatusCode = StatusCodes.Status400BadRequest;
             return new JsonResult(errors);
@@ -645,7 +647,7 @@ namespace WebApplication3.Controllers
             [FromBody] AddDragAndDropQuestionViewModel model)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int) RouteData.Values["testId"]);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
             if (test == null) return NotFound();
             if (test.CreatedBy != user) return Forbid();
             var question = await _context.DragAndDropQuestions
@@ -690,14 +692,14 @@ namespace WebApplication3.Controllers
                     ts.Commit();
                 }
 
-                var redirectUrl = Url.Action("Details", "Test", new {id = test.Id});
+                var redirectUrl = Url.Action("Details", "Test", new { id = test.Id });
                 return new JsonResult(redirectUrl);
             }
 
             var errors = new List<ModelError>();
             foreach (var modelState in ViewData.ModelState.Values)
-            foreach (var error in modelState.Errors)
-                errors.Add(error);
+                foreach (var error in modelState.Errors)
+                    errors.Add(error);
 
             Response.StatusCode = StatusCodes.Status400BadRequest;
             return new JsonResult(errors);
@@ -711,7 +713,7 @@ namespace WebApplication3.Controllers
             [FromBody] AddCodeQuestionViewModel model)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int) RouteData.Values["testId"]);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
             if (test == null) return NotFound();
             if (test.CreatedBy != user) return Forbid();
             var question = await _context.CodeQuestions
@@ -741,14 +743,14 @@ namespace WebApplication3.Controllers
                     ts.Commit();
                 }
 
-                var redirectUrl = Url.Action("Details", "Test", new {id = test.Id});
+                var redirectUrl = Url.Action("Details", "Test", new { id = test.Id });
                 return new JsonResult(redirectUrl);
             }
 
             var errors = new List<ModelError>();
             foreach (var modelState in ViewData.ModelState.Values)
-            foreach (var error in modelState.Errors)
-                errors.Add(error);
+                foreach (var error in modelState.Errors)
+                    errors.Add(error);
 
             Response.StatusCode = StatusCodes.Status400BadRequest;
             return new JsonResult(errors);
@@ -770,7 +772,7 @@ namespace WebApplication3.Controllers
             question.IsDeleted = true;
             _context.Questions.Update(question);
             await _context.SaveChangesAsync();
-            return RedirectToAction("Details", "Test", new {id = testId});
+            return RedirectToAction("Details", "Test", new { id = testId });
         }
 
         #endregion
@@ -784,7 +786,7 @@ namespace WebApplication3.Controllers
         {
             Code code;
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int) RouteData.Values["testId"]);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
             try
             {
                 code = await _context.Codes.SingleAsync(c => c.Test == test);
@@ -793,7 +795,7 @@ namespace WebApplication3.Controllers
             {
                 using (var ts = _context.Database.BeginTransaction())
                 {
-                    code = new Code {Output = "Output", Test = test};
+                    code = new Code { Output = "Output", Test = test };
                     code = (await _context.AddAsync(code)).Entity;
                     await _context.SaveChangesAsync();
                     ts.Commit();
@@ -810,7 +812,7 @@ namespace WebApplication3.Controllers
         public async Task<IActionResult> PostCode(int testId, [FromBody] Code model)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int) RouteData.Values["testId"]);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
             Code code;
             try
             {
@@ -842,7 +844,7 @@ namespace WebApplication3.Controllers
         {
             Code code;
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int) RouteData.Values["testId"]);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
             var question = await _context.CodeQuestions
                 .SingleAsync(q => q.Id == questionId);
             try
@@ -853,7 +855,7 @@ namespace WebApplication3.Controllers
             {
                 using (var ts = _context.Database.BeginTransaction())
                 {
-                    code = new Code {Output = "Output", Test = test};
+                    code = new Code { Output = "Output", Test = test };
                     code = (await _context.AddAsync(code)).Entity;
                     await _context.SaveChangesAsync();
                     ts.Commit();
@@ -870,7 +872,7 @@ namespace WebApplication3.Controllers
         public async Task<IActionResult> EditPostCode(int testId, int questionId, [FromBody] Code model)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int) RouteData.Values["testId"]);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
             var question = await _context.CodeQuestions
                 .SingleAsync(q => q.Id == questionId);
             Code code;
@@ -940,7 +942,7 @@ namespace WebApplication3.Controllers
 
             var compilation = CSharpCompilation.Create(
                 assemblyName,
-                new[] {syntaxTree},
+                new[] { syntaxTree },
                 references,
                 new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
                     true,
@@ -962,39 +964,38 @@ namespace WebApplication3.Controllers
                 }
                 else
                 {
-                    ms.Seek(0, SeekOrigin.Begin);
-                    var assembly = Assembly.Load(ms.ToArray());
-                    var type = assembly.GetType("TestsApp.Program");
-                    var obj = Activator.CreateInstance(type);
-                    var method = type.GetMethod("Main");
-                    var parameters = method.GetParameters();
-                    var types = new List<Type>();
-                    foreach (var p in parameters) types.Add(p.ParameterType);
-                    var multiArgs = code.Args.Split(';').Select(arg => arg.Trim()).ToArray();
-                    //var multiArgs = code.Args.Trim(new char[] { ' ', ';', ',' }).Split(';').Select(arg => arg.Trim(new char[] { ' ', ';', ',' })).ToArray();
-                    string[] tmp;
-                    foreach (var a in multiArgs)
+                    try
                     {
-                        tmp = a.Split(',').Select(arg => arg.Trim()).ToArray();
-                        if (!string.IsNullOrEmpty(a))
+                        ms.Seek(0, SeekOrigin.Begin);
+                        var assembly = Assembly.Load(ms.ToArray());
+                        var type = assembly.GetType("TestsApp.Program");
+                        var obj = Activator.CreateInstance(type);
+                        var method = type.GetMethod("Main");
+                        var parameters = method.GetParameters();
+                        var types = new List<Type>();
+                        foreach (var p in parameters) types.Add(p.ParameterType);
+                        var multiArgs = code.Args.Split(';').Select(arg => arg.Trim()).ToArray();
+                        //var multiArgs = code.Args.Trim(new char[] { ' ', ';', ',' }).Split(';').Select(arg => arg.Trim(new char[] { ' ', ';', ',' })).ToArray();
+                        string[] tmp;
+                        foreach (var a in multiArgs)
                         {
-                            args = new object[tmp.Length];
-                            for (var i = 0; i < tmp.Length; i++) args[i] = Convert.ChangeType(tmp[i], types[i]);
-                        }
-                        else
-                        {
-                            args = null;
-                        }
-
-                        try
-                        {
+                            tmp = a.Split(',').Select(arg => arg.Trim()).ToArray();
+                            if (!string.IsNullOrEmpty(a))
+                            {
+                                args = new object[tmp.Length];
+                                for (var i = 0; i < tmp.Length; i++) args[i] = Convert.ChangeType(tmp[i], types[i]);
+                            }
+                            else
+                            {
+                                args = null;
+                            }
                             output.AppendLine(type.InvokeMember("Main",
                                 BindingFlags.Default | BindingFlags.InvokeMethod, null, obj, args).ToString());
                         }
-                        catch (Exception e)
-                        {
-                            output = new StringBuilder(e.Message);
-                        }
+                    }
+                    catch (Exception e)
+                    {
+                        output = new StringBuilder(e.Message);
                     }
                 }
             }

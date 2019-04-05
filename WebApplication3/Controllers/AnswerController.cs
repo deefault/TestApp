@@ -204,7 +204,7 @@ namespace WebApplication3.Controllers
         public async Task<IActionResult> LoadCodeAnswer(int answerId)
         {
             var answer = await _context.CodeAnswers
-                    .Include(a => a.TestResult)
+                    .Include(a => a.TestResult).ThenInclude(tr => tr.Test)
                     .Include(a => a.Code)
                     .Include(a => a.Question)
                     .ThenInclude(q => (q as CodeQuestion).Code)
@@ -453,7 +453,7 @@ namespace WebApplication3.Controllers
             {
                 using (var ts = _context.Database.BeginTransaction())
                 {
-                    code = new Code {Output = "Output", Answer = answer};
+                    code = new Code { Output = "Output", Answer = answer };
                     code = (await _context.AddAsync(code)).Entity;
                     await _context.SaveChangesAsync();
                     ts.Commit();
@@ -533,7 +533,7 @@ namespace WebApplication3.Controllers
 
             var compilation = CSharpCompilation.Create(
                 assemblyName,
-                new[] {syntaxTree},
+                new[] { syntaxTree },
                 references,
                 new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
                     true,
@@ -555,41 +555,43 @@ namespace WebApplication3.Controllers
                 }
                 else
                 {
-                    ms.Seek(0, SeekOrigin.Begin);
-                    var assembly = Assembly.Load(ms.ToArray());
-                    var type = assembly.GetType("TestsApp.Program");
-                    var obj = Activator.CreateInstance(type);
-                    var method = type.GetMethod("Main");
-                    var parameters = method.GetParameters();
-                    var types = new List<Type>();
-                    foreach (var p in parameters) types.Add(p.ParameterType);
-                    var multiArgs = code.Args.Split(';').Select(arg => arg.Trim()).ToArray();
-                    string[] tmp;
-                    foreach (var a in multiArgs)
+                    try
                     {
-                        tmp = a.Split(',').Select(arg => arg.Trim()).ToArray();
-                        if (!string.IsNullOrEmpty(a))
+                        ms.Seek(0, SeekOrigin.Begin);
+                        var assembly = Assembly.Load(ms.ToArray());
+                        var type = assembly.GetType("TestsApp.Program");
+                        var obj = Activator.CreateInstance(type);
+                        var method = type.GetMethod("Main");
+                        var parameters = method.GetParameters();
+                        var types = new List<Type>();
+                        foreach (var p in parameters) types.Add(p.ParameterType);
+                        var multiArgs = code.Args.Split(';').Select(arg => arg.Trim()).ToArray();
+                        string[] tmp;
+                        foreach (var a in multiArgs)
                         {
-                            args = new object[tmp.Length];
-                            for (var i = 0; i < tmp.Length; i++) args[i] = Convert.ChangeType(tmp[i], types[i]);
-                        }
-                        else
-                        {
-                            args = null;
-                        }
+                            tmp = a.Split(',').Select(arg => arg.Trim()).ToArray();
+                            if (!string.IsNullOrEmpty(a))
+                            {
+                                args = new object[tmp.Length];
+                                for (var i = 0; i < tmp.Length; i++) args[i] = Convert.ChangeType(tmp[i], types[i]);
+                            }
+                            else
+                            {
+                                args = null;
+                            }
 
-                        try
-                        {
+
                             output.AppendLine(type.InvokeMember("Main",
                                 BindingFlags.Default | BindingFlags.InvokeMethod,
                                 null,
                                 obj,
                                 args).ToString());
+
                         }
-                        catch (Exception e)
-                        {
-                            output = new StringBuilder(e.Message);
-                        }
+                    }
+                    catch (Exception e)
+                    {
+                        output = new StringBuilder(e.Message);
                     }
                 }
             }

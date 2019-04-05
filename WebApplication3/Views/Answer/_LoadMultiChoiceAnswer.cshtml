@@ -26,7 +26,7 @@
                             {
                                 if (option.Checked == option.Option.IsRight)
                                 {
-                                    <tr class="item-table__row @(option.Checked ?"bg-success text-white" : "")">
+                                    <tr class="item-table__row @(!Model.TestResult.Test.HideRightAnswers && option.Checked ?"bg-success text-white" : "")">
                                         <td class="item-table__cell">
                                             <label id="inputContainer" class="form-check-label unselectable">
                                                 <input name="option" type="checkbox" option-id="@option.OptionId"

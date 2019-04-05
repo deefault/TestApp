@@ -26,7 +26,7 @@
                                         <td class="drag-handler"></td>
                                         <td class="item-table__cell">
                                             <label name="option" option-id="@Model.Question.Options.Single(o => o.Id == option.Option.Id).Id"
-                                                   class="form-check-label text-white unselectable">
+                                                   class="form-check-label @(!Model.TestResult.Test.HideRightAnswers ? "text-white" : "") unselectable">
                                                 @Model.Question.Options.Single(o => o.Id == option.Option.Id).Text
                                             </label>
                                         </td>

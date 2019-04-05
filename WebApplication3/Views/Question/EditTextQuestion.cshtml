@@ -65,10 +65,6 @@
 @section Scripts {
     <script src="~/lib/bootstrap-touchspin/src/jquery.bootstrap-touchspin.js"></script>
     <script>
-        
-        $("#Score").TouchSpin({
-            verticalbuttons: true,
-        });
         $("form").submit(function(event) {
                 event.preventDefault();
                 submitQuestion('@Url.RouteUrl("EditText", new {testId = Context.GetRouteData().Values["testId"], questionId=Model.Id})');

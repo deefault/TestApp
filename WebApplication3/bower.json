@@ -4,8 +4,7 @@
   "private": true,
   "dependencies": {
     "bootstrap": "4.1.3",
-    "Sortable": "sortablejs#1.8.1",
-    "bootstrap-touchspin": "4.2.5"
+    "Sortable": "sortablejs#1.8.1"
   },
   "homepage": "https://github.com/deefault/TestsApp",
   "authors": [

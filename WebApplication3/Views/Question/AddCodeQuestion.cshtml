@@ -104,11 +104,7 @@ namespace TestsApp
     <script src="~/lib/codemirror/addon/hint/show-hint.js"></script>
     <script src="~/lib/codemirror/addon/selection/active-line.js"></script>
     <script src="~/lib/bootstrap-touchspin/src/jquery.bootstrap-touchspin.js"></script>
-    <script>
-        $("#Score").TouchSpin({
-            verticalbuttons: true,
-        });
-        loadOutput('@Url.RouteUrl("GetCode", new {testId = Context.GetRouteData().Values["testId"]})');
+    <script>        loadOutput('@Url.RouteUrl("GetCode", new {testId = Context.GetRouteData().Values["testId"]})');
         var elements =
         {
             args: $("#args"),

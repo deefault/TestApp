@@ -928,8 +928,9 @@ namespace WebApplication3.Controllers
             await _context.SaveChangesAsync();
         }
 
-        private static string Compile(Code code)
+        public static string Compile(Code code)
         {
+            var TimeoutSeconds = 5;
             var output = new StringBuilder();
             object[] args;
             var syntaxTree = CSharpSyntaxTree.ParseText(code.Value);
@@ -942,7 +943,7 @@ namespace WebApplication3.Controllers
 
             var compilation = CSharpCompilation.Create(
                 assemblyName,
-                new[] { syntaxTree },
+                new[] {syntaxTree},
                 references,
                 new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
                     true,
@@ -989,9 +990,22 @@ namespace WebApplication3.Controllers
                             {
                                 args = null;
                             }
-                            output.AppendLine(type.InvokeMember("Main",
-                                BindingFlags.Default | BindingFlags.InvokeMethod, null, obj, args).ToString());
+
+                            var task = Task.Run(() => type.InvokeMember("Main",
+                                BindingFlags.Default | BindingFlags.InvokeMethod,
+                                null,
+                                obj,
+                                args));
+                            task.Wait(TimeSpan.FromSeconds(TimeoutSeconds));
+                            if (task.IsCompleted)
+                                output.AppendLine(task.Result.ToString());
+                            else
+                                throw new TimeoutException("Timed out 5sec");
                         }
+                    }
+                    catch (TimeoutException e)
+                    {
+                        output = new StringBuilder($"TimeoutException: max {TimeoutSeconds * 1000} ms.");
                     }
                     catch (Exception e)
                     {

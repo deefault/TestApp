@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -708,8 +709,9 @@ namespace WebApplication3.Controllers
             }
         }
 
-        private static string Compile(string code, string args)
+        public static string Compile(string code, string args)
         {
+            var TimeoutSeconds = 5;
             var output = new StringBuilder();
             object[] Args;
             var syntaxTree = CSharpSyntaxTree.ParseText(code);
@@ -768,12 +770,22 @@ namespace WebApplication3.Controllers
                             {
                                 Args = null;
                             }
-                            output.AppendLine(type.InvokeMember("Main",
+                           
+                            var task = Task.Run(() => type.InvokeMember("Main",
                                 BindingFlags.Default | BindingFlags.InvokeMethod,
                                 null,
                                 obj,
-                                Args).ToString());
+                                Args));
+                            task.Wait(TimeSpan.FromSeconds(TimeoutSeconds));
+                            if (task.IsCompleted)
+                                output.AppendLine(task.Result.ToString());
+                            else
+                                throw new TimeoutException("Timed out 5sec");
                         }
+                    }
+                    catch (TimeoutException e)
+                    {
+                        output = new StringBuilder($"TimeoutException: max {TimeoutSeconds*1000} ms.");
                     }
                     catch (Exception e)
                     {

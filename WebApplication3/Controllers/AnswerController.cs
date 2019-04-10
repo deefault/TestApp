@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using WebApplication3.Data;
@@ -168,8 +163,6 @@ namespace WebApplication3.Controllers
                     if (answerOption.Checked) checkedOptionIds.Add(answerOption.OptionId);
                     if (answerOption.Option.IsRight) rightOptionIds.Add(answerOption.OptionId);
                 }
-
-            ;
             ViewBag.checkedOptionsIds = checkedOptionIds;
             ViewBag.rightOptionsIds = rightOptionIds;
             return PartialView("_LoadMultiChoiceAnswer", answer);
@@ -475,6 +468,7 @@ namespace WebApplication3.Controllers
                     .Include(a => a.Question)
                     .SingleAsync(a => a.Id == answerId)
                 ;
+            if (answer.TestResult.CompletedByUserId != user.Id) return BadRequest();
             Code code;
             try
             {
@@ -504,7 +498,7 @@ namespace WebApplication3.Controllers
 
         #region Вспомогательные методы
 
-        private static readonly Random rng = new Random();
+        private static readonly Random Random = new Random();
 
         public static void Shuffle<T>(List<T> list)
         {
@@ -512,7 +506,7 @@ namespace WebApplication3.Controllers
             while (n > 1)
             {
                 n--;
-                var k = rng.Next(n + 1);
+                var k = Random.Next(n + 1);
                 var value = list[k];
                 list[k] = list[n];
                 list[n] = value;

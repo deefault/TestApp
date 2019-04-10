@@ -787,6 +787,8 @@ namespace WebApplication3.Controllers
             Code code;
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
+            var testResult = await _context.TestResults.SingleOrDefaultAsync(t=>t.Test == test);
+            if (testResult.CompletedByUserId != user.Id) return BadRequest();
             try
             {
                 code = await _context.Codes.SingleAsync(c => c.Test == test);
@@ -823,6 +825,8 @@ namespace WebApplication3.Controllers
                 return BadRequest();
             }
 
+            var testResult = await _context.TestResults.SingleOrDefaultAsync(t=>t.Test == test);
+            if (testResult.CompletedByUserId != user.Id) return BadRequest();
             code.Value = model.Value;
             code.Args = model.Args;
             code.Output = Compile(code);
@@ -845,6 +849,8 @@ namespace WebApplication3.Controllers
             Code code;
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
+            var testResult = await _context.TestResults.SingleOrDefaultAsync(t=>t.Test == test);
+            if (testResult.CompletedByUserId != user.Id) return BadRequest();
             var question = await _context.CodeQuestions
                 .SingleAsync(q => q.Id == questionId);
             try
@@ -873,6 +879,8 @@ namespace WebApplication3.Controllers
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
+            var testResult = await _context.TestResults.SingleOrDefaultAsync(t=>t.Test == test);
+            if (testResult.CompletedByUserId != user.Id) return BadRequest();
             var question = await _context.CodeQuestions
                 .SingleAsync(q => q.Id == questionId);
             Code code;

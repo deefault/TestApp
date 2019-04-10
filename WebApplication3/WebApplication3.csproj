@@ -5,7 +5,6 @@
     <TypeScriptToolsVersion>3.3</TypeScriptToolsVersion>
   </PropertyGroup>
   <ItemGroup>
-    <None Update="app.db" CopyToOutputDirectory="PreserveNewest" />
     <None Remove="Pages\login.html" />
   </ItemGroup>
   <ItemGroup>

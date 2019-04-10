@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-
 
 namespace WebApplication3.Models
 {
@@ -9,40 +7,40 @@ namespace WebApplication3.Models
     {
         public int Id { get; set; }
         public int QuestionId { get; set; }
-        [Required]
-        public Question Question { get; set; }
-        [Required]
-        public string AnswerType { get; set; }
-        [Required]
-        public float Score { get; set; }
-        [Required]
-        public TestResult TestResult { get; set; }
-        [Required]
-        public ushort Order { get; set; }
+
+        [Required] public Question Question { get; set; }
+
+        [Required] public string AnswerType { get; set; }
+
+        [Required] public float Score { get; set; }
+
+        [Required] public TestResult TestResult { get; set; }
+
+        [Required] public ushort Order { get; set; }
 
         public Option Option { get; set; }
     }
-    
-    public  class SingleChoiceAnswer : Answer
+
+    public class SingleChoiceAnswer : Answer
     {
-        
     }
-    
-    public  class MultiChoiceAnswer : Answer
+
+    public class MultiChoiceAnswer : Answer
     {
         public IList<AnswerOption> AnswerOptions { get; set; }
     }
-    
-    public  class TextAnswer : Answer
+
+    public class TextAnswer : Answer
     {
         public string Text { get; set; }
     }
-    public  class DragAndDropAnswer : Answer
+
+    public class DragAndDropAnswer : Answer
     {
         public List<DragAndDropAnswerOption> DragAndDropAnswerOptions { get; set; }
     }
 
-    public class CodeAnswer: Answer
+    public class CodeAnswer : Answer
     {
         public Code Code { get; set; }
     }
@@ -55,7 +53,6 @@ namespace WebApplication3.Models
         public Option Option { get; set; }
         public Option RightOption { get; set; }
         public int ChosenOrder { get; set; }
-        
     }
 
     public class AnswerOption

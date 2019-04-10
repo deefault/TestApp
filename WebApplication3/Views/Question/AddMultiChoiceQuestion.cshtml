@@ -8,7 +8,6 @@
 }
 
 <div class="container">
-    <link rel="stylesheet" href="~/lib/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.css" />
     <div class="form-group" id="fields">
         <div class="">
             <form asp-controller="Question" asp-action="AddMultiChoiceQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
@@ -83,7 +82,6 @@
     </div>
 </div>
 @section Scripts {
-    <script src="~/lib/bootstrap-touchspin/src/jquery.bootstrap-touchspin.js"></script>
     <script>
         $(function () {
             $(document).on('click', '.item-table__add-row-btn', function (e) {

@@ -11,11 +11,6 @@
 
 
 <div class="container">
-    <link rel="stylesheet" href="~/lib/codemirror/theme/material.css" />
-    <link rel="stylesheet" href="~/lib/codemirror/lib/codemirror.css" />
-    <link rel="stylesheet" href="~/lib/codemirror/addon/fold/foldgutter.css" />
-    <link rel="stylesheet" href="~/lib/codemirror/addon/hint/show-hint.css" />
-    <link rel="stylesheet" href="~/lib/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.css" />
     <div class="form-group" id="fields">
         <div class="">
             <form asp-controller="Question" asp-action="AddCodeQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
@@ -88,22 +83,9 @@ namespace TestsApp
     </div>
 </div>
 @section Scripts {
-    <script src="~/lib/codemirror/lib/codemirror.js"></script>
-    <script src="~/lib/codemirror/mode/clike/clike.js"></script>
-    <script src="~/lib/codemirror/mode/python/python.js"></script>
-    <script src="~/lib/codemirror/keymap/sublime.js"></script>
-    <script src="~/lib/codemirror/addon/fold/foldcode.js"></script>
-    <script src="~/lib/codemirror/addon/fold/foldgutter.js"></script>
-    <script src="~/lib/codemirror/addon/fold/brace-fold.js"></script>
-    <script src="~/lib/codemirror/addon/fold/comment-fold.js"></script>
-    <script src="~/lib/codemirror/addon/edit/closebrackets.js"></script>
-    <script src="~/lib/codemirror/addon/edit/trailingspace.js"></script>
-    <script src="~/lib/codemirror/addon/edit/matchbrackets.js"></script>
-    <script src="~/lib/codemirror/addon/hint/anyword-hint.js"></script>
-    <script src="~/lib/codemirror/addon/hint/show-hint.js"></script>
-    <script src="~/lib/codemirror/addon/selection/active-line.js"></script>
-    <script src="~/lib/bootstrap-touchspin/src/jquery.bootstrap-touchspin.js"></script>
-    <script>        loadOutput('@Url.RouteUrl("GetCode", new {testId = Context.GetRouteData().Values["testId"]})');
+    @{ await Html.RenderPartialAsync("_CodeScriptsPartial"); }
+    <script>
+        loadOutput('@Url.RouteUrl("GetCode", new {testId = Context.GetRouteData().Values["testId"]})');
         var elements =
         {
             args: $("#args"),

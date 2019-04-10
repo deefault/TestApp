@@ -29,7 +29,8 @@
 </nav>
 
 @section Scripts
-    {
+{
+    @{ await Html.RenderPartialAsync("_CodeScriptsPartial"); }
     <script src="~/lib/Sortable/Sortable.js"></script>
     <script  type="text/javascript">var firstId = $("nav ul").children().filter(".num-btn")[0].getAttribute("btn-id");
         var firstOrder = $("nav ul").children().filter(".num-btn")[0].getAttribute("btn-order");

@@ -50,7 +50,8 @@
       asp-route-testResultId="@Model.First().TestResult.Id">
 </form>
 @section Scripts
-    {
+{
+    @{ await Html.RenderPartialAsync("_CodeScriptsPartial"); }
     <script src="~/lib/Sortable/Sortable.js"></script>
     <script type="text/javascript">
         var firstOrder = $("nav ul").children().filter(".num-btn")[0].getAttribute("btn-order");

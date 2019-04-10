@@ -787,21 +787,17 @@ namespace WebApplication3.Controllers
             Code code;
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
-            var testResult = await _context.TestResults.SingleOrDefaultAsync(t=>t.Test == test);
-            if (testResult.CompletedByUserId != user.Id) return BadRequest();
+            if (test.CreatedById != user.Id) return BadRequest();
             try
             {
                 code = await _context.Codes.SingleAsync(c => c.Test == test);
             }
             catch (Exception)
             {
-                using (var ts = _context.Database.BeginTransaction())
-                {
-                    code = new Code { Output = "Output", Test = test };
-                    code = (await _context.AddAsync(code)).Entity;
-                    await _context.SaveChangesAsync();
-                    ts.Commit();
-                }
+
+                code = new Code { Output = "Output", Test = test };
+                code = (await _context.AddAsync(code)).Entity;
+                await _context.SaveChangesAsync();
             }
 
             return PartialView("CodeOutput", code);
@@ -815,6 +811,7 @@ namespace WebApplication3.Controllers
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
+            if (test.CreatedById != user.Id) return BadRequest();
             Code code;
             try
             {
@@ -830,12 +827,8 @@ namespace WebApplication3.Controllers
             code.Value = model.Value;
             code.Args = model.Args;
             code.Output = Compile(code);
-            using (var ts = _context.Database.BeginTransaction())
-            {
-                _context.Codes.Update(code);
-                await _context.SaveChangesAsync();
-                ts.Commit();
-            }
+
+            _context.Codes.Update(code);
 
             await _context.SaveChangesAsync();
             return new JsonResult("");
@@ -849,8 +842,7 @@ namespace WebApplication3.Controllers
             Code code;
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
-            var testResult = await _context.TestResults.SingleOrDefaultAsync(t=>t.Test == test);
-            if (testResult.CompletedByUserId != user.Id) return BadRequest();
+            if (test.CreatedById != user.Id) return BadRequest();
             var question = await _context.CodeQuestions
                 .SingleAsync(q => q.Id == questionId);
             try
@@ -859,13 +851,11 @@ namespace WebApplication3.Controllers
             }
             catch (Exception)
             {
-                using (var ts = _context.Database.BeginTransaction())
-                {
-                    code = new Code { Output = "Output", Test = test };
-                    code = (await _context.AddAsync(code)).Entity;
-                    await _context.SaveChangesAsync();
-                    ts.Commit();
-                }
+
+                code = new Code { Output = "Output", Test = test };
+                code = (await _context.AddAsync(code)).Entity;
+                await _context.SaveChangesAsync();
+                
             }
 
             return PartialView("CodeOutput", code);
@@ -896,13 +886,8 @@ namespace WebApplication3.Controllers
             code.Value = model.Value;
             code.Args = model.Args;
             code.Output = Compile(code);
-            using (var ts = _context.Database.BeginTransaction())
-            {
-                _context.Codes.Update(code);
-                await _context.SaveChangesAsync();
-                ts.Commit();
-            }
-
+            
+            _context.Codes.Update(code);
             await _context.SaveChangesAsync();
             return new JsonResult("");
         }

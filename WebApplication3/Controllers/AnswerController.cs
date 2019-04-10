@@ -444,13 +444,9 @@ namespace WebApplication3.Controllers
             }
             catch (Exception)
             {
-                using (var ts = _context.Database.BeginTransaction())
-                {
-                    code = new Code { Output = "Output", Answer = answer };
-                    code = (await _context.AddAsync(code)).Entity;
-                    await _context.SaveChangesAsync();
-                    ts.Commit();
-                }
+                code = new Code { Output = "Output", Answer = answer };
+                code = (await _context.AddAsync(code)).Entity;
+                await _context.SaveChangesAsync();
             }
 
             return PartialView("CodeOutput", code);
@@ -483,12 +479,7 @@ namespace WebApplication3.Controllers
             code.Args = model.Args;
             code.Output = Compile(code);
 
-            using (var ts = _context.Database.BeginTransaction())
-            {
-                _context.Codes.Update(code);
-                await _context.SaveChangesAsync();
-                ts.Commit();
-            }
+            _context.Codes.Update(code);
 
             await _context.SaveChangesAsync();
             return new JsonResult("");

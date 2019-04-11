@@ -398,13 +398,19 @@ namespace WebApplication3.Controllers
                     };
                     question = (await _context.AddAsync(question)).Entity;
                     await _context.SaveChangesAsync();
+                    var co = new Code
+                        {
+                            Args = model.Code.Args,
+                            Question = question,
+                            Value = model.Code.Value
+                        };
                     var code = (await _context.AddAsync(
                         new Code
                         {
                             Args = model.Code.Args,
                             Question = question,
-                            Output = model.Code.Output,
-                            Value = model.Code.Value
+                            Value = model.Code.Value,
+                            Output = Compile(co)
                         })).Entity;
                     await _context.AddAsync(
                         new Option { Text = model.Code.Output, Question = question });
@@ -723,7 +729,13 @@ namespace WebApplication3.Controllers
 
             model.TestId = test.Id;
             TryValidateModel(model);
-
+            try
+            {
+                _context.Remove(await _context.Codes.SingleAsync(c => c.Test == test));
+            }
+            catch
+            {
+            }
             if (ModelState.IsValid)
             {
                 // транзакция
@@ -731,8 +743,8 @@ namespace WebApplication3.Controllers
                 {
                     var code = await _context.Codes.SingleAsync(c => c.Question == question);
                     code.Args = model.Code.Args;
-                    code.Output = model.Code.Output;
                     code.Value = model.Code.Value;
+                    code.Output = Compile(code);
                     var option = await _context.Options.SingleAsync(o => o.Question == question);
                     question.Code = code;
                     option.Text = model.Code.Output;
@@ -812,86 +824,22 @@ namespace WebApplication3.Controllers
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
             if (test.CreatedById != user.Id) return BadRequest();
-            Code code;
-            try
+            Code code = await _context.Codes.SingleOrDefaultAsync(c => c.Test == test);
+            if (code == null)
             {
-                code = await _context.Codes.SingleAsync(c => c.Test == test);
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
-
-            var testResult = await _context.TestResults.SingleOrDefaultAsync(t=>t.Test == test);
-            if (testResult.CompletedByUserId != user.Id) return BadRequest();
-            code.Value = model.Value;
-            code.Args = model.Args;
-            code.Output = Compile(code);
-
-            _context.Codes.Update(code);
-
-            await _context.SaveChangesAsync();
-            return new JsonResult("");
-        }
-
-        [Authorize]
-        [HttpGet]
-        [Route("/Tests/{testId}/Code/{questionId}", Name = "EditGetCode")]
-        public async Task<IActionResult> EditGetCode(int testId, int questionId)
-        {
-            Code code;
-            var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
-            if (test.CreatedById != user.Id) return BadRequest();
-            var question = await _context.CodeQuestions
-                .SingleAsync(q => q.Id == questionId);
-            try
-            {
-                code = await _context.Codes.SingleAsync(c => c.Question == question);
-            }
-            catch (Exception)
-            {
-
-                code = new Code { Output = "Output", Test = test };
-                code = (await _context.AddAsync(code)).Entity;
+                code = (await _context.AddAsync(new Code { Test = test })).Entity;
                 await _context.SaveChangesAsync();
-                
             }
-
-            return PartialView("CodeOutput", code);
-        }
-
-        [Authorize]
-        [HttpPost]
-        [Route("/Tests/{testId}/Code/{questionId}", Name = "EditPostCode")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditPostCode(int testId, int questionId, [FromBody] Code model)
-        {
-            var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == (int)RouteData.Values["testId"]);
-            var testResult = await _context.TestResults.SingleOrDefaultAsync(t=>t.Test == test);
-            if (testResult.CompletedByUserId != user.Id) return BadRequest();
-            var question = await _context.CodeQuestions
-                .SingleAsync(q => q.Id == questionId);
-            Code code;
-            try
-            {
-                code = await _context.Codes.SingleAsync(c => c.Question == question);
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
-
+            if (test.CreatedBy != user) return BadRequest();
             code.Value = model.Value;
             code.Args = model.Args;
             code.Output = Compile(code);
-            
+
             _context.Codes.Update(code);
+
             await _context.SaveChangesAsync();
             return new JsonResult("");
         }
-
         #endregion
 
         #region Вспомогательные методы

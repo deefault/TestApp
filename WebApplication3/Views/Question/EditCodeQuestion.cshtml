@@ -109,8 +109,8 @@
             $("#output").html(output);
         }
         function Compile() {
-            submitCode('@Url.RouteUrl("EditPostCode", new {testId = Context.GetRouteData().Values["testId"], questionId = Model.Id })');
-            loadOutput('@Url.RouteUrl("EditGetCode", new {testId = Context.GetRouteData().Values["testId"], questionId = Model.Id })');
+            submitCode('@Url.RouteUrl("PostCode", new {testId = Context.GetRouteData().Values["testId"]})');
+            loadOutput('@Url.RouteUrl("GetCode", new {testId = Context.GetRouteData().Values["testId"]})');
         }
 
         $("form").submit(function(event) {

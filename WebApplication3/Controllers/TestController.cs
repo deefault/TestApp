@@ -102,7 +102,7 @@ namespace WebApplication3.Controllers
             {
                 try
                 {
-                    var link = Url.Link("AddTestToUser", new {testId = test.Id});
+                    var link = Url.Link("AddTestToUser", new { testId = test.Id });
                     var qrCode = "data:image/png;base64, " + Utils.Utils.GenerateBase64QRCodeFromLink(link);
                     ViewBag.qrCodeBase64 = qrCode;
                 }
@@ -118,7 +118,7 @@ namespace WebApplication3.Controllers
             var testResult = await _context.TestResults.Where(r => r.Test == test && r.CompletedByUser == user)
                 .FirstAsync();
             // у пользователя отсутствует тест
-            if (testResult == null) return RedirectToAction("AddTestToUser", new {testId = test.Id, userId = user.Id});
+            if (testResult == null) return RedirectToAction("AddTestToUser", new { testId = test.Id, userId = user.Id });
             ViewData["testResult"] = testResult;
 
             return View(test);
@@ -127,7 +127,7 @@ namespace WebApplication3.Controllers
         #endregion
 
         #region Поля
-
+        private readonly float EPSILON = 0.0000001F;
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
 
@@ -160,8 +160,11 @@ namespace WebApplication3.Controllers
             {
                 var test = new Test
                 {
-                    Name = model.Model2.Name, CreatedBy = user, IsEnabled = model.Model2.IsEnabled,
-                    Shuffled = model.Model2.Shuffled
+                    Name = model.Model2.Name,
+                    CreatedBy = user,
+                    IsEnabled = model.Model2.IsEnabled,
+                    Shuffled = model.Model2.Shuffled,
+                    HideRightAnswers = !model.Model2.HideRightAnswers
                 };
                 await _context.Tests.AddAsync(test);
 
@@ -177,7 +180,7 @@ namespace WebApplication3.Controllers
 
 
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Details", new {id = test.Id});
+                return RedirectToAction("Details", new { id = test.Id });
             }
 
             return View(model);
@@ -237,7 +240,7 @@ namespace WebApplication3.Controllers
                 // Добавить тест к пользователю, который его создал (чтобы он тоже мог проходить его)
 
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Details", new {id = testData.Test.Id});
+                return RedirectToAction("Details", new { id = testData.Test.Id });
             }
             catch (Exception e)
             {
@@ -271,7 +274,7 @@ namespace WebApplication3.Controllers
             await _context.TestResults.AddAsync(testResult);
             await _context.SaveChangesAsync();
             Response.StatusCode = 200;
-            return RedirectToAction("Start", new {testResultId = testResult.Id});
+            return RedirectToAction("Start", new { testResultId = testResult.Id });
         }
 
         [HttpGet]
@@ -289,7 +292,7 @@ namespace WebApplication3.Controllers
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var testResult =
                 await _context.TestResults.SingleOrDefaultAsync(tr => tr.Test == test && tr.CompletedByUser == user);
-            if (testResult != null) return RedirectToAction("Start", new {testResultId = testResult.Id});
+            if (testResult != null) return RedirectToAction("Start", new { testResultId = testResult.Id });
             ViewData["test"] = test;
             return View(model);
         }
@@ -501,7 +504,7 @@ namespace WebApplication3.Controllers
             Answer answer = null;
             var order = new ushort[questions.Count()];
             for (var i = 0; i < order.Length; i++)
-                order[i] = (ushort) (i + 1);
+                order[i] = (ushort)(i + 1);
             if (testResult.Test.Shuffled)
                 Shuffle(order);
             var j = 0;
@@ -539,7 +542,7 @@ namespace WebApplication3.Controllers
             // TODO: redirect to first answer (question)
             //throw new NotImplementedException();
             return RedirectToAction("Answer", "Answer",
-                new {testResultId = testResult.Id, answerId = answers.SingleOrDefault(a => a.Order == 1).Id});
+                new { testResultId = testResult.Id, answerId = answers.SingleOrDefault(a => a.Order == 1).Id });
         }
 
         [ValidateAntiForgeryToken]
@@ -557,7 +560,7 @@ namespace WebApplication3.Controllers
             uint count = 0;
             //var questions = testResult.Test.Questions.ToList();
             var answers = _context.Answers.Where(a => a.TestResult == testResult);
-            testResult.TotalQuestions = (uint) answers.Count();
+            testResult.TotalQuestions = (uint)answers.Count();
             foreach (var answer in answers)
                 if (answer is SingleChoiceAnswer)
                 {
@@ -604,9 +607,9 @@ namespace WebApplication3.Controllers
                         }
 
                         var score = question.Score *
-                                    (countChecked - countWrong) / (float) countChecked;
+                                    (countChecked - countWrong) / (float)countChecked;
                         multiChoiceAnswer.Score = score > 0 ? score : 0;
-                        if (multiChoiceAnswer.Score == question.Score) count++;
+                        if (Math.Abs(multiChoiceAnswer.Score - question.Score) < EPSILON) count++;
                     }
 
                     _context.MultiChoiceAnswers.Update(multiChoiceAnswer);
@@ -645,9 +648,9 @@ namespace WebApplication3.Controllers
                         if (dndOption.RightOption.Id != dndOption.Option.Id)
                             wrongOrderCount++;
                     var score = question.Score *
-                                (optionsCount - wrongOrderCount) / (float) optionsCount;
+                                (optionsCount - wrongOrderCount) / (float)optionsCount;
                     dndAnswer.Score = score > 0 ? score : 0;
-                    if (dndAnswer.Score == question.Score) count++;
+                    if (Math.Abs(dndAnswer.Score - question.Score) < EPSILON) count++;
                 }
                 else if (answer is CodeAnswer)
                 {
@@ -724,7 +727,7 @@ namespace WebApplication3.Controllers
 
             var compilation = CSharpCompilation.Create(
                 assemblyName,
-                new[] {syntaxTree},
+                new[] { syntaxTree },
                 references,
                 new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
                     true,
@@ -770,7 +773,7 @@ namespace WebApplication3.Controllers
                             {
                                 Args = null;
                             }
-                           
+
                             var task = Task.Run(() => type.InvokeMember("Main",
                                 BindingFlags.Default | BindingFlags.InvokeMethod,
                                 null,
@@ -783,9 +786,9 @@ namespace WebApplication3.Controllers
                                 throw new TimeoutException("Timed out 5sec");
                         }
                     }
-                    catch (TimeoutException e)
+                    catch (TimeoutException)
                     {
-                        output = new StringBuilder($"TimeoutException: max {TimeoutSeconds*1000} ms.");
+                        output = new StringBuilder($"TimeoutException: max {TimeoutSeconds * 1000} ms.");
                     }
                     catch (Exception e)
                     {

@@ -944,7 +944,7 @@ namespace WebApplication3.Controllers
                                 throw new TimeoutException("Timed out 5sec");
                         }
                     }
-                    catch (TimeoutException e)
+                    catch (TimeoutException)
                     {
                         output = new StringBuilder($"TimeoutException: max {TimeoutSeconds * 1000} ms.");
                     }

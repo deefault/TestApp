@@ -18,5 +18,8 @@ namespace WebApplication3.Models.TestViewModels
         [Required]
         [DisplayName("Перемешивать")]
         public bool Shuffled { get; set; }
+        [Required]
+        [DisplayName("Ответы")]
+        public bool HideRightAnswers { get; set; } = false;
     }
 }

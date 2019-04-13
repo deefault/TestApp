@@ -7,78 +7,68 @@
 
 <div class="container">
     <div class="align-content-center">
-        
+
         @if (!SignInManager.IsSignedIn(User))
         {
             <hr/>
-            <h2 class="text-center">Приветствую, для начала зарегестрируйтесь или войдите</h2>
-            <div class="row text-center">
-                <a href="@Url.Action("Login","User")">
-                    <button class="btn btn-primary" style="margin-right: 15px">Войти</button>
-                </a>
-                <a href="@Url.Action("Register","User")">
-                    <button class="btn btn-primary">Зарегестрироваться</button>
-                </a>
-            </div>        
+            <h2 class="text-center">Здравствуйте, для начала <a href="@Url.Action("Register", "User")">зарегестрируйтесь</a> или <a href="@Url.Action("Login", "User")">войдите</a></h2>
         }
         else
         {
             <hr/>
-            <h2 class="text-center">Приветствую, @UserManager.GetUserName(User)!</h2>
-                                                                               
+            <h2 class="text-center">Здравствуйте, @UserManager.GetUserName(User)!</h2>
+
         }
         <p></p>
-        <p class="text-center">Для прохождения и просмотра тестов и ваших результатов нажмите 
-            <a href="@Url.Action("TestResults", "Test")">текущие тесты</a> сверху. 
-            Для создания и редактирования тестов нажмите на ссылку 
-            <a href="@Url.Action("Tests", "Test")">созданные тесты</a></p>
+        <p class="text-center">Для прохождения тестов и просмотра ваших результатов нажмите
+            <a href="@Url.Action("TestResults", "Test")">прохождение тестов</a> сверху.
+            Для создания и редактирования тестов нажмите
+            <a href="@Url.Action("Tests", "Test")">создание тестов</a>.</p>
         <h4 class="text-center">Как пользоваться?</h4>
         <div class="accordion" id="instruction">
-            
+
             <div class="card">
                 <div class="card-header" id="headingOne">
                     <h2 class="mb-0">
-                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                            Прохождение теста
+                        <button class="btn btn-link" style="width: 100%; text-align: left;" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                            Прохождение тестов
                         </button>
                     </h2>
                 </div>
-                <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#instruction">
+                <div id="collapseOne" class="collapse" aria-labelledby="headingOne">
                     <div class="card-body">
-                        Для того, чтобы проходить тест выберите из списка доступных, либо добавьте тест по QR-коду, 
-                        либо с помощью специальной формы на странице со списком тестов по ID теста.
-                        Для переключения между вопросами используйте клавиши <kbd>&larr;</kbd> и <kbd>&rarr;</kbd>
+                        Для того, чтобы пройти тест, выберите его из списка доступных, либо добавьте по QR-коду или с помощью специальной формы на <a href="@Url.Action("TestResults", "Test")">странице со списком тестов</a>.
+                        Для переключения между вопросами используйте клавиши <kbd>&larr;</kbd> и <kbd>&rarr;</kbd>.
                         Для завершения теста нажмите кнопку "Завершить"
                     </div>
                 </div>
             </div>
-            
+
             <div class="card">
                 <div class="card-header" id="heading2">
                     <h2 class="mb-0">
-                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
-                            Добавление теста теста
+                        <button class="btn btn-link" style="width: 100%; text-align: left;" type="button" data-toggle="collapse" data-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
+                            Создание тестов
                         </button>
                     </h2>
                 </div>
-                <div id="collapse2" class="collapse" aria-labelledby="heading2" data-parent="#instruction">
+                <div id="collapse2" class="collapse" aria-labelledby="heading2">
                     <div class="card-body">
                         <p>
-                            Перейдите в меню "созданные тесты". Создайте тест или добавьте тест из файла. После создания теста
-                            добавьте вопросы: Вы можете добавить вопросы 5 типов:
+                            Перейдите на страницу <a href="@Url.Action("Tests", "Test")">создание тестов</a>. Создайте новый тест или добавьте его из файла. После создания теста добавьте вопросы. Доступны следующие типы вопросов:
                         </p>
                         <ul>
-                            <li>Single Choice - с одним правильным ответом</li>
-                            <li>Multi Choice - с несколькими правильнымм ответами</li>
-                            <li>Text - с пользовательским вводом ответа</li>
-                            <li>Drag and Drop -на восстановление правильной последовательности</li>
-                            <li>Multi Choice - с несколькими правильнымм ответами</li>
+                            <li>С одним правильным ответом</li>
+                            <li>С несколькими правильнымм ответами</li>
+                            <li>С открытым ответом</li>
+                            <li>На восстановление правильной последовательности</li>
+                            <li>На написание кода</li>
                         </ul>
                     </div>
                 </div>
             </div>
 
         </div>
-    </div> 
+    </div>
 </div>
 

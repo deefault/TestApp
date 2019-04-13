@@ -225,4 +225,7 @@ button.collapse-btn {
     outline: 2px solid #5c5c5c;
     outline-offset: -2px;
 }
-
+.row {
+    margin-left: 0;
+    margin-right: 0;
+}

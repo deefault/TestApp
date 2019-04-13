@@ -4,7 +4,7 @@
         <b>Текст вопроса:</b>
         <div>
             <div class="form-group clearfix contentwrapper">
-                <textarea class="form-control" readonly>@Model.Question.Title</textarea>
+                <div class="form-control unselectable" readonly>@Model.Question.Title</div>
             </div>
         </div>
         @if (Model.TestResult.IsCompleted)
@@ -126,7 +126,6 @@ namespace TestsApp
                     loadOutput("/Code/" + getActiveAnswerId() + "/");
                 }</script>
         }
-        
         <script>
             var editor = CodeMirror.fromTextArea(document.getElementById('code'),
                 {

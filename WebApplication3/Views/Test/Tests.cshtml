@@ -26,10 +26,10 @@ else
             <tr>
                 <th>ID</th>
                 <th>Название</th>
-                <th>Включен</th>
-                <th>Перемешивать</th>
+                <th style="text-align: center;">Флаги</th>
+                @*<th>Перемешивать</th>
                 <th>Ответы</th>
-                @*<th>Создатель</th>*@
+                <th>Создатель</th>*@
                 <th>Управление</th>
             </tr>
             @foreach (var item in Model.Model1)
@@ -41,56 +41,48 @@ else
                 <td>
                     <a asp-action="Details" asp-route-id="@item.Id">@item.Name</a>
                 </td>
-                <td>
+                <td style="text-align: center;">
                     <form method="post">
                         @if (item.IsEnabled)
                         {
-                            <button asp-controller="Test" class="btn-link" asp-action="Enable"
+                            <button style="width: 5em" asp-controller="Test" class="btn-link" asp-action="Enable"
                                     asp-route-testId="@item.Id" type="submit">
-                                <span class="badge badge-success">Да</span>
+                                <span style="width: 5em" class="badge badge-success">ON</span>
                             </button>
                         }
                         else
                         {
-                            <button asp-controller="Test" class="btn-link" asp-action="Enable"
+                            <button style="width: 5em" asp-controller="Test" class="btn-link" asp-action="Enable"
                                     asp-route-testId="@item.Id" type="submit">
-                                <span class="badge badge-danger">Нет</span>
+                                <span style="width: 5em" class="badge badge-danger">OFF</span>
                             </button>
                         }
-                    </form>
-                </td>
-                <td>
-                    <form method="post">
                         @if (item.Shuffled)
                         {
-                            <button asp-controller="Test" class="btn-link" asp-action="Shuffle"
+                            <button style="width: 5em" asp-controller="Test" class="btn-link" asp-action="Shuffle"
                                     asp-route-testId="@item.Id" type="submit">
-                                <span class="badge badge-success">Да</span>
+                                <span style="width: 5em" class="badge badge-success">RNG</span>
                             </button>
                         }
                         else
                         {
-                            <button asp-controller="Test" class="btn-link" asp-action="Shuffle"
+                            <button style="width: 5em" asp-controller="Test" class="btn-link" asp-action="Shuffle"
                                     asp-route-testId="@item.Id" type="submit">
-                                <span class="badge badge-danger">Нет</span>
+                                <span style="width: 5em" class="badge badge-danger">RNG</span>
                             </button>
                         }
-                    </form>
-                </td>
-                <td>
-                    <form method="post">
                         @if (!item.HideRightAnswers)
                         {
-                            <button asp-controller="Test" class="btn-link" asp-action="Hide"
+                            <button style="width: 5em" asp-controller="Test" class="btn-link" asp-action="Hide"
                                     asp-route-testId="@item.Id" type="submit">
-                                <span class="badge badge-success">Да</span>
+                                <span style="width: 5em" class="badge badge-success">SHOW</span>
                             </button>
                         }
                         else
                         {
-                            <button asp-controller="Test" class="btn-link" asp-action="Hide"
+                            <button style="width: 5em" asp-controller="Test" class="btn-link" asp-action="Hide"
                                     asp-route-testId="@item.Id" type="submit">
-                                <span class="badge badge-danger">Нет</span>
+                                <span style="width: 5em" class="badge badge-danger">HIDE</span>
                             </button>
                         }
                     </form>
@@ -214,6 +206,13 @@ test {
                         <div class="col-md-10">
                             <input asp-for="Model2.Shuffled" type="checkbox" class="checkbox" />
                             <span asp-validation-for="Model2.Shuffled" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label asp-for="Model2.HideRightAnswers" class="col-md-2 control-label"></label>
+                        <div class="col-md-10">
+                            <input asp-for="Model2.HideRightAnswers" type="checkbox" class="checkbox" />
+                            <span asp-validation-for="Model2.HideRightAnswers" class="text-danger"></span>
                         </div>
                     </div>
 

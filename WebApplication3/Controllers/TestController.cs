@@ -619,16 +619,25 @@ namespace WebApplication3.Controllers
                     var question =
                         await _context.TextQuestions
                             .SingleAsync(q => q.Id == textAnswer.QuestionId);
-                    if (textAnswer.Text.ToLower() == question.TextRightAnswer.ToLower())
+                    if (!String.IsNullOrEmpty(textAnswer.Text) && !String.IsNullOrEmpty(question.TextRightAnswer))
                     {
-                        textAnswer.Score = question.Score;
-                        count++;
+                        if (textAnswer.Text.ToLower() == question.TextRightAnswer.ToLower())
+                        {
+                            textAnswer.Score = question.Score;
+                            count++;
+                        }
+                        else
+                        {
+                            textAnswer.Score = 0;
+                        }
                     }
                     else
                     {
+                        textAnswer.Text = "";
                         textAnswer.Score = 0;
                     }
 
+                   
                     _context.TextAnswers.Update(textAnswer);
                 }
                 else if (answer is DragAndDropAnswer)

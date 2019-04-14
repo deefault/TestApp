@@ -61,14 +61,14 @@ else
                         {
                             <button style="width: 5em" asp-controller="Test" class="btn-link" asp-action="Shuffle"
                                     asp-route-testId="@item.Id" type="submit">
-                                <span style="width: 5em" class="badge badge-success">RNG</span>
+                                <span style="width: 5em" class="badge badge-success">RND</span>
                             </button>
                         }
                         else
                         {
                             <button style="width: 5em" asp-controller="Test" class="btn-link" asp-action="Shuffle"
                                     asp-route-testId="@item.Id" type="submit">
-                                <span style="width: 5em" class="badge badge-danger">RNG</span>
+                                <span style="width: 5em" class="badge badge-danger">RND</span>
                             </button>
                         }
                         @if (!item.HideRightAnswers)

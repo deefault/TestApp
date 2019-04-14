@@ -917,7 +917,6 @@ namespace WebApplication3.Controllers
                         var types = new List<Type>();
                         foreach (var p in parameters) types.Add(p.ParameterType);
                         var multiArgs = code.Args.Split(';').Select(arg => arg.Trim()).ToArray();
-                        //var multiArgs = code.Args.Trim(new char[] { ' ', ';', ',' }).Split(';').Select(arg => arg.Trim(new char[] { ' ', ';', ',' })).ToArray();
                         string[] tmp;
                         foreach (var a in multiArgs)
                         {

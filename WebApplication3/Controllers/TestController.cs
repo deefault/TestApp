@@ -635,9 +635,7 @@ namespace WebApplication3.Controllers
                     {
                         textAnswer.Text = "";
                         textAnswer.Score = 0;
-                    }
-
-                   
+                    }                  
                     _context.TextAnswers.Update(textAnswer);
                 }
                 else if (answer is DragAndDropAnswer)

@@ -108,6 +108,8 @@ namespace WebApplication3.Controllers
                 ;
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
+            if (user == answer.TestResult.Test.CreatedBy)
+                answer.TestResult.Test.HideRightAnswers = false;
             if (_context.TestResults.Count(tr =>
                     tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) ==
                 0) return NotFound();
@@ -128,6 +130,8 @@ namespace WebApplication3.Controllers
                 ;
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
+            if (user == answer.TestResult.Test.CreatedBy)
+                answer.TestResult.Test.HideRightAnswers = false;
             if (_context.TestResults.Count(tr =>
                     tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) ==
                 0) return NotFound();
@@ -151,6 +155,8 @@ namespace WebApplication3.Controllers
                 ;
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
+            if (user == answer.TestResult.Test.CreatedBy)
+                answer.TestResult.Test.HideRightAnswers = false;
             if (_context.TestResults.Count(tr =>
                     tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) ==
                 0) return NotFound();
@@ -185,6 +191,8 @@ namespace WebApplication3.Controllers
             Shuffle(answer.Question.Options);
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
+            if (user == answer.TestResult.Test.CreatedBy)
+                answer.TestResult.Test.HideRightAnswers = false;
             if (_context.TestResults.Count(tr =>
                     tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) ==
                 0) return NotFound();
@@ -205,6 +213,8 @@ namespace WebApplication3.Controllers
                 ;
             if (answer == null) return NotFound();
             var user = await _userManager.GetUserAsync(HttpContext.User);
+            if (user == answer.TestResult.Test.CreatedBy)
+                answer.TestResult.Test.HideRightAnswers = false;
             if (_context.TestResults.Count(tr =>
                     tr.Id == answer.TestResult.Id && (tr.CompletedByUser == user || tr.Test.CreatedBy == user)) ==
                 0) return NotFound();

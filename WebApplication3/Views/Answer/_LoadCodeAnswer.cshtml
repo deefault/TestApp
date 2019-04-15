@@ -117,7 +117,6 @@ namespace TestsApp
                     ShowOutput("Waiting for server...");
                     Compile();
                 });
-                $(".CodeMirror").addClass("contentwrapper");
                 function ShowOutput(output) {
                     $("#output").html(output);
                 }
@@ -145,6 +144,7 @@ namespace TestsApp
                     gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
                     extraKeys: { "Ctrl-Space": "autocomplete" }
                 });
+            $(".CodeMirror").addClass("contentwrapper");
         </script>
     </fieldset>
 </form>

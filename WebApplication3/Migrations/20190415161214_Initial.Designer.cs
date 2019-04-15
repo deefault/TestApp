@@ -9,8 +9,8 @@ using WebApplication3.Data;
 namespace WebApplication3.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190410141058_m")]
-    partial class m
+    [Migration("20190415161214_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -279,6 +279,8 @@ namespace WebApplication3.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<int>("Count");
 
                     b.Property<int>("CreatedById");
 
@@ -584,7 +586,8 @@ namespace WebApplication3.Migrations
 
                     b.HasOne("WebApplication3.Models.Test", "Test")
                         .WithMany()
-                        .HasForeignKey("TestId");
+                        .HasForeignKey("TestId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("WebApplication3.Models.DragAndDropAnswerOption", b =>

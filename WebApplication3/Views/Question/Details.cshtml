@@ -1,37 +1,45 @@
 ﻿@model WebApplication3.Models.Question
-
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
 
 }
-<hr/>
-<h3 class="text-center">@Model.Title</h3>
-<hr />
-<h5 class="text-center">Тип вопроса: @Enum.Parse(typeof(Question.QuestionTypeEnum), Model.QuestionType)</h5>
-<hr />
-<h5 class="text-center">Варианты</h5>
-<table class="table table-hover">
-    <thead>
-    <tr>
+<b>Текст вопроса:</b>
+<div>
+    <div class="form-group clearfix contentwrapper">
+        <div class="form-control" style="height: auto" readonly>@Model.Title</div>
+    </div>
+</div>
+<b>Тип вопроса:</b>
+<div>
+    <div class="form-group clearfix contentwrapper">
+        <div class="form-control" style="height: auto" readonly>@Enum.Parse(typeof(Question.QuestionTypeEnum), Model.QuestionType)</div>
+    </div>
+</div>
+<b>Варианты ответа:</b>
+<div class="card" style="background-color: #e9ecef">
+    <table class="table table-hover table-borderless">
+        <thead>
+            <tr>
+                <th scope="col" width="10%">#</th>
+                <th scope="col" width="90%">Текст</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{ int i = 1; }
+            @foreach (var o in Model.Options)
+            {
 
-        <th scope="col">#</th>
-        <th scope="col">Текст</th>
-    </tr>
-    </thead>
-    <tbody>
-    @{ int i = 1; }
-    @foreach (var o in Model.Options)
-    {
+                <tr class="@((o.IsRight) ? "table-success" : "")">
+                    <td width="10%">@(i++)</td>
+                    <td width="90%" style="white-space:pre">@o.Text</td>
+                </tr>
+            }
 
-        <tr class="@((o.IsRight) ? "table-success" : "")">
-            <td>@(i++)</td>
-            <td style="white-space:pre">@o.Text</td>
-
-        </tr>
+        </tbody>
+    </table>
+    </div>
+    @section Scripts {
+        <script>
+        </script>
     }
-
-
-    </tbody>
-</table>
-

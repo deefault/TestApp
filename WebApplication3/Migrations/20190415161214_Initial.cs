@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace WebApplication3.Migrations
 {
-    public partial class m : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -166,7 +166,8 @@ namespace WebApplication3.Migrations
                     IsEnabled = table.Column<bool>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false, defaultValue: false),
                     Shuffled = table.Column<bool>(nullable: false),
-                    HideRightAnswers = table.Column<bool>(nullable: false)
+                    HideRightAnswers = table.Column<bool>(nullable: false),
+                    Count = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -244,7 +245,7 @@ namespace WebApplication3.Migrations
                         column: x => x.TestId,
                         principalTable: "Test",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(

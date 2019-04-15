@@ -195,6 +195,13 @@ test {
                         </div>
                     </div>
                     <div class="form-group row">
+                        <label asp-for="Model2.Count" class="col-md-2 control-label"></label>
+                        <div class="col-md-10">
+                            <input asp-for="Model2.Count" class="form-control" />
+                            <span asp-validation-for="Model2.Count" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
                         <label asp-for="Model2.IsEnabled" class="col-md-2 control-label"></label>
                         <div class="col-md-10">
                             <input asp-for="Model2.IsEnabled" type="checkbox" class="checkbox" />

@@ -42,6 +42,7 @@ namespace WebApplication3.Models
 
         public bool HideRightAnswers { get; set; } = false;
         public ICollection<Question> Questions { get; set; }
+        public int Count { get; set; } = 0;
     }
 
     public class AddTestModel

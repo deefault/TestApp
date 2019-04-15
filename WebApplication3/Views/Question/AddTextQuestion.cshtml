@@ -11,9 +11,7 @@
     <div class="form-group" id="fields">
         <div class="">
             <form asp-controller="Question" asp-action="AddTextQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
-                <hr />
-                <h4 class="text-center">Добавить открытый вопрос</h4>
-                <hr />
+                <h5 class="text-center" style="padding-top:1rem">Добавить открытый вопрос</h5>
                 <ul class="text-danger" id="validation-summary"></ul>
                 @*<div asp-validation-summary="All" class="text-danger"></div>*@
                 <b>Текст вопроса:</b>
@@ -32,11 +30,11 @@
                     </div>
                 </div>
                 <b>Варианты ответа:</b>
-                <div class="items card" style="margin-bottom: 1rem;">
-                    <table class="table table-borderless" style="margin-bottom: 0;">
+                <div style="margin-bottom: 1rem;">
+                    <table class="table table-borderless" style="padding: 0; margin: 0;">
                         <tbody id="item-table__body">
                             <tr>
-                                <td class="item-table__cell">
+                                <td class="item-table__cell" style="padding: 0; margin: 0;">
                                     <textarea rows="1" id="Text" asp-for="Text" class="form-control item__text-field"></textarea>
                                 </td>
                             </tr>
@@ -45,7 +43,7 @@
                 </div>
                 <input type="hidden" value="@ViewContext.RouteData.Values["testId"]" asp-for="TestId" />
                 <div class="form-group row">
-                    <div class="col-md-offset-2 col-md-10">
+                    <div>
                         <button type="submit" class="btn btn-primary">Добавить</button>
                     </div>
                 </div>

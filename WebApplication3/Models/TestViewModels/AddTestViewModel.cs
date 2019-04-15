@@ -21,5 +21,8 @@ namespace WebApplication3.Models.TestViewModels
         [Required]
         [DisplayName("Ответы")]
         public bool HideRightAnswers { get; set; } = false;
+        [Required]
+        [DisplayName("Вопросов при прохождении")]
+        public int Count { get; set; } = 0;
     }
 }

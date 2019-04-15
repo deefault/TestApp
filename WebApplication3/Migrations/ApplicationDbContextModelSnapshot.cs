@@ -278,6 +278,8 @@ namespace WebApplication3.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int>("Count");
+
                     b.Property<int>("CreatedById");
 
                     b.Property<DateTime>("CreatedOn")

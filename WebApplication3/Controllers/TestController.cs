@@ -472,8 +472,12 @@ namespace WebApplication3.Controllers
             if (ViewBag.IsStarted)
                 ViewBag.QuestionsCount = _context.Answers.Count(a => a.TestResult == testResult);
             else
+            {
                 ViewBag.QuestionsCount =
                     _context.Questions.Where(q => !q.IsDeleted).Count(q => q.Test == testResult.Test);
+                if (testResult.Test.Count != 0 && testResult.Test.Count < ViewBag.QuestionsCount)
+                    ViewBag.QuestionsCount = testResult.Test.Count;
+            }
             return View(testResult);
         }
 
@@ -629,10 +633,10 @@ namespace WebApplication3.Controllers
                 {
                     var multiChoiceAnswer = await _context.MultiChoiceAnswers
                         .Include(a => a.AnswerOptions).Include(a => a.Question).ThenInclude(q => q.Options)
-                        .SingleAsync(a => a.Id == answer.Id);
+                        .SingleOrDefaultAsync(a => a.Id == answer.Id);
                     var question =
                         await _context.MultiChoiceQuestions
-                            .SingleAsync(q => q.Id == multiChoiceAnswer.QuestionId);
+                            .SingleOrDefaultAsync(q => q.Id == multiChoiceAnswer.QuestionId);
 
                     // count Score
                     int countChecked = 0, countWrong = 0;
@@ -662,7 +666,7 @@ namespace WebApplication3.Controllers
                 {
                     var question =
                         await _context.TextQuestions
-                            .SingleAsync(q => q.Id == textAnswer.QuestionId);
+                            .SingleOrDefaultAsync(q => q.Id == textAnswer.QuestionId);
                     if (!String.IsNullOrEmpty(textAnswer.Text) && !String.IsNullOrEmpty(question.TextRightAnswer))
                     {
                         if (textAnswer.Text.ToLower() == question.TextRightAnswer.ToLower())
@@ -686,12 +690,12 @@ namespace WebApplication3.Controllers
                 {
                     var dndAnswer = await _context.DragAndDropAnswers
                         .Include(a => a.Question).Include(a => a.DragAndDropAnswerOptions)
-                        .SingleAsync(a => a.Id == answer.Id);
+                        .SingleOrDefaultAsync(a => a.Id == answer.Id);
                     var question =
                         await _context.DragAndDropQuestions
                             .SingleAsync(q => q.Id == dndAnswer.QuestionId);
                     if (dndAnswer.DragAndDropAnswerOptions == null || dndAnswer.DragAndDropAnswerOptions.Count == 0)
-                        count--;
+                        continue;
                     var dndOptions = _context.DragAndDropAnswerOptions.Where(o => o.Answer == dndAnswer)
                         .Include(o => o.Option).Include(o => o.RightOption);
                     int optionsCount = dndOptions.Count(), wrongOrderCount = 0;
@@ -709,13 +713,20 @@ namespace WebApplication3.Controllers
                         .Include(a => a.Question)
                         .ThenInclude(q => (q as CodeQuestion).Code)
                         .Include(a => a.Code).Include(a => a.Option)
-                        .SingleAsync(a => a.Id == answer.Id);
-                    var userCode = codeAnswer.Code.Value;
+                        .SingleOrDefaultAsync(a => a.Id == answer.Id);
+                    var userCode = codeAnswer.Code?.Value == null ? "" : codeAnswer.Code.Value;
                     var creatorCode = (codeAnswer.Question as CodeQuestion).Code.Value;
                     var creatorArgs = (codeAnswer.Question as CodeQuestion).Code.Args;
                     var userOutput = Compile(userCode, creatorArgs);
                     var creatorOutput = Compile(creatorCode, creatorArgs);
                     var code = await _context.Codes.SingleOrDefaultAsync(c => c.Answer == codeAnswer);
+                    if (code == null)
+                    {
+                        code = (await _context.AddAsync(new Code() { Answer = codeAnswer, Value = userCode })).Entity;
+                        codeAnswer.Code = code;
+                        _context.Update(codeAnswer);
+                        await _context.SaveChangesAsync();
+                    }
                     code.Args = creatorArgs;
                     code.Output = userOutput;
                     _context.Codes.Update(code);

@@ -164,7 +164,8 @@ namespace WebApplication3.Controllers
                     CreatedBy = user,
                     IsEnabled = model.Model2.IsEnabled,
                     Shuffled = model.Model2.Shuffled,
-                    HideRightAnswers = !model.Model2.HideRightAnswers
+                    HideRightAnswers = !model.Model2.HideRightAnswers,
+                    Count = model.Model2.Count
                 };
                 await _context.Tests.AddAsync(test);
 
@@ -490,7 +491,7 @@ namespace WebApplication3.Controllers
                 .SingleAsync(t => t.Id == testResultId);
             if (testResult == null) return NotFound();
             if (!testResult.Test.IsEnabled) return Forbid();
-            var questions = testResult.Test.Questions.Where(q => !q.IsDeleted);
+            var questions = testResult.Test.Questions.Where(q => !q.IsDeleted).ToList();
             if (questions.Count() == 0) return NotFound();
             if (_context.Answers.Any(a => a.TestResult == testResult))
                 return RedirectToAction("Answer", "Answer",
@@ -502,43 +503,86 @@ namespace WebApplication3.Controllers
                     });
             var answers = new List<Answer>();
             Answer answer = null;
-            var order = new ushort[questions.Count()];
-            for (var i = 0; i < order.Length; i++)
-                order[i] = (ushort)(i + 1);
-            if (testResult.Test.Shuffled)
-                Shuffle(order);
-            var j = 0;
-            foreach (var question in questions)
+            if (testResult.Test.Count != 0 && testResult.Test.Count < questions.Count && testResult.Test.Shuffled)
             {
-                switch (question.QuestionType)
+                var order = new ushort[testResult.Test.Count];
+                for (var i = 0; i < order.Length; i++)
+                    order[i] = (ushort)(i + 1);
+                if (testResult.Test.Shuffled)
+                    Shuffle(order);
+                var j = 0;
+                Shuffle(questions);
+                for (var k = 0; k < order.Length; k++)
                 {
-                    case "SingleChoiceQuestion":
-                        answer = new SingleChoiceAnswer();
-                        break;
-                    case "MultiChoiceQuestion":
-                        answer = new MultiChoiceAnswer();
-                        break;
-                    case "TextQuestion":
-                        answer = new TextAnswer();
-                        break;
-                    case "DragAndDropQuestion":
-                        answer = new DragAndDropAnswer();
-                        break;
-                    case "CodeQuestion":
-                        answer = new CodeAnswer();
-                        break;
+                    var question = questions[k];
+                    switch (question.QuestionType)
+                    {
+                        case "SingleChoiceQuestion":
+                            answer = new SingleChoiceAnswer();
+                            break;
+                        case "MultiChoiceQuestion":
+                            answer = new MultiChoiceAnswer();
+                            break;
+                        case "TextQuestion":
+                            answer = new TextAnswer();
+                            break;
+                        case "DragAndDropQuestion":
+                            answer = new DragAndDropAnswer();
+                            break;
+                        case "CodeQuestion":
+                            answer = new CodeAnswer();
+                            break;
+                    }
+
+                    if (answer == null) throw new NullReferenceException();
+                    answer.Question = question;
+                    answer.Score = 0;
+                    answer.TestResult = testResult;
+                    answer.Order = order[j++];
+                    await _context.Answers.AddAsync(answer);
+                    answers.Add(answer);
+                    await _context.SaveChangesAsync();
                 }
-
-                if (answer == null) throw new NullReferenceException();
-                answer.Question = question;
-                answer.Score = 0;
-                answer.TestResult = testResult;
-                answer.Order = order[j++];
-                await _context.Answers.AddAsync(answer);
-                answers.Add(answer);
-                await _context.SaveChangesAsync();
             }
+            else
+            {
+                var order = new ushort[questions.Count()];
+                for (var i = 0; i < order.Length; i++)
+                    order[i] = (ushort)(i + 1);
+                if (testResult.Test.Shuffled)
+                    Shuffle(order);
+                var j = 0;
+                foreach (var question in questions)
+                {
+                    switch (question.QuestionType)
+                    {
+                        case "SingleChoiceQuestion":
+                            answer = new SingleChoiceAnswer();
+                            break;
+                        case "MultiChoiceQuestion":
+                            answer = new MultiChoiceAnswer();
+                            break;
+                        case "TextQuestion":
+                            answer = new TextAnswer();
+                            break;
+                        case "DragAndDropQuestion":
+                            answer = new DragAndDropAnswer();
+                            break;
+                        case "CodeQuestion":
+                            answer = new CodeAnswer();
+                            break;
+                    }
 
+                    if (answer == null) throw new NullReferenceException();
+                    answer.Question = question;
+                    answer.Score = 0;
+                    answer.TestResult = testResult;
+                    answer.Order = order[j++];
+                    await _context.Answers.AddAsync(answer);
+                    answers.Add(answer);
+                    await _context.SaveChangesAsync();
+                }
+            }
             // TODO: redirect to first answer (question)
             //throw new NotImplementedException();
             return RedirectToAction("Answer", "Answer",
@@ -703,16 +747,27 @@ namespace WebApplication3.Controllers
         #endregion
 
         #region Вспомогательные методы
+        private static readonly Random Random = new Random();
 
-        private static readonly Random rng = new Random();
-
+        public static void Shuffle<T>(List<T> list)
+        {
+            var n = list.Count;
+            while (n > 1)
+            {
+                n--;
+                var k = Random.Next(n + 1);
+                var value = list[k];
+                list[k] = list[n];
+                list[n] = value;
+            }
+        }
         public static void Shuffle<T>(T[] list)
         {
             var n = list.Length;
             while (n > 1)
             {
                 n--;
-                var k = rng.Next(n + 1);
+                var k = Random.Next(n + 1);
                 var value = list[k];
                 list[k] = list[n];
                 list[n] = value;

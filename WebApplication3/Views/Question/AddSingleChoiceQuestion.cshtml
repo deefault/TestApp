@@ -10,9 +10,7 @@
     <div class="form-group" id="fields">
         <div class="">
             <form asp-controller="Question" asp-action="AddSingleChoiceQuestion" asp-route-returnurl="/User/Tests/@ViewContext.RouteData.Values["testId"]" method="post" class="form" role="form" autocomplete="off">
-                <hr />
-                <h4 class="text-center">Добавить вопрос с выбором одного правильного ответа</h4>
-                <hr />
+                <h5 class="text-center" style="padding-top:1rem">Добавить вопрос с выбором одного правильного ответа</h5>
                 <ul class="text-danger" id="validation-summary"></ul>
                 @*<div asp-validation-summary="All" class="text-danger"></div>*@
                 <b>Текст вопроса:</b>
@@ -71,7 +69,7 @@
                 </script>
                 <input type="hidden" value="@ViewContext.RouteData.Values["testId"]" asp-for="TestId" />
                 <div class="form-group row">
-                    <div class="col-md-offset-2 col-md-10">
+                    <div>
                         <button type="submit" class="btn btn-primary">Добавить</button>
                     </div>
                 </div>

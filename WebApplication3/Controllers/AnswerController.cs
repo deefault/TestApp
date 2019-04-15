@@ -488,7 +488,6 @@ namespace WebApplication3.Controllers
         #endregion
 
         #region Вспомогательные методы
-
         private static readonly Random Random = new Random();
 
         public static void Shuffle<T>(List<T> list)

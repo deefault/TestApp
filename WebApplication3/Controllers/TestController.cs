@@ -342,7 +342,24 @@ namespace WebApplication3.Controllers
             Response.StatusCode = 200;
             return new JsonResult("Успешно");
         }
-
+        [HttpPost]
+        [Authorize]
+        [Route("/User/[controller]s/{testResultId}/ReAdd/")]
+        public async Task<IActionResult> ReAdd(int testResultId)
+        {
+            //throw new NotImplementedException();
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var testResult = await _context.TestResults.Include(t => t.Test).SingleOrDefaultAsync(t => t.Id == testResultId);
+            if (user == null) Response.StatusCode = 404;
+            if (testResult == null) Response.StatusCode = 404;
+            if (!testResult.Test.IsEnabled) Response.StatusCode = 400;
+            _context.Answers.RemoveRange(_context.Answers.Where(a => a.TestResult == testResult));
+            testResult.IsCompleted = false;
+            _context.TestResults.Update(testResult);
+            await _context.SaveChangesAsync();
+            Response.StatusCode = 200;
+            return RedirectToAction("Results", new { id = testResult.Test.Id });
+        }
         #endregion
 
         #region Включение/Выключение

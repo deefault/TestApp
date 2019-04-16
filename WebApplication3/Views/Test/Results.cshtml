@@ -4,8 +4,7 @@
     Layout = "_Layout";
 }
 
-<hr />
-<h4 class="text-center">@ViewBag.Title</h4>
+<h4 class="text-center"  style="padding-top:1rem">@ViewBag.Title</h4>
 <hr />
 @if (Model.Results.Count == 0 || Model.Results == null)
 {
@@ -52,10 +51,13 @@ else
                             @(item.RightAnswersCount * 100 / item.TotalQuestions)%
                         </td>
                         <td>
-                            @item.Id |
-                            <a href="@Url.Action("AnswerResults", "Answer", new {testResultId = item.Id, answerId = item.Answers.SingleOrDefault(a => a.Order == 1).Id })">
-                                 Ответы пользователя
-                            </a>
+                            <form method="post">
+                                <a style="padding-right: .8em;">@item.Id</a> |
+                                <a style="padding-right: .8em; padding-left: .8em" href="@Url.Action("AnswerResults", "Answer", new { testResultId = item.Id, answerId = item.Answers.SingleOrDefault(a => a.Order == 1).Id })">
+                                    Ответы пользователя
+                                </a> | <input asp-controller="Test" asp-action="ReAdd"
+                                asp-route-testResultId="@item.Id" value="Переназначить" class="btn-link" type="submit" />
+                            </form>
                         </td>
                     </tr>
                 

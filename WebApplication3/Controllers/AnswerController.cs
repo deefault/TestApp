@@ -58,7 +58,7 @@ namespace WebApplication3.Controllers
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var testResult = await _context.TestResults
-                .Include(tr => tr.Answers)
+                .Include(tr => tr.Answers).Include(t => t.Test)
                 .SingleAsync(tr => tr.Id == testResultId);
             if (testResult == null) return NotFound();
             if (testResult.CompletedByUserId != user.Id) return Forbid();

@@ -145,6 +145,14 @@ namespace TestsApp
                     extraKeys: { "Ctrl-Space": "autocomplete" }
                 });
             $(".CodeMirror").addClass("contentwrapper");
+            @{var testResult = Model.TestResult; var target_date = testResult.StartedOn.AddMinutes(testResult.Test.TimeToPassing); }
+                date = new Date();
+                var current_date = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(),
+                    date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds());
+            if (@testResult.Test.TimeToPassing != 0 && target_date - current_date < 0) {
+                $("#compile").attr("disabled", "");
+                $("#args").attr("disabled", "");
+            }
         </script>
     </fieldset>
 </form>

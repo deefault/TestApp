@@ -32,7 +32,8 @@
 {
     @{ await Html.RenderPartialAsync("_CodeScriptsPartial"); }
     <script src="~/lib/Sortable/Sortable.js"></script>
-    <script  type="text/javascript">var firstId = $("nav ul").children().filter(".num-btn")[0].getAttribute("btn-id");
+    <script  type="text/javascript">
+        var firstId = $("nav ul").children().filter(".num-btn")[0].getAttribute("btn-id");
         var firstOrder = $("nav ul").children().filter(".num-btn")[0].getAttribute("btn-order");
         var lastOrder = $("nav ul").children().filter(".num-btn")[$("nav ul").children().filter(".num-btn").length - 1].getAttribute("btn-order");
 

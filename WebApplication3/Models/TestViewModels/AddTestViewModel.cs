@@ -24,5 +24,8 @@ namespace WebApplication3.Models.TestViewModels
         [Required]
         [DisplayName("Вопросов при прохождении")]
         public int Count { get; set; } = 0;
+        [Required]
+        [DisplayName("Время на прохождение")]
+        public int Time { get; set; } = 0;
     }
 }

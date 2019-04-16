@@ -9,8 +9,8 @@ using WebApplication3.Data;
 namespace WebApplication3.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190415161214_Initial")]
-    partial class Initial
+    [Migration("20190416160751_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -299,6 +299,8 @@ namespace WebApplication3.Migrations
                         .IsRequired();
 
                     b.Property<bool>("Shuffled");
+
+                    b.Property<int>("TimeToPassing");
 
                     b.HasKey("Id");
 

@@ -4,25 +4,74 @@
 @{
     ViewBag.Title = "Начать тест";
     Layout = "_Layout";
-    //TODO: поправить дизайн
+    var target_date = Model.StartedOn.AddMinutes(Model.Test.TimeToPassing);
 }
 <div class="container">
     <h4 class="text-center" style="padding-top:1rem">@ViewBag.Title</h4>
-    <hr/>
+    <hr />
     <p>Название теста: @Model.Test.Name</p>
     <p>Вопросов: @ViewBag.QuestionsCount</p>
     @if (ViewBag.IsStarted)
     {
-            <a class="btn btn-primary" role="button"
-               href="@Url.Action("Answer", "Answer", new { testResultId = Model.Id, answerId = ViewBag.AnswerId })">
-                Продолжить
-            </a>
+        @if (Model.Test.TimeToPassing != 0)
+        {
+            <p>Старт: @Model.StartedOn.ToString()</p>
+            <p>Финиш: @target_date.ToString()</p>
+            <p id="timer">До финиша: </p>
+        }
+        <a class="btn btn-primary" role="button"
+           href="@Url.Action("Answer", "Answer", new { testResultId = Model.Id, answerId = ViewBag.AnswerId })">
+            Продолжить
+        </a>
     }
     else
     {
+        var time = TimeSpan.FromMinutes(Model.Test.TimeToPassing);
+        <div>Длительность: @string.Format("{0:dd\\ hh\\:mm\\:ss}", time)</div>
         <form asp-controller="Test" asp-action="Start" asp-route-testResultId="@Model.Id" class="form" role="form" method="post">
             <div asp-validation-summary="All" class="text-danger"></div>
             <button type="submit" class="btn btn-success">Начать</button>
         </form>
     }
 </div>
+@section Scripts {
+    <script>
+        var target_date = Date.UTC(@target_date.Year, @target_date.Month - 1, @target_date.Day, @target_date.Hour, @target_date.Minute, @target_date.Second, @target_date.Millisecond);
+        var days, hours, minutes, seconds; // переменные для единиц времени
+        var seconds_left;
+        if (@Model.Test.TimeToPassing != 0)
+        {
+            getCountdown();
+            var timer = setInterval(function() { getCountdown(); }, 1000);
+            function getCountdown()
+            {
+                date = new Date();
+                var current_date = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(),
+                    date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds());
+                seconds_left = (target_date - current_date) / 1000;
+                if (seconds_left >= 0) {
+
+                    days = pad(parseInt(seconds_left / 86400));
+                    seconds_left = seconds_left % 86400;
+
+                    hours = pad(parseInt(seconds_left / 3600));
+                    seconds_left = seconds_left % 3600;
+
+                    minutes = pad(parseInt(seconds_left / 60));
+                    seconds = pad(parseInt(seconds_left % 60));
+
+                    $("#timer").html("До финиша: " + days + " " + hours + ":" + minutes + ":" + seconds);
+                }
+                else {
+                    $("#timer").html("До финиша: 00 00:00:00");
+                    clearInterval(timer);
+                    $("#field").attr("disabled", "");
+                }
+            }
+            function pad(n)
+            {
+                return (n < 10 ? '0' : '') + n;
+            }
+        }
+    </script>
+}

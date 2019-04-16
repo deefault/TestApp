@@ -165,7 +165,8 @@ namespace WebApplication3.Controllers
                     IsEnabled = model.Model2.IsEnabled,
                     Shuffled = model.Model2.Shuffled,
                     HideRightAnswers = !model.Model2.HideRightAnswers,
-                    Count = model.Model2.Count
+                    Count = Math.Abs(model.Model2.Count),
+                    TimeToPassing = Math.Abs(model.Model2.Time)
                 };
                 await _context.Tests.AddAsync(test);
 
@@ -427,7 +428,8 @@ namespace WebApplication3.Controllers
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var test = await _context.Tests.SingleAsync(t => t.Id == testId && !t.IsDeleted);
-            test.Count = model.Count;
+            test.Count = Math.Abs(model.Count);
+            test.TimeToPassing = Math.Abs(model.TimeToPassing);
             _context.Update(test);
             await _context.SaveChangesAsync();
             return RedirectToAction("Tests");
@@ -627,6 +629,9 @@ namespace WebApplication3.Controllers
                     await _context.SaveChangesAsync();
                 }
             }
+            testResult.StartedOn = DateTime.UtcNow;
+            _context.TestResults.Update(testResult);
+            await _context.SaveChangesAsync();
             // TODO: redirect to first answer (question)
             //throw new NotImplementedException();
             return RedirectToAction("Answer", "Answer",

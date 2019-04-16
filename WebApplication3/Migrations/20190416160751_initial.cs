@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace WebApplication3.Migrations
 {
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -166,6 +166,7 @@ namespace WebApplication3.Migrations
                     IsEnabled = table.Column<bool>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false, defaultValue: false),
                     Shuffled = table.Column<bool>(nullable: false),
+                    TimeToPassing = table.Column<int>(nullable: false),
                     HideRightAnswers = table.Column<bool>(nullable: false),
                     Count = table.Column<int>(nullable: false)
                 },

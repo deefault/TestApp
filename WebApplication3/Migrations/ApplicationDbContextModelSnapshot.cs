@@ -298,6 +298,8 @@ namespace WebApplication3.Migrations
 
                     b.Property<bool>("Shuffled");
 
+                    b.Property<int>("TimeToPassing");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedById");

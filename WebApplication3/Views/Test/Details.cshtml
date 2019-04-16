@@ -80,17 +80,17 @@
             </thead>
             <tbody>
                 @{ int i = 0; }
-                @foreach (var q in ViewBag.Questions)
+                @foreach (Question q in ViewBag.Questions)
                 {
 
                     <tr>
                         <td>@(i + 1)</td>
-                        <td>
-                            @{ var title = q.Title; if (q.Title.Length > 25) { title = q.Title.Substring(0, 25).Trim() + "..."; } }
+                        <td class="col-6">
+                            @{ var title = q.Title; if (q.Title.Length > 50) { title = q.Title.Substring(0, 50).Trim() + "..."; } }
                             <a asp-controller="Question" asp-action="Details"
                                asp-route-testId="@Model.Id" asp-route-questionId="@q.Id">@title</a>
                         </td>
-                        <td>@q.QuestionType</td>
+                        <td>@q.GetTypeString()</td>
                         <td>
                             <form method="post">
                                 <a asp-controller="Question" asp-action="Edit"

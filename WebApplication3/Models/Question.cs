@@ -39,6 +39,24 @@ namespace WebApplication3.Models
         [Required] public bool IsDeleted { get; set; } = false;
 
         [DisplayName("Балл")] public int Score { get; set; }
+
+        public string GetTypeString()
+        {
+            switch (this.QuestionType)
+            {
+                case "SingleChoiceQuestion":
+                    return "С одним ответом";
+                case "MultiChoiceQuestion":
+                    return "С несколькими ответами";
+                case "TextQuestion":
+                    return "На ввод ответа";
+                case "DragAndDropQuestion":
+                    return "На последовательность";
+                case "CodeQuestion":
+                    return "На написание кода";
+                default: return "";
+            }
+        }
     }
 
     public class SingleChoiceQuestion : Question

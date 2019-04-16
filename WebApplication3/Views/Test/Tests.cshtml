@@ -92,8 +92,9 @@ else
                 </td>*@
                 <td>
                     <form method="post">
+                        <a asp-controller="Test" asp-action="Count" asp-route-testId="@item.Id" style="padding-right: .8em">@item.Count</a> |
                         <a asp-controller="Test" asp-action="Results"
-                           asp-route-id="@item.Id" style="padding-right: .8em">Результаты</a> |
+                           asp-route-id="@item.Id" style="padding-right: .8em; padding-left: .8em">Результаты</a> |
                         <input asp-controller="Test" asp-action="Delete"
                                asp-route-testId="@item.Id" value="Удалить" class="btn-link" type="submit" id="deleteLink" />
                     </form>

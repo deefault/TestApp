@@ -515,7 +515,7 @@ namespace WebApplication3.Controllers
             {
                 ViewBag.QuestionsCount =
                     _context.Questions.Where(q => !q.IsDeleted).Count(q => q.Test == testResult.Test);
-                if (testResult.Test.Count != 0 && testResult.Test.Count < ViewBag.QuestionsCount)
+                if (testResult.Test.Count != 0 && testResult.Test.Shuffled && testResult.Test.Count < ViewBag.QuestionsCount)
                     ViewBag.QuestionsCount = testResult.Test.Count;
             }
             return View(testResult);

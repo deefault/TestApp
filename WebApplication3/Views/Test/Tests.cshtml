@@ -69,7 +69,7 @@ else
                 </td>*@
                 <td>
                     <form method="post">
-                        <a asp-controller="Test" asp-action="Count" asp-route-testId="@item.Id" style="padding-right: .8em" data-toggle="tooltip" data-placement="top" title="Вопросов при прохождении (только при RNG, 0 - все)">@item.Count</a> |
+                        <a asp-controller="Test" asp-action="Count" asp-route-testId="@item.Id" style="padding-right: .8em" data-toggle="tooltip" data-placement="top" title="Вопросов при прохождении (только при RNG, 0 - все), время на прохождение (0 - без ограничений)">@item.Count / @item.TimeToPassing</a> |
                         <a asp-controller="Test" asp-action="Results"
                            asp-route-id="@item.Id" style="padding-right: .8em; padding-left: .8em">Результаты</a> |
                         <input asp-controller="Test" asp-action="Delete"
@@ -117,6 +117,7 @@ else
 	[flag = Состояние (true/false)] = false
 	[shuffled = Перемешивать (true/false)] = flase
 	[count = Вопросов при прохождении] = 0
+	[time = Время на прохождение] = 0
 	question {
 		type = Тип вопроса (single/multi/text/dnd/code)
 		text = Текст вопроса
@@ -168,7 +169,7 @@ else
                     <div class="form-group row">
                         <label asp-for="Model2.Name" class="col-md-2 control-label"></label>
                         <div class="col-md-10">
-                            <input asp-for="Model2.Name" class="form-control"/>
+                            <input asp-for="Model2.Name" class="form-control" />
                             <span asp-validation-for="Model2.Name" class="text-danger"></span>
                         </div>
                     </div>
@@ -180,23 +181,30 @@ else
                         </div>
                     </div>
                     <div class="form-group row">
+                        <label asp-for="Model2.Time" class="col-md-2 control-label"></label>
+                        <div class="col-md-10">
+                            <input asp-for="Model2.Time" class="form-control" />
+                            <span asp-validation-for="Model2.Time" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
                         <label asp-for="Model2.IsEnabled" class="col-md-2 control-label"></label>
                         <div class="col-md-10">
-                            <input asp-for="Model2.IsEnabled" type="checkbox" class="checkbox"/>
+                            <input asp-for="Model2.IsEnabled" type="checkbox" class="checkbox" />
                             <span asp-validation-for="Model2.IsEnabled" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label asp-for="Model2.Shuffled" class="col-md-2 control-label"></label>
                         <div class="col-md-10">
-                            <input asp-for="Model2.Shuffled" type="checkbox" class="checkbox"/>
+                            <input asp-for="Model2.Shuffled" type="checkbox" class="checkbox" />
                             <span asp-validation-for="Model2.Shuffled" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label asp-for="Model2.HideRightAnswers" class="col-md-2 control-label"></label>
                         <div class="col-md-10">
-                            <input asp-for="Model2.HideRightAnswers" type="checkbox" class="checkbox"/>
+                            <input asp-for="Model2.HideRightAnswers" type="checkbox" class="checkbox" />
                             <span asp-validation-for="Model2.HideRightAnswers" class="text-danger"></span>
                         </div>
                     </div>

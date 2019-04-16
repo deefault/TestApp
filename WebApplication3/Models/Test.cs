@@ -40,6 +40,8 @@ namespace WebApplication3.Models
 
         public bool Shuffled { get; set; }
 
+        public int TimeToPassing { get; set; }
+
         public bool HideRightAnswers { get; set; } = false;
         public ICollection<Question> Questions { get; set; }
         public int Count { get; set; } = 0;

@@ -107,7 +107,7 @@ namespace WebApplication3.Controllers
             {
                 var testData = new TestData();
                 var test = new Test();
-                bool textParsed = false, flagParsed = false, shuffleParsed = false, hideParsed = false, countParsed = false;
+                bool textParsed = false, flagParsed = false, shuffleParsed = false, hideParsed = false, countParsed = false, timeParsed = false;
                 var Row = tokens.Peek().Row;
                 Consume(tokens, "test");
                 Consume(tokens, "{");
@@ -144,10 +144,17 @@ namespace WebApplication3.Controllers
                             break;
                         case "count":
                             if (!countParsed)
-                                test.Count = ParseInt(tokens, "count");
+                                test.Count = Math.Abs(ParseInt(tokens, "count"));
                             else
                                 throw new Exception("Count already parsed");
                             countParsed = true;
+                            break;
+                        case "time":
+                            if (!timeParsed)
+                                test.TimeToPassing = Math.Abs(ParseInt(tokens, "time"));
+                            else
+                                throw new Exception("Time already parsed");
+                            timeParsed = true;
                             break;
                         case "question":
                             ParseQuestion(tokens, test, testData);
@@ -166,6 +173,8 @@ namespace WebApplication3.Controllers
                     test.HideRightAnswers = false;
                 if (!countParsed)
                     test.Count = 0;
+                if (!timeParsed)
+                    test.TimeToPassing = 0;
                 if (!textParsed)
                     throw new Exception(string.Format("Заданы не все требуемые поля (Test (Row - {0})). Text - {1}.",
                         Row, textParsed));

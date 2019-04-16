@@ -1,0 +1,114 @@
+test {
+	text = "Основы программирования и алгоритмизации"
+	flag = true
+	shuffle = false
+	hide = false
+	count = 5
+	time = 120
+	question {
+		type = single
+		text = "Инкапсуляция – это"
+		score = 1
+		option {
+			text = "Свойство системы, позволяющее описать новый класс на основе уже существующего с частично или полностью заимствующейся функциональностью."
+			flag = false
+		}
+		option {
+			text = "Сущность в адресном пространстве вычислительной системы, появляющаяся при создании экземпляра класса или копирования прототипа (например, после запуска результатов компиляции и связывания исходного кода на выполнение)"
+			flag = false
+		}
+		option {
+			text = "Свойство системы, позволяющее объединить данные и методы, работающие с ними в классе, и скрыть детали реализации от пользователя."
+			flag = true
+		}
+	}
+	question {
+		type = multi
+		text = "Основные принципы ООП"
+		score = 2
+		option {
+			text = "Абстрагирование"
+			flag = true
+		}
+		option {
+			text = "Инкапсуляция"
+			flag = true
+		}
+		option {
+			text = "Наследование"
+			flag = true
+		}
+		option {
+			text = "Полиморфизм"
+			flag = true
+		}
+		option {
+			text = "Типизирование"
+			flag = false
+		}
+	}
+	question {
+		type = text
+		text = "Дерево — одна из наиболее широко распространённых структур данных в информатике, эмулирующая древовидную структуру в виде набора связанных узлов. Является связным ******, не содержащим циклы. Введите слово вместо символов *."
+		score = 2
+		option {
+			text = графом
+		}
+	}
+	question {
+		type = dnd
+		text = "Расположите уровни модели OSI в верном порядке (снизу наиболее низкоуровневый)"
+		score = 3
+		option {
+			text = Прикладной (application)
+		}
+		option {
+			text = Представления (presentation)
+		}
+		option {
+			text = Сеансовый (session)
+		}
+		option {
+			text = Транспортный (transport)
+		}
+		option {
+			text = Сетевой (network)
+		}
+		option {
+			text = Канальный (data link)
+		}
+		option {
+			text = Физический (physical)
+		}
+	}
+	question {
+		type = code
+		text = "Реализуйте алгоритм нахождения n-того числа Фибоначчи"
+		score = 1
+		code {
+			text = "using System;
+
+namespace TestsApp
+{
+    public class Program
+    {
+        public static int Fibb(int n)
+        {
+            if (n == 1 || n == 2)
+                return 1;
+            return Fibb(n - 1) + Fibb(n - 2);
+        }
+        public int Main(int n)
+        {
+            return Fibb(n);
+        }
+    }
+}"
+			args = 10; 15; 20
+			output = "55
+610
+6765
+"
+		}
+	}
+}

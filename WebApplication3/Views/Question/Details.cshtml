@@ -21,8 +21,8 @@
     <table class="table table-hover table-borderless">
         <thead>
             <tr>
-                <th scope="col" width="10%">#</th>
-                <th scope="col" width="90%">Текст</th>
+                <th scope="col" style="width:10%">#</th>
+                <th scope="col" style="width:auto">Текст</th>
             </tr>
         </thead>
         <tbody>
@@ -31,15 +31,11 @@
             {
 
                 <tr class="@((o.IsRight) ? "table-success" : "")">
-                    <td width="10%">@(i++)</td>
-                    <td width="90%" style="white-space:pre">@o.Text</td>
+                    <td style="width:10%">@(i++)</td>
+                    <td style="white-space: pre-line; width: auto">@o.Text</td>
                 </tr>
             }
 
         </tbody>
     </table>
     </div>
-    @section Scripts {
-        <script>
-        </script>
-    }

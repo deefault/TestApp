@@ -6,21 +6,22 @@
     Layout = "_Layout";
 }
 
+<hr/>
 <h4 class="text-center" style="padding-top:1rem">@ViewBag.Title</h4>
 @if (Model.Model1 == null || Model.Model1.Count == 0)
 {
-    <hr />
+    <hr/>
     <div class="alert alert-warning" role="alert">
         Вы пока ещё не создали тестов
     </div>
-    <hr />
+    <hr/>
 }
 else
 {
     <dt>
         @Html.DisplayNameFor(model => model)
     </dt>
-    <dd style="margin-top:1rem;">
+    <dd style="margin-top: 1rem;">
         <table class="table item-table">
             <tr>
                 <th>ID</th>
@@ -33,60 +34,38 @@ else
             </tr>
             @foreach (var item in Model.Model1)
             {
-            <tr>
-                <td>
-                    @item.Id
-                </td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@item.Id">@item.Name</a>
-                </td>
-                <td style="text-align: center;">
-                    <form method="post">
-                        @if (item.IsEnabled)
-                        {
+                <tr>
+                    <td>
+                        @item.Id
+                    </td>
+                    <td class="col-4">
+                        <a asp-action="Details" asp-route-id="@item.Id">@item.Name</a>
+                    </td>
+                    <td style="text-align: center;">
+                        <form method="post">
+
                             <button style="width: 5em" asp-controller="Test" class="btn-link" asp-action="Enable"
-                                    asp-route-testId="@item.Id" type="submit">
-                                <span style="width: 5em" class="badge badge-success">ON</span>
+                                    asp-route-testId="@item.Id" type="submit"
+                                    data-toggle="tooltip" data-placement="top" title="Включен?">
+                                <span style="width: 5em" class="badge badge-@(item.IsEnabled ? "success" : "danger")">ON</span>
                             </button>
-                        }
-                        else
-                        {
-                            <button style="width: 5em" asp-controller="Test" class="btn-link" asp-action="Enable"
-                                    asp-route-testId="@item.Id" type="submit">
-                                <span style="width: 5em" class="badge badge-danger">OFF</span>
-                            </button>
-                        }
-                        @if (item.Shuffled)
-                        {
                             <button style="width: 5em" asp-controller="Test" class="btn-link" asp-action="Shuffle"
-                                    asp-route-testId="@item.Id" type="submit">
-                                <span style="width: 5em" class="badge badge-success">RND</span>
+                                    asp-route-testId="@item.Id" type="submit"
+                                    data-toggle="tooltip" data-placement="top" title="Перемешаь?">
+                                <span style="width: 5em" class="badge badge-@(item.Shuffled ? "success" : "danger")">RND</span>
                             </button>
-                        }
-                        else
-                        {
-                            <button style="width: 5em" asp-controller="Test" class="btn-link" asp-action="Shuffle"
-                                    asp-route-testId="@item.Id" type="submit">
-                                <span style="width: 5em" class="badge badge-danger">RND</span>
-                            </button>
-                        }
-                        @if (!item.HideRightAnswers)
-                        {
+
+
                             <button style="width: 5em" asp-controller="Test" class="btn-link" asp-action="Hide"
-                                    asp-route-testId="@item.Id" type="submit">
-                                <span style="width: 5em" class="badge badge-success">SHOW</span>
+                                    asp-route-testId="@item.Id" type="submit"
+                                    data-toggle="tooltip" data-placement="top" title="Показывать правильные ответы?">
+                                <span style="width: 5em" class="badge badge-@(!item.HideRightAnswers ? "success" : "danger")">SHOW</span>
                             </button>
-                        }
-                        else
-                        {
-                            <button style="width: 5em" asp-controller="Test" class="btn-link" asp-action="Hide"
-                                    asp-route-testId="@item.Id" type="submit">
-                                <span style="width: 5em" class="badge badge-danger">HIDE</span>
-                            </button>
-                        }
-                    </form>
-                </td>
-                @*<td>
+
+
+                        </form>
+                    </td>
+                    @*<td>
                     @Html.DisplayFor(modelItem => item.CreatedBy.UserName)
                 </td>*@
                 <td>
@@ -112,7 +91,7 @@ else
 </button>
 <button class="btn btn-info"
         data-toggle="collapse" data-target="#addFromFileFormCollapse"
-        aria-expanded="false" aria-controls="addFromFileFormCollapse" >
+        aria-expanded="false" aria-controls="addFromFileFormCollapse">
     Добавить тест из файла
 </button>
 <div class="panel panel-default" id="parent">
@@ -165,7 +144,7 @@ test {
                                 <div class="input-group-prepend">
                                     <span class="input-group-text" id="inputGroupFileAddon01">Upload</span>
                                 </div>
-                                <div class="custom-file" style="cursor:pointer">
+                                <div class="custom-file" style="cursor: pointer">
                                     <input type="file" onchange="$('#inputFile01').html(this.files[0].name)" id="inputFile00" class="custom-file-input" name="uploadedFile">
                                     <label class="custom-file-label" id="inputFile01" for="inputFile00">Choose file</label>
                                 </div>
@@ -190,7 +169,7 @@ test {
                     <div class="form-group row">
                         <label asp-for="Model2.Name" class="col-md-2 control-label"></label>
                         <div class="col-md-10">
-                            <input asp-for="Model2.Name" class="form-control" />
+                            <input asp-for="Model2.Name" class="form-control"/>
                             <span asp-validation-for="Model2.Name" class="text-danger"></span>
                         </div>
                     </div>
@@ -204,21 +183,21 @@ test {
                     <div class="form-group row">
                         <label asp-for="Model2.IsEnabled" class="col-md-2 control-label"></label>
                         <div class="col-md-10">
-                            <input asp-for="Model2.IsEnabled" type="checkbox" class="checkbox" />
+                            <input asp-for="Model2.IsEnabled" type="checkbox" class="checkbox"/>
                             <span asp-validation-for="Model2.IsEnabled" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label asp-for="Model2.Shuffled" class="col-md-2 control-label"></label>
                         <div class="col-md-10">
-                            <input asp-for="Model2.Shuffled" type="checkbox" class="checkbox" />
+                            <input asp-for="Model2.Shuffled" type="checkbox" class="checkbox"/>
                             <span asp-validation-for="Model2.Shuffled" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label asp-for="Model2.HideRightAnswers" class="col-md-2 control-label"></label>
                         <div class="col-md-10">
-                            <input asp-for="Model2.HideRightAnswers" type="checkbox" class="checkbox" />
+                            <input asp-for="Model2.HideRightAnswers" type="checkbox" class="checkbox"/>
                             <span asp-validation-for="Model2.HideRightAnswers" class="text-danger"></span>
                         </div>
                     </div>
@@ -233,6 +212,8 @@ test {
         </div>
     </div>
 </div>
+
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    
 }

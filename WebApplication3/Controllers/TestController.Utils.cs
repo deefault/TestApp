@@ -67,7 +67,7 @@ namespace WebApplication3.Controllers
                     tokens.Peek().Value, tokens.Peek().Row));
             }
 
-            private static int ConsumeScore(Queue<Token> tokens)
+            private static int ConsumeInt(Queue<Token> tokens)
             {
                 var flag = int.TryParse(tokens.Peek().Value, out var tmp);
                 if (flag)
@@ -107,7 +107,7 @@ namespace WebApplication3.Controllers
             {
                 var testData = new TestData();
                 var test = new Test();
-                bool textParsed = false, flagParsed = false, shuffleParsed = false, hideParsed = false;
+                bool textParsed = false, flagParsed = false, shuffleParsed = false, hideParsed = false, countParsed = false;
                 var Row = tokens.Peek().Row;
                 Consume(tokens, "test");
                 Consume(tokens, "{");
@@ -142,6 +142,13 @@ namespace WebApplication3.Controllers
                                 throw new Exception("Hide already parsed");
                             hideParsed = true;
                             break;
+                        case "count":
+                            if (!countParsed)
+                                test.Count = ParseInt(tokens, "count");
+                            else
+                                throw new Exception("Count already parsed");
+                            countParsed = true;
+                            break;
                         case "question":
                             ParseQuestion(tokens, test, testData);
                             break;
@@ -157,6 +164,8 @@ namespace WebApplication3.Controllers
                     test.Shuffled = false;
                 if (!hideParsed)
                     test.HideRightAnswers = false;
+                if (!countParsed)
+                    test.Count = 0;
                 if (!textParsed)
                     throw new Exception(string.Format("Заданы не все требуемые поля (Test (Row - {0})). Text - {1}.",
                         Row, textParsed));
@@ -207,7 +216,7 @@ namespace WebApplication3.Controllers
                             break;
                         case "score":
                             if (!scoreParsed)
-                                question.Score = ParseScore(tokens);
+                                question.Score = ParseInt(tokens, "score");
                             else
                                 throw new Exception(string.Format("Score already parsed (Quesiton (Row - {0})).", Row));
                             scoreParsed = true;
@@ -253,18 +262,20 @@ namespace WebApplication3.Controllers
                     throw new Exception(string.Format(
                         "В данном типе вопроса нужно отметить хотя бы один верный ответ (Quesiton (Row - {0})).", Row));
                 Consume(tokens, "}");
+                if (!scoreParsed)
+                    question.Score = 1;
                 if (!(question is CodeQuestion))
                 {
-                    if (!textParsed || !scoreParsed || !optionParsed)
+                    if (!textParsed || !optionParsed)
                         throw new Exception(string.Format(
-                            "Заданы не все требуемые поля (Quesiton (Row - {0})). Text - {1}, Score - {2}, Option - {3}.",
-                            Row, textParsed, scoreParsed, optionParsed));
+                            "Заданы не все требуемые поля (Quesiton (Row - {0})). Text - {1}, Option - {2}.",
+                            Row, textParsed, optionParsed));
                 }
-                else if (!textParsed || !scoreParsed || !codeParsed)
+                else if (!textParsed || !codeParsed)
                 {
                     throw new Exception(string.Format(
-                        "Заданы не все требуемые поля (Quesiton (Row - {0})). Text - {1}, Score - {2}, Code - {3}.",
-                        Row, textParsed, scoreParsed, codeParsed));
+                        "Заданы не все требуемые поля (Quesiton (Row - {0})). Text - {1}, Code - {2}.",
+                        Row, textParsed, codeParsed));
                 }
 
                 testData.Questions.Add(question);
@@ -317,17 +328,15 @@ namespace WebApplication3.Controllers
                                 tokens.Peek().Value, tokens.Peek().Row));
                     }
                 Consume(tokens, "}");
+                if (!flagParsed)
+                    option.IsRight = false;
                 if (!textParsed)
-                    throw new Exception(string.Format("Заданы не все требуемые поля (Option (Row - {0})). Text - {1}.",
+                    throw new Exception(string.Format("Заданы не все требуемые поля (Option (Row - {0})). Text - {1}).",
                         Row, textParsed));
                 if (question is DragAndDropQuestion)
                     option.Order = i;
                 else if (question is TextQuestion)
                     (question as TextQuestion).TextRightAnswer = option.Text;
-                else if (!flagParsed)
-                    throw new Exception(string.Format(
-                        "Заданы не все требуемые поля (Option (Row - {0})). Text - {1}, Flag - {2}.", Row, textParsed,
-                        flagParsed));
                 testData.Options.Add(option);
             }
 
@@ -411,11 +420,11 @@ namespace WebApplication3.Controllers
                 return flag;
             }
 
-            private static int ParseScore(Queue<Token> tokens)
+            private static int ParseInt(Queue<Token> tokens, string tok)
             {
-                Consume(tokens, "score");
+                Consume(tokens, tok);
                 Consume(tokens, "=");
-                var score = ConsumeScore(tokens);
+                var score = ConsumeInt(tokens);
                 return score;
             }
 

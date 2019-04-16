@@ -112,24 +112,24 @@ else
 
                                     <div id="exampleCollapse" class="collapse" aria-labelledby="exampleHeading" data-parent="#example">
                                         <div class="card-body">
-                                            <pre>
-test {
+                                            <pre>test {
 	text = Название теста
-	flag = Состояние (true/false)
-	shuffled = Перемешивать (true/false)
+	[flag = Состояние (true/false)] = false
+	[shuffled = Перемешивать (true/false)] = flase
+	[count = Вопросов при прохождении] = 0
 	question {
 		type = Тип вопроса (single/multi/text/dnd/code)
 		text = Текст вопроса
-		score = Баллов за правильный ответ
+		[score = Баллов за правильный ответ] = 1
 		option {
 			text = Текст варианта ответа
-			flag = Состояние (true/false)*
-		}**
+			[flag = Состояние (true/false)] = false *
+		} **
 		code {
 			text = Код
 			args = Аргументы
 			output = Вывод
-		}***
+		} ***
 	}
 }
 * - Только для single и multi

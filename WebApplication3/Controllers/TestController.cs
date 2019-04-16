@@ -392,6 +392,29 @@ namespace WebApplication3.Controllers
             return RedirectToAction("Tests");
         }
 
+        [HttpGet]
+        [Authorize]
+        [Route("/Tests/{testId}/Count/")]
+        public async Task<IActionResult> Count(int testId)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleAsync(t => t.Id == testId && !t.IsDeleted);
+            if (test.CreatedBy != user) return Forbid();
+            return View(test);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("/Tests/{testId}/Count/")]
+        public async Task<IActionResult> Count(int testId, Test model)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleAsync(t => t.Id == testId && !t.IsDeleted);
+            test.Count = model.Count;
+            _context.Update(test);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Tests");
+        }
         #endregion
 
         #region Результаты

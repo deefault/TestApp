@@ -1,0 +1,15 @@
+﻿@model WebApplication3.Models.Test
+@{
+    Layout = "_Layout";
+}
+<form asp-controller="Test" asp-action="Count" asp-route-returnurl="/User/Tests/" method="post" class="form" role="form">
+    <h5 class="text-center" style="padding-top:1rem">@Model.Name</h5>
+    <b>Вопросов при прохождении:</b>
+    <div class="input-group">
+        <input asp-for="Count" value="@Model.Count" class="form-control" />
+        <span asp-validation-for="Count" class="text-danger"></span>
+        <span class="input-group-append">
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+        </span>
+    </div>
+</form>

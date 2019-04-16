@@ -33,13 +33,13 @@
                     </div>
                 </div>
                 <b>Варианты ответа:</b>
-                <div class="items card" style="margin-bottom: 1rem;">
-                    <table class="table table-borderless" id="options" style="margin-bottom: 0;">
+                <div class="items" style="margin-bottom: 1rem;">
+                    <table class="table table-borderless" id="options" style="padding: 0; margin: 0;">
                         <tbody id="item-table__body">
                             @foreach (var o in Model.Options)
                             {
                                 <tr>
-                                    <td class="item-table__cell">
+                                    <td class="item-table__cell" style="padding: 0; margin: 0;">
                                         <textarea rows="1" id="Text" option-id="@o.Id" asp-for="@o.Text" class="form-control item__text-field" value="@(o.Text)"></textarea>
                                     </td>
                                 </tr>

@@ -27,12 +27,15 @@
     else
     {
         var time = TimeSpan.FromMinutes(Model.Test.TimeToPassing);
-        <div>Длительность: @string.Format("{0:dd\\ hh\\:mm\\:ss}", time)</div>
+        @if (Model.Test.TimeToPassing != 0)
+        {
+            <div>Длительность: @string.Format("{0:dd\\ hh\\:mm\\:ss}", time)</div>
+        }
         <form asp-controller="Test" asp-action="Start" asp-route-testResultId="@Model.Id" class="form" role="form" method="post">
             <div asp-validation-summary="All" class="text-danger"></div>
             <button type="submit" class="btn btn-success">Начать</button>
         </form>
-    }
+        }
 </div>
 @section Scripts {
     <script>

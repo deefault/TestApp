@@ -13,7 +13,7 @@
     <p>Вопросов: @ViewBag.QuestionsCount</p>
     @if (ViewBag.IsStarted)
     {
-        @if (Model.Test.TimeToPassing != 0)
+        if (Model.Test.TimeToPassing != 0)
         {
             <p>Старт: @Model.StartedOn.ToString()</p>
             <p>Финиш: @target_date.ToString()</p>
@@ -27,7 +27,7 @@
     else
     {
         var time = TimeSpan.FromMinutes(Model.Test.TimeToPassing);
-        @if (Model.Test.TimeToPassing != 0)
+        if (Model.Test.TimeToPassing != 0)
         {
             <div>Длительность: @string.Format("{0:dd\\ hh\\:mm\\:ss}", time)</div>
         }

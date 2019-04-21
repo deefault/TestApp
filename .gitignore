@@ -250,3 +250,5 @@ __pycache__/
 WebApplication3.sqlite
 WebApplication3/wwwroot/lib/
 bower_components/
+*.sublime-workspace
+WebApplication3.sublime-project

@@ -32,6 +32,7 @@
     <Folder Include="Migrations\" />
     <Folder Include="Pages\Question" />
     <Folder Include="Pages\Test" />
+    <Folder Include="wwwroot\lib" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="Views\Question\AddDragAndDropQuestion - Копировать.cshtml">

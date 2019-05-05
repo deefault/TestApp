@@ -1,0 +1,92 @@
+@using System.Collections.Specialized
+@model WebApplication3.Models.TestViewModels.Stat
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<h2>Статистика Теста "@Model.TestName"</h2>
+<canvas id="canvas" style="display: block; width: 702px; height: 351px;"></canvas>
+@section Scripts
+{
+	<link rel="stylesheet" href="~/lib/chart.js/dist/Chart.css"/>
+    <script src="~/lib/chart.js/dist/Chart.bundle.js"></script> 
+    <script src="~/lib/chart.js/samples/utils.js"></script> 
+    <script type="text/javascript">
+        stat = @Html.Raw(Json.Serialize(@Model));
+
+        var titles = stat.questionStats.map(x => x.questionTitle);
+        var color = Chart.helpers.color;
+        var horizontalBarChartData = {
+            labels: titles.map(x=>truncateString(x,40,'...')),
+            datasets: [
+                {
+                    label: 'Right',
+                    backgroundColor: 'rgba(55, 250, 143, 1)',
+                    borderColor: window.chartColors.green,
+                    borderWidth: 1,
+                    data: stat.questionStats.map(x => x.rightCount)
+                }, 
+                {
+                    label: 'Partially Right',
+                    backgroundColor: 'rgba(204, 212, 91, 1)',
+                    borderColor: window.chartColors.yellow,
+                    data: stat.questionStats.map(x => x.partiallyRightCount)
+                },
+                {
+                    label: 'Wrong',
+                    backgroundColor: 'rgba(191, 46, 75, 1)',
+                    borderColor: window.chartColors.red,
+                    borderWidth: 1,
+                    data: stat.questionStats.map(x => x.wrongCount)
+                }
+        ]
+
+        };
+
+        window.onload = function() {
+            var ctx = document.getElementById('canvas').getContext('2d');
+            window.myHorizontalBar = new Chart(ctx, {
+                type: 'horizontalBar',
+                data: horizontalBarChartData,
+                options: {
+                    // Elements options apply to all of the options unless overridden in a dataset
+                    // In this case, we are setting the border of each horizontal bar to be 2px wide
+                    elements: {
+                        rectangle: {
+                            borderWidth: 2,
+                        }
+                    },
+                    responsive: true,
+                    legend: {
+                        position: 'right',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Chart.js Horizontal Bar Chart'
+                    },
+                    scales: {
+                        xAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                callback: function(value) {if (value % 1 === 0) {return value;}}
+                            }
+                        }]
+                    }
+                }
+            });
+
+        };
+
+        
+
+        var colorNames = Object.keys(window.chartColors);
+
+        
+
+    </script> 
+    
+}
+
+

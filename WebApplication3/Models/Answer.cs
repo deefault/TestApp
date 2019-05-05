@@ -19,6 +19,15 @@ namespace WebApplication3.Models
         [Required] public ushort Order { get; set; }
 
         public Option Option { get; set; }
+        
+        public AnswerResult? Result { get; set; }
+    }
+
+    public enum AnswerResult : int
+    {
+        Wrong,
+        PartiallyRight,
+        Right
     }
 
     public class SingleChoiceAnswer : Answer
@@ -50,9 +59,12 @@ namespace WebApplication3.Models
         public int Id { get; set; }
         public int AnswerId { get; set; }
         public DragAndDropAnswer Answer { get; set; }
+        public int OptionId { get; set; }
         public Option Option { get; set; }
+        public int RightOptionId { get; set; }
         public Option RightOption { get; set; }
         public int ChosenOrder { get; set; }
+        
     }
 
     public class AnswerOption

@@ -369,4 +369,11 @@ function submitCodeQuestion(actionUrl) {
         },
     });
 }
+
+function truncateString(str, maxlength, sym) {
+    if (str.length > maxlength) {
+        return str.slice(0, maxlength - 3) + sym;
+    }
+    return str;
+}
 // #endregion

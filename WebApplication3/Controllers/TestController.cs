@@ -488,6 +488,104 @@ namespace WebApplication3.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        [Authorize]
+        [Route("/Tests/{id}/Stats/")]
+        public async Task<IActionResult> Stats(int id)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == id);
+            if (test.CreatedById != user.Id) Forbid();
+            var questions = _context.Questions.Where(q => q.TestId == test.Id && !q.IsDeleted);
+            var stat = new Stat();
+            stat.TestName = test.Name;
+            stat.TestId = test.Id;
+            
+            foreach (var question in questions)
+            {
+                QuestionStat questionStat = new QuestionStat();
+                questionStat.QuestionId = question.Id;
+                questionStat.QuestionType = question.GetTypeString();
+                questionStat.QuestionTitle = question.Title;
+                var answersForQuestion = _context.Answers.Where(a => a.QuestionId == question.Id);
+                foreach (var answer in answersForQuestion)
+                {
+                    switch (answer.Result)
+                    {
+                        case null:
+                        {
+                            questionStat.NullCount++;
+                            break;
+                        }
+                        case AnswerResult.Wrong:
+                        {
+                            questionStat.WrongCount++;
+                            break;
+                        }
+                        case AnswerResult.PartiallyRight:
+                        {
+                            questionStat.PartiallyRightCount++;
+                            break;
+                        }
+                        case AnswerResult.Right:
+                        {
+                            questionStat.RightCount++;
+                            break;
+                        }
+                    }
+                }
+                stat.QuestionStats.Add(questionStat);
+            }
+            return View("Stat", stat);
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("/Tests/{id}/GetStats/")]
+        public async Task<IActionResult> GetStats(int id)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == id);
+            if (test.CreatedById != user.Id) Forbid();
+                        var questions = _context.Questions.Where(q => q.TestId == test.Id && !q.IsDeleted);
+                        var stat = new Stat();
+                        foreach (var question in questions)
+                        {
+                            QuestionStat questionStat = new QuestionStat();
+                            questionStat.QuestionId = question.Id;
+            
+                            var answersForQuestion = _context.Answers.Where(a => a.QuestionId == question.Id);
+                            foreach (var answer in answersForQuestion)
+                            {
+                                switch (answer.Result)
+                                {
+                                    case null:
+                                    {
+                                        questionStat.NullCount++;
+                                        break;
+                                    }
+                                    case AnswerResult.Wrong:
+                                    {
+                                        questionStat.WrongCount++;
+                                        break;
+                                    }
+                                    case AnswerResult.PartiallyRight:
+                                    {
+                                        questionStat.PartiallyRightCount++;
+                                        break;
+                                    }
+                                    case AnswerResult.Right:
+                                    {
+                                        questionStat.RightCount++;
+                                        break;
+                                    }
+                                }
+                            }
+                            stat.QuestionStats.Add(questionStat);
+                        }
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #region Прохождение
@@ -581,6 +679,7 @@ namespace WebApplication3.Controllers
                     }
 
                     if (answer == null) throw new NullReferenceException();
+                    answer.Result = null;
                     answer.Question = question;
                     answer.Score = 0;
                     answer.TestResult = testResult;
@@ -655,14 +754,16 @@ namespace WebApplication3.Controllers
             var answers = _context.Answers.Where(a => a.TestResult == testResult);
             testResult.TotalQuestions = (uint)answers.Count();
             foreach (var answer in answers)
-                if (answer is SingleChoiceAnswer)
+            {
+                var _question = await _context.Questions
+                    .SingleOrDefaultAsync(q => q.Id == answer.QuestionId);
+                
+                if (answer is SingleChoiceAnswer singleChoiceAnswer)
                 {
-                    var singleChoiceAnswer = await _context.SingleChoiceAnswers
-                        .Include(a => a.Question).Include(a => a.Option)
-                        .SingleAsync(a => a.Id == answer.Id);
-                    var question =
-                        await _context.SingleChoiceQuestions
-                            .SingleAsync(q => q.Id == singleChoiceAnswer.QuestionId);
+                    _context.Entry(singleChoiceAnswer).Reference(x => x.Option).Load();
+                    
+                    var question = _question as SingleChoiceQuestion;
+                    _context.Entry(question).Reference(x => x.RightAnswer).Load();
                     singleChoiceAnswer.Score = 0;
                     if (singleChoiceAnswer.Option != null)
                         if (singleChoiceAnswer.Option == question.RightAnswer)
@@ -674,15 +775,11 @@ namespace WebApplication3.Controllers
 
                     _context.SingleChoiceAnswers.Update(singleChoiceAnswer);
                 }
-                else if (answer is MultiChoiceAnswer)
+                else if (answer is MultiChoiceAnswer multiChoiceAnswer)
                 {
-                    var multiChoiceAnswer = await _context.MultiChoiceAnswers
-                        .Include(a => a.AnswerOptions).Include(a => a.Question).ThenInclude(q => q.Options)
-                        .SingleOrDefaultAsync(a => a.Id == answer.Id);
-                    var question =
-                        await _context.MultiChoiceQuestions
-                            .SingleOrDefaultAsync(q => q.Id == multiChoiceAnswer.QuestionId);
-
+                    var question = _question as MultiChoiceQuestion;
+                    await _context.Entry(question).Collection(x=>x.Options).LoadAsync();
+                    await _context.Entry(multiChoiceAnswer).Collection(x => x.AnswerOptions).LoadAsync();
                     // count Score
                     int countChecked = 0, countWrong = 0;
                     float countOptions = multiChoiceAnswer.AnswerOptions.Count;
@@ -709,9 +806,7 @@ namespace WebApplication3.Controllers
                 }
                 else if (answer is TextAnswer textAnswer)
                 {
-                    var question =
-                        await _context.TextQuestions
-                            .SingleOrDefaultAsync(q => q.Id == textAnswer.QuestionId);
+                    var question = _question as TextQuestion;
                     if (!String.IsNullOrEmpty(textAnswer.Text) && !String.IsNullOrEmpty(question.TextRightAnswer))
                     {
                         if (textAnswer.Text.ToLower() == question.TextRightAnswer.ToLower())
@@ -731,37 +826,35 @@ namespace WebApplication3.Controllers
                     }                  
                     _context.TextAnswers.Update(textAnswer);
                 }
-                else if (answer is DragAndDropAnswer)
+                else if (answer is DragAndDropAnswer dndAnswer)
                 {
-                    var dndAnswer = await _context.DragAndDropAnswers
-                        .Include(a => a.Question).Include(a => a.DragAndDropAnswerOptions)
-                        .SingleOrDefaultAsync(a => a.Id == answer.Id);
-                    var question =
-                        await _context.DragAndDropQuestions
-                            .SingleAsync(q => q.Id == dndAnswer.QuestionId);
+                    var question = _question as DragAndDropQuestion;
+                    await _context.Entry(question).Collection(x=>x.Options).LoadAsync();
+                    await _context.Entry(dndAnswer).Collection(x => x.DragAndDropAnswerOptions).LoadAsync();
                     if (dndAnswer.DragAndDropAnswerOptions == null || dndAnswer.DragAndDropAnswerOptions.Count == 0)
                         continue;
-                    var dndOptions = _context.DragAndDropAnswerOptions.Where(o => o.Answer == dndAnswer)
-                        .Include(o => o.Option).Include(o => o.RightOption);
+                    var dndOptions = dndAnswer.DragAndDropAnswerOptions;
                     int optionsCount = dndOptions.Count(), wrongOrderCount = 0;
                     foreach (var dndOption in dndOptions)
-                        if (dndOption.RightOption.Id != dndOption.Option.Id)
+                        if (dndOption.RightOptionId != dndOption.OptionId)
                             wrongOrderCount++;
                     var score = question.Score *
                                 (optionsCount - wrongOrderCount) / (float)optionsCount;
                     dndAnswer.Score = score > 0 ? score : 0;
                     if (Math.Abs(dndAnswer.Score - question.Score) < EPSILON) count++;
+                    _context.Update(dndAnswer);
                 }
-                else if (answer is CodeAnswer)
+                else if (answer is CodeAnswer codeAnswer)
                 {
-                    var codeAnswer = await _context.CodeAnswers
-                        .Include(a => a.Question)
-                        .ThenInclude(q => (q as CodeQuestion).Code)
-                        .Include(a => a.Code).Include(a => a.Option)
-                        .SingleOrDefaultAsync(a => a.Id == answer.Id);
+                    var question = _question as CodeQuestion;
+                        //.Include(a => a.Question)
+                        //.ThenInclude(q => (q as CodeQuestion).Code)
+                        //.Include(a => a.Code).Include(a => a.Option)
+                    await _context.Entry(question).Reference(x=>x.Code).LoadAsync();
+                    await _context.Entry(codeAnswer).Reference(x => x.Code).LoadAsync();
                     var userCode = codeAnswer.Code?.Value == null ? "" : codeAnswer.Code.Value;
-                    var creatorCode = (codeAnswer.Question as CodeQuestion).Code.Value;
-                    var creatorArgs = (codeAnswer.Question as CodeQuestion).Code.Args;
+                    var creatorCode = question.Code.Value;
+                    var creatorArgs = question.Code.Args;
                     var userOutput = Compile(userCode, creatorArgs);
                     var creatorOutput = Compile(creatorCode, creatorArgs);
                     var code = await _context.Codes.SingleOrDefaultAsync(c => c.Answer == codeAnswer);
@@ -770,7 +863,7 @@ namespace WebApplication3.Controllers
                         code = (await _context.AddAsync(new Code() { Answer = codeAnswer, Value = userCode })).Entity;
                         codeAnswer.Code = code;
                         _context.Update(codeAnswer);
-                        await _context.SaveChangesAsync();
+                        
                     }
                     code.Args = creatorArgs;
                     code.Output = userOutput;
@@ -792,6 +885,18 @@ namespace WebApplication3.Controllers
                         codeAnswer.Score = 0;
                     }
                 }
+
+                if (answer.Score != 0)
+                {
+                    if (Math.Abs(answer.Score - _question.Score) < EPSILON) answer.Result = AnswerResult.Right;
+                    else answer.Result = AnswerResult.PartiallyRight;
+                }
+                else answer.Result = AnswerResult.Wrong;
+
+                _context.Update(answer);
+                await _context.SaveChangesAsync();
+            }
+                
 
             testResult.RightAnswersCount = count;
             _context.Update(testResult);

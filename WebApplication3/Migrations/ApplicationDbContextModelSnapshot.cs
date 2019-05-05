@@ -136,6 +136,8 @@ namespace WebApplication3.Migrations
 
                     b.Property<int>("QuestionId");
 
+                    b.Property<int?>("Result");
+
                     b.Property<float>("Score");
 
                     b.Property<int>("TestResultId");

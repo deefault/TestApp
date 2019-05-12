@@ -48,67 +48,118 @@ test {
 		}
 	}
 	question {
-		type = text
-		text = "Дерево — одна из наиболее широко распространённых структур данных в информатике, эмулирующая древовидную структуру в виде набора связанных узлов. Является связным ******, не содержащим циклы. Введите слово вместо символов *."
+		type = multi
+		text = "Основные принципы ООП"
 		score = 2
 		option {
-			text = графом
+			text = "Абстрагирование"
+			flag = true
+		}
+		option {
+			text = "Инкапсуляция"
+			flag = true
+		}
+		option {
+			text = "Наследование"
+			flag = true
+		}
+		option {
+			text = "Полиморфизм"
+			flag = true
+		}
+		option {
+			text = "Типизирование"
+			flag = false
 		}
 	}
 	question {
-		type = dnd
-		text = "Расположите уровни модели OSI в верном порядке (снизу наиболее низкоуровневый)"
+		type = single
+		text = "Какого свойства нет среди свойств алгоритмов?"
+		score = 2
+		option {
+			text = "Дискретность"
+			flag = false
+		}
+		option {
+			text = "Конечность"
+			flag = false
+		}
+		option {
+			text = "Определенность"
+			flag = false
+		}
+		option {
+			text = "Разделимость"
+			flag = true
+		}
+	}
+	question {
+		type = single
+		text = "Какая структура не относится к линейным?"
+		score = 1
+		option {
+			text = "Связный список"
+			flag = false
+		}
+		option {
+			text = "Очередь"
+			flag = false
+		}
+		option {
+			text = "Граф"
+			flag = true
+		}
+		option {
+			text = "Стек"
+			flag = false
+		}
+	}
+	question {
+		type = single
+		text = "Какое условие должно выполняться для того, чтобы в массиве размерности N можно было выполнить двоичный поиск?"
 		score = 3
 		option {
-			text = Прикладной (application)
+			text = "N должно быть четным"
+			flag = false
 		}
 		option {
-			text = Представления (presentation)
+			text = "N должно быть нечетным"
+			flag = false
 		}
 		option {
-			text = Сеансовый (session)
+			text = "Массив не должен содержать отрицательных элементов"
+			flag = false
 		}
 		option {
-			text = Транспортный (transport)
-		}
-		option {
-			text = Сетевой (network)
-		}
-		option {
-			text = Канальный (data link)
-		}
-		option {
-			text = Физический (physical)
+			text = "Массив должен быть отсортирован"
+			flag = true
 		}
 	}
 	question {
-		type = code
-		text = "Реализуйте алгоритм нахождения n-того числа Фибоначчи"
+		type = multi
+		text = "Какие методы существуют в разработке алгоритмов?"
 		score = 1
-		code {
-			text = "using System;
-
-namespace TestsApp
-{
-    public class Program
-    {
-        public static int Fibb(int n)
-        {
-            if (n == 1 || n == 2)
-                return 1;
-            return Fibb(n - 1) + Fibb(n - 2);
-        }
-        public int Main(int n)
-        {
-            return Fibb(n);
-        }
-    }
-}"
-			args = 10; 15; 20
-			output = "55
-610
-6765
-"
+		option {
+			text = "Разделяй и властвуй"
+			flag = true
+		}
+		option {
+			text = "Итеративный"
+			flag = true
+		}
+		option {
+			text = "Индукционный"
+			flag = false
+		}
+		option {
+			text = "Бинарный"
+			flag = false
+		}
+		option {
+			text = "Динамический"
+			flag = true
 		}
 	}
+
+	
 }

@@ -1,0 +1,3 @@
+#! /bin/bash
+
+cp -f WebApplication3.backup.sqlite WebApplication3.sqlite

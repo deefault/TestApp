@@ -18,7 +18,10 @@ namespace WebApplication3.Models
 
         [Required] public ushort Order { get; set; }
 
+        public int? OptionId { get; set; }
+        
         public Option Option { get; set; }
+        
         
         public AnswerResult? Result { get; set; }
     }
@@ -27,7 +30,7 @@ namespace WebApplication3.Models
     {
         Wrong,
         PartiallyRight,
-        Right
+        Right,
     }
 
     public class SingleChoiceAnswer : Answer

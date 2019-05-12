@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using WebApplication3.Data;
 using WebApplication3.Models;
+using WebApplication3.Models.AnswerViewModels;
 using WebApplication3.Models.TestViewModels;
 
 namespace WebApplication3.Controllers
@@ -452,7 +453,7 @@ namespace WebApplication3.Controllers
         [HttpGet]
         [Authorize]
         [Route("/[controller]/Result/{testResultId}/Details/")]
-        public async Task<IActionResult> TRDetails(int testResultId)
+        public async Task<IActionResult> TestResultDetails(int testResultId)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var testResult = await _context.TestResults.Include(tr => tr.Test)
@@ -497,16 +498,16 @@ namespace WebApplication3.Controllers
             var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == id);
             if (test.CreatedById != user.Id) Forbid();
             var questions = _context.Questions.Where(q => q.TestId == test.Id && !q.IsDeleted);
-            var stat = new Stat();
-            stat.TestName = test.Name;
-            stat.TestId = test.Id;
-            
+            var stat = new Stat {TestName = test.Name, TestId = test.Id};
+            int easyScore, difficultScore;
             foreach (var question in questions)
             {
-                QuestionStat questionStat = new QuestionStat();
-                questionStat.QuestionId = question.Id;
-                questionStat.QuestionType = question.GetTypeString();
-                questionStat.QuestionTitle = question.Title;
+                QuestionStat questionStat = new QuestionStat
+                {
+                    QuestionId = question.Id,
+                    QuestionType = question.GetTypeString(),
+                    QuestionTitle = question.Title
+                };
                 var answersForQuestion = _context.Answers.Where(a => a.QuestionId == question.Id);
                 foreach (var answer in answersForQuestion)
                 {
@@ -536,54 +537,10 @@ namespace WebApplication3.Controllers
                 }
                 stat.QuestionStats.Add(questionStat);
             }
-            return View("Stat", stat);
-        }
 
-        [HttpGet]
-        [Authorize]
-        [Route("/Tests/{id}/GetStats/")]
-        public async Task<IActionResult> GetStats(int id)
-        {
-            var user = await _userManager.GetUserAsync(HttpContext.User);
-            var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == id);
-            if (test.CreatedById != user.Id) Forbid();
-                        var questions = _context.Questions.Where(q => q.TestId == test.Id && !q.IsDeleted);
-                        var stat = new Stat();
-                        foreach (var question in questions)
-                        {
-                            QuestionStat questionStat = new QuestionStat();
-                            questionStat.QuestionId = question.Id;
-            
-                            var answersForQuestion = _context.Answers.Where(a => a.QuestionId == question.Id);
-                            foreach (var answer in answersForQuestion)
-                            {
-                                switch (answer.Result)
-                                {
-                                    case null:
-                                    {
-                                        questionStat.NullCount++;
-                                        break;
-                                    }
-                                    case AnswerResult.Wrong:
-                                    {
-                                        questionStat.WrongCount++;
-                                        break;
-                                    }
-                                    case AnswerResult.PartiallyRight:
-                                    {
-                                        questionStat.PartiallyRightCount++;
-                                        break;
-                                    }
-                                    case AnswerResult.Right:
-                                    {
-                                        questionStat.RightCount++;
-                                        break;
-                                    }
-                                }
-                            }
-                            stat.QuestionStats.Add(questionStat);
-                        }
-            throw new NotImplementedException();
+            stat.MostDifficult = questions.SingleOrDefault(x=>x.Id == stat.GetMostDifficultId());
+            stat.MostEasy = questions.SingleOrDefault(x=>x.Id == stat.GetMostEasyId());
+            return View("Stat", stat);
         }
 
         #endregion
@@ -627,7 +584,6 @@ namespace WebApplication3.Controllers
         [Route("/[controller]/Result/{testResultId}/Start/")]
         public async Task<IActionResult> Start(int testResultId, ErrorViewModel model)
         {
-            // TODO: пользователь начал проходить тест, переброс на первый вопрос
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var testResult = await _context.TestResults
                 .Include(tr => tr.Test)
@@ -760,140 +716,26 @@ namespace WebApplication3.Controllers
                 
                 if (answer is SingleChoiceAnswer singleChoiceAnswer)
                 {
-                    _context.Entry(singleChoiceAnswer).Reference(x => x.Option).Load();
-                    
-                    var question = _question as SingleChoiceQuestion;
-                    _context.Entry(question).Reference(x => x.RightAnswer).Load();
-                    singleChoiceAnswer.Score = 0;
-                    if (singleChoiceAnswer.Option != null)
-                        if (singleChoiceAnswer.Option == question.RightAnswer)
-                        {
-                            singleChoiceAnswer.Score = question.Score;
-                            count++;
-                        }
-                    //singleChoiceAnswer.Score = (singleChoiceAnswer.Option == question.RightAnswer) ? question.Score : 0;
-
-                    _context.SingleChoiceAnswers.Update(singleChoiceAnswer);
+                    GetSingleChoiceResult(singleChoiceAnswer, _question, ref count);
                 }
                 else if (answer is MultiChoiceAnswer multiChoiceAnswer)
                 {
-                    var question = _question as MultiChoiceQuestion;
-                    await _context.Entry(question).Collection(x=>x.Options).LoadAsync();
-                    await _context.Entry(multiChoiceAnswer).Collection(x => x.AnswerOptions).LoadAsync();
-                    // count Score
-                    int countChecked = 0, countWrong = 0;
-                    float countOptions = multiChoiceAnswer.AnswerOptions.Count;
-                    if (multiChoiceAnswer.AnswerOptions == null || multiChoiceAnswer.AnswerOptions.Count == 0)
-                    {
-                        multiChoiceAnswer.Score = 0;
-                    }
-                    else
-                    {
-                        foreach (var answerOption in multiChoiceAnswer.AnswerOptions)
-                        {
-                            var rightAnswer = question.Options.Single(o => o.Id == answerOption.OptionId).IsRight;
-                            if (rightAnswer) countChecked++;
-                            if (answerOption.Checked != rightAnswer) countWrong++;
-                        }
-
-                        var score = question.Score *
-                                    (countChecked - countWrong) / (float)countChecked;
-                        multiChoiceAnswer.Score = score > 0 ? score : 0;
-                        if (Math.Abs(multiChoiceAnswer.Score - question.Score) < EPSILON) count++;
-                    }
-
-                    _context.MultiChoiceAnswers.Update(multiChoiceAnswer);
+                    GetMultiChoiceResult(_question, multiChoiceAnswer, ref count);
                 }
                 else if (answer is TextAnswer textAnswer)
                 {
-                    var question = _question as TextQuestion;
-                    if (!String.IsNullOrEmpty(textAnswer.Text) && !String.IsNullOrEmpty(question.TextRightAnswer))
-                    {
-                        if (textAnswer.Text.ToLower() == question.TextRightAnswer.ToLower())
-                        {
-                            textAnswer.Score = question.Score;
-                            count++;
-                        }
-                        else
-                        {
-                            textAnswer.Score = 0;
-                        }
-                    }
-                    else
-                    {
-                        textAnswer.Text = "";
-                        textAnswer.Score = 0;
-                    }                  
-                    _context.TextAnswers.Update(textAnswer);
+                    GetTextResult(_question, textAnswer, ref count);
                 }
                 else if (answer is DragAndDropAnswer dndAnswer)
                 {
-                    var question = _question as DragAndDropQuestion;
-                    await _context.Entry(question).Collection(x=>x.Options).LoadAsync();
-                    await _context.Entry(dndAnswer).Collection(x => x.DragAndDropAnswerOptions).LoadAsync();
-                    if (dndAnswer.DragAndDropAnswerOptions == null || dndAnswer.DragAndDropAnswerOptions.Count == 0)
-                        continue;
-                    var dndOptions = dndAnswer.DragAndDropAnswerOptions;
-                    int optionsCount = dndOptions.Count(), wrongOrderCount = 0;
-                    foreach (var dndOption in dndOptions)
-                        if (dndOption.RightOptionId != dndOption.OptionId)
-                            wrongOrderCount++;
-                    var score = question.Score *
-                                (optionsCount - wrongOrderCount) / (float)optionsCount;
-                    dndAnswer.Score = score > 0 ? score : 0;
-                    if (Math.Abs(dndAnswer.Score - question.Score) < EPSILON) count++;
-                    _context.Update(dndAnswer);
+                    GetDragAndDropResult(_question, dndAnswer, ref count);
                 }
                 else if (answer is CodeAnswer codeAnswer)
                 {
-                    var question = _question as CodeQuestion;
-                        //.Include(a => a.Question)
-                        //.ThenInclude(q => (q as CodeQuestion).Code)
-                        //.Include(a => a.Code).Include(a => a.Option)
-                    await _context.Entry(question).Reference(x=>x.Code).LoadAsync();
-                    await _context.Entry(codeAnswer).Reference(x => x.Code).LoadAsync();
-                    var userCode = codeAnswer.Code?.Value == null ? "" : codeAnswer.Code.Value;
-                    var creatorCode = question.Code.Value;
-                    var creatorArgs = question.Code.Args;
-                    var userOutput = Compile(userCode, creatorArgs);
-                    var creatorOutput = Compile(creatorCode, creatorArgs);
-                    var code = await _context.Codes.SingleOrDefaultAsync(c => c.Answer == codeAnswer);
-                    if (code == null)
-                    {
-                        code = (await _context.AddAsync(new Code() { Answer = codeAnswer, Value = userCode })).Entity;
-                        codeAnswer.Code = code;
-                        _context.Update(codeAnswer);
-                        
-                    }
-                    code.Args = creatorArgs;
-                    code.Output = userOutput;
-                    _context.Codes.Update(code);
-                    if (userCode != null)
-                    {
-                        if (userOutput == creatorOutput)
-                        {
-                            codeAnswer.Score = codeAnswer.Question.Score;
-                            count++;
-                        }
-                        else
-                        {
-                            codeAnswer.Score = 0;
-                        }
-                    }
-                    else
-                    {
-                        codeAnswer.Score = 0;
-                    }
+                    GedCodeResult(_question, codeAnswer, ref count);
                 }
 
-                if (answer.Score != 0)
-                {
-                    if (Math.Abs(answer.Score - _question.Score) < EPSILON) answer.Result = AnswerResult.Right;
-                    else answer.Result = AnswerResult.PartiallyRight;
-                }
-                else answer.Result = AnswerResult.Wrong;
-
-                _context.Update(answer);
+                //_context.Update(answer);
                 await _context.SaveChangesAsync();
             }
                 
@@ -903,6 +745,170 @@ namespace WebApplication3.Controllers
             await _context.SaveChangesAsync();
             //throw new NotImplementedException();
             return RedirectToAction("TestResults");
+        }
+
+        private void GedCodeResult(Question _question, CodeAnswer codeAnswer, ref uint count)
+        {
+            var question = _question as CodeQuestion;
+            //.Include(a => a.Question)
+            //.ThenInclude(q => (q as CodeQuestion).Code)
+            //.Include(a => a.Code).Include(a => a.Option)
+            _context.Entry(question).Reference(x => x.Code).Load();
+            _context.Entry(codeAnswer).Reference(x => x.Code).Load();
+            var userCode = codeAnswer.Code?.Value == null ? "" : codeAnswer.Code.Value;
+            var creatorCode = question.Code.Value;
+            var creatorArgs = question.Code.Args;
+            var userOutput = Compile(userCode, creatorArgs);
+            var creatorOutput = Compile(creatorCode, creatorArgs);
+            var code = _context.Codes.SingleOrDefault(c => c.Answer == codeAnswer);
+            if (code == null)
+            {
+                code = (_context.Add(new Code() {Answer = codeAnswer, Value = userCode})).Entity;
+                codeAnswer.Code = code;
+                _context.Update(codeAnswer);
+            }
+
+            code.Args = creatorArgs;
+            code.Output = userOutput;
+            _context.Codes.Update(code);
+            if (userCode != null)
+            {
+                if (userOutput == creatorOutput)
+                {
+                    codeAnswer.Score = codeAnswer.Question.Score;
+                    count++;
+                    codeAnswer.Result = AnswerResult.Right;
+                }
+                else
+                {
+                    codeAnswer.Result = AnswerResult.Wrong;
+                    codeAnswer.Score = 0;
+                }
+            }
+            else
+            {
+                codeAnswer.Result = null;
+                codeAnswer.Score = 0;
+            }
+
+            _context.Update(codeAnswer);
+        }
+
+        private void GetDragAndDropResult(Question _question, DragAndDropAnswer dndAnswer, ref uint count)
+        {
+            var question = _question as DragAndDropQuestion;
+            _context.Entry(question).Collection(x => x.Options).Load();
+            _context.Entry(dndAnswer).Collection(x => x.DragAndDropAnswerOptions).Load();
+            if (dndAnswer.DragAndDropAnswerOptions == null || dndAnswer.DragAndDropAnswerOptions.Count == 0)
+            {
+                dndAnswer.Result = null;
+                dndAnswer.Score = 0;
+            }
+            else
+            {
+                var dndOptions = dndAnswer.DragAndDropAnswerOptions;
+                int optionsCount = dndOptions.Count(), wrongOrderCount = 0;
+                foreach (var dndOption in dndOptions)
+                    if (dndOption.RightOptionId != dndOption.OptionId)
+                        wrongOrderCount++;
+                var score = question.Score *
+                            (optionsCount - wrongOrderCount) / (float) optionsCount;
+                dndAnswer.Score = score > 0 ? score : 0;
+            
+                if (Math.Abs(dndAnswer.Score - question.Score) < EPSILON)
+                {
+                    count++;
+                    dndAnswer.Result = AnswerResult.Right;
+                }
+                else
+                {
+                    dndAnswer.Result = score == 0 ? AnswerResult.Wrong : AnswerResult.PartiallyRight;
+                }
+            }  
+            _context.Update(dndAnswer);
+        }
+
+        private void GetTextResult(Question _question, TextAnswer textAnswer, ref uint count)
+        {
+            var question = _question as TextQuestion;
+            if (!String.IsNullOrEmpty(textAnswer.Text) && !String.IsNullOrEmpty(question.TextRightAnswer))
+            {
+                if (String.Equals(textAnswer.Text, question.TextRightAnswer, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    textAnswer.Score = question.Score;
+                    count++;
+                    textAnswer.Result = AnswerResult.Right;
+                }
+                else
+                {
+                    textAnswer.Result = AnswerResult.Wrong;
+                    textAnswer.Score = 0;
+                }
+            }
+            else
+            {
+                textAnswer.Result = null;
+                textAnswer.Text = "";
+                textAnswer.Score = 0;
+            }
+            _context.TextAnswers.Update(textAnswer);
+        }
+
+        private void GetMultiChoiceResult(Question _question, MultiChoiceAnswer multiChoiceAnswer, ref uint count)
+        {
+            var question = _question as MultiChoiceQuestion;
+            _context.Entry(question).Collection(x => x.Options).Load();
+            _context.Entry(multiChoiceAnswer).Collection(x => x.AnswerOptions).Load();
+            // count Score
+            int countChecked = 0, countWrong = 0;
+            float countOptions = multiChoiceAnswer.AnswerOptions.Count;
+            if (multiChoiceAnswer.AnswerOptions == null || multiChoiceAnswer.AnswerOptions.Count == 0)
+            {
+                multiChoiceAnswer.Score = 0;
+                multiChoiceAnswer.Result = null;
+            }
+            else
+            {
+                foreach (var answerOption in multiChoiceAnswer.AnswerOptions)
+                {
+                    var rightAnswer = question.Options.Single(o => o.Id == answerOption.OptionId).IsRight;
+                    if (rightAnswer) countChecked++;
+                    if (answerOption.Checked != rightAnswer) countWrong++;
+                }
+
+                var score = question.Score *
+                            (countChecked - countWrong) / (float) countChecked;
+                multiChoiceAnswer.Score = score > 0 ? score : 0;
+                if (Math.Abs(multiChoiceAnswer.Score - question.Score) < EPSILON)
+                {
+                    count++;
+                    multiChoiceAnswer.Result = AnswerResult.Right;
+                }
+                else multiChoiceAnswer.Result = AnswerResult.Wrong;
+            }
+
+            _context.MultiChoiceAnswers.Update(multiChoiceAnswer);
+        }
+
+        private void GetSingleChoiceResult(SingleChoiceAnswer singleChoiceAnswer, Question _question, ref uint count)
+        {
+            _context.Entry(singleChoiceAnswer).Reference(x => x.Option).Load();
+
+            var question = _question as SingleChoiceQuestion;
+            _context.Entry(question).Reference(x => x.RightAnswer).Load();
+            singleChoiceAnswer.Score = 0;
+            if (singleChoiceAnswer.Option != null)
+            {
+                if (singleChoiceAnswer.Option == question.RightAnswer)
+                {
+                    singleChoiceAnswer.Score = question.Score;
+                    count++;
+                    singleChoiceAnswer.Result = AnswerResult.Right;
+                }
+                else singleChoiceAnswer.Result = AnswerResult.Wrong;
+            }
+            else singleChoiceAnswer.Result = null;
+            _context.SingleChoiceAnswers.Update(singleChoiceAnswer);
         }
 
         #endregion

@@ -1,92 +1,148 @@
 @using System.Collections.Specialized
-@model WebApplication3.Models.TestViewModels.Stat
+@model WebApplication3.Models.AnswerViewModels.Stat
 
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "Статистика теста";
     Layout = "_Layout";
 }
 
-<h2>Статистика Теста "@Model.TestName"</h2>
-<canvas id="canvas" style="display: block; width: 702px; height: 351px;"></canvas>
+<h2>Статистика теста <a href="@Url.Action("Details","Test", new {id=Model.TestId})">"@Model.TestName"</a></h2>
+
+@if (Model.MostDifficult != null)
+{
+    <hr/>
+    <h4>Самый сложный вопрос:</h4>
+    <h5>
+        <a href="@Url.Action("Details", "Question", new {testId = Model.TestId, questionId = Model.MostDifficult.Id})">
+            @Model.MostDifficult.Title
+        </a>
+    </h5>
+}
+@if (Model.MostEasy != null)
+{
+    <h4>Самый легкий вопрос:</h4>
+    <h5>
+         <a href="@Url.Action("Details", "Question", new {testId = Model.TestId, questionId = Model.MostEasy.Id})">
+            @Model.MostEasy.Title
+        </a>
+    </h5>
+}
+   
+<div class="chart-container">
+    <canvas id="canvas" height="500px"></canvas>
+</div>
 @section Scripts
 {
-	<link rel="stylesheet" href="~/lib/chart.js/dist/Chart.css"/>
-    <script src="~/lib/chart.js/dist/Chart.bundle.js"></script> 
-    <script src="~/lib/chart.js/samples/utils.js"></script> 
+    <link rel="stylesheet" href="~/lib/chart.js/dist/Chart.css"/>
+    <script src="~/lib/chart.js/dist/Chart.bundle.js"></script>
+    <script src="~/lib/chart.js/samples/utils.js"></script>
+    <style>
+        .chart-container {
+            width: 1000px;
+            
+        }
+    </style>
     <script type="text/javascript">
-        stat = @Html.Raw(Json.Serialize(@Model));
-
-        var titles = stat.questionStats.map(x => x.questionTitle);
+        questionStats = @Html.Raw(Json.Serialize(@Model.QuestionStats));
+        var canvas = $("#canvas").attr("height", getHeight(questionStats.length));
+        var titles = questionStats.map(x => x.questionTitle);
         var color = Chart.helpers.color;
         var horizontalBarChartData = {
-            labels: titles.map(x=>truncateString(x,40,'...')),
+            labels: titles.map(x => truncateString(x, 40, '...')),
             datasets: [
                 {
-                    label: 'Right',
-                    backgroundColor: 'rgba(55, 250, 143, 1)',
+                    label: 'Верные',
+                    backgroundColor: 'rgba(66, 255, 158, 1)',
                     borderColor: window.chartColors.green,
                     borderWidth: 1,
-                    data: stat.questionStats.map(x => x.rightCount)
-                }, 
-                {
-                    label: 'Partially Right',
-                    backgroundColor: 'rgba(204, 212, 91, 1)',
-                    borderColor: window.chartColors.yellow,
-                    data: stat.questionStats.map(x => x.partiallyRightCount)
+                    data: questionStats.map(x => x.rightCount)
+
                 },
                 {
-                    label: 'Wrong',
-                    backgroundColor: 'rgba(191, 46, 75, 1)',
+                    label: 'Частично верные',
+                    backgroundColor: window.chartColors.yellow,
+                    borderColor: window.chartColors.yellow,
+                    data: questionStats.map(x => x.partiallyRightCount)
+                },
+                {
+                    label: 'Неверные',
+                    backgroundColor: window.chartColors.red,
                     borderColor: window.chartColors.red,
                     borderWidth: 1,
-                    data: stat.questionStats.map(x => x.wrongCount)
+                    data: questionStats.map(x => x.wrongCount)
                 }
-        ]
+            ]
 
         };
 
         window.onload = function() {
+            Chart.defaults.global.defaultFontSize = 15;
             var ctx = document.getElementById('canvas').getContext('2d');
-            window.myHorizontalBar = new Chart(ctx, {
-                type: 'horizontalBar',
-                data: horizontalBarChartData,
-                options: {
-                    // Elements options apply to all of the options unless overridden in a dataset
-                    // In this case, we are setting the border of each horizontal bar to be 2px wide
-                    elements: {
-                        rectangle: {
-                            borderWidth: 2,
-                        }
-                    },
-                    responsive: true,
-                    legend: {
-                        position: 'right',
-                    },
-                    title: {
-                        display: true,
-                        text: 'Chart.js Horizontal Bar Chart'
-                    },
-                    scales: {
-                        xAxes: [{
-                            ticks: {
-                                beginAtZero: true,
-                                callback: function(value) {if (value % 1 === 0) {return value;}}
+            window.chart = new Chart(ctx,
+                {
+                    
+                    type: 'horizontalBar',
+                    data: horizontalBarChartData,
+                    options: {
+                        maintainAspectRatio: false,
+                        layout: {
+                            padding: {
+                                left: 0,
+                                right: 0,
+                                top: 40,
+                                bottom: 0
                             }
-                        }]
+                        },
+                        elements: {
+                            rectangle: {
+                                borderWidth: 2,
+                            }
+                        },
+                        responsive: true,
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                fontFamily: "'Roboto','sans-serif','Arial'",
+                                fontSize: 16,
+                            }
+
+                        },
+                        title: {
+                            display: false,
+                        },
+                        scales: {
+                            xAxes: [
+                                {
+                                    ticks: {
+                                        beginAtZero: true,
+                                        callback: function(value) {
+                                            return;
+                                        }
+                                    }
+                                }
+                            ]
+                        }
                     }
-                }
-            });
+                });
 
         };
-
         
+
 
         var colorNames = Object.keys(window.chartColors);
 
+        function getHeight(n) {
+            var h = 50;
+            if (n < 8) h = 80;
+            else if (n < 15) h = 60;
+            else if (n < 20) h = 50;
+            else h = 40
+            return (100 + h * n).toString()+"px";
+        }
         
-
-    </script> 
+    </script>
     
+
 }
 
 

@@ -24,7 +24,5 @@
     "test",
     "tests"
   ],
-  "resolutions": {
-    "Sortable": "1.8.1"
-  }
+
 }

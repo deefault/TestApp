@@ -99,7 +99,7 @@ else
                         @item.Test.Id
                     </td>
                     <td>
-                        <a asp-controller="Test" asp-action="TRDetails" asp-route-testResultId="@item.Id">@item.Test.Name</a>
+                        <a asp-controller="Test" asp-action="TestResultDetails" asp-route-testResultId="@item.Id">@item.Test.Name</a>
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Test.CreatedBy.UserName)

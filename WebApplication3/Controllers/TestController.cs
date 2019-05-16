@@ -499,7 +499,6 @@ namespace WebApplication3.Controllers
             if (test.CreatedById != user.Id) Forbid();
             var questions = _context.Questions.Where(q => q.TestId == test.Id && !q.IsDeleted);
             var stat = new Stat {TestName = test.Name, TestId = test.Id};
-            int easyScore, difficultScore;
             foreach (var question in questions)
             {
                 QuestionStat questionStat = new QuestionStat
@@ -884,7 +883,14 @@ namespace WebApplication3.Controllers
                     count++;
                     multiChoiceAnswer.Result = AnswerResult.Right;
                 }
-                else multiChoiceAnswer.Result = AnswerResult.Wrong;
+                else
+                {
+                    if (multiChoiceAnswer.Score < EPSILON)
+                    {
+                        multiChoiceAnswer.Result = AnswerResult.PartiallyRight;
+                    }
+                    else multiChoiceAnswer.Result = AnswerResult.Wrong;
+                }
             }
 
             _context.MultiChoiceAnswers.Update(multiChoiceAnswer);

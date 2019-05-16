@@ -6,7 +6,12 @@
     Layout = "_Layout";
 }
 
-<h2>Статистика теста <a href="@Url.Action("Details","Test", new {id=Model.TestId})">"@Model.TestName"</a></h2>
+<h2 style="margin-top: 15px">
+    Статистика теста
+    <a href="@Url.Action("Details", "Test", new {id = Model.TestId})">
+        "@Model.TestName"
+    </a>
+</h2>
 
 @if (Model.MostDifficult != null)
 {
@@ -98,6 +103,19 @@
                                 borderWidth: 2,
                             }
                         },
+                        tooltips: {
+                        			mode: 'index',
+                        			callbacks: {
+                        			        
+                        					footer: function(tooltipItems, data) {
+                                                var questionType;
+                       							var tooltipItem = tooltipItems[0];
+                     						    questionType= questionStats[tooltipItem.index].questionType;
+                       							return 'Тип: ' + questionType;
+                       						},
+                       					},
+                       					footerFontStyle: 'normal'
+                       				},
                         responsive: true,
                         legend: {
                             position: 'top',
@@ -126,9 +144,6 @@
                 });
 
         };
-        
-
-
         var colorNames = Object.keys(window.chartColors);
 
         function getHeight(n) {

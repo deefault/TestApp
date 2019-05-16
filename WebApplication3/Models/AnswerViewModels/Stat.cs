@@ -19,11 +19,11 @@ namespace WebApplication3.Models.AnswerViewModels
             QuestionStat tempMax = new QuestionStat{PartiallyRightCount = -1,QuestionId = -1,WrongCount = -1,RightCount = -1};
             foreach (var q in QuestionStats)
             {
-                if (q.WrongCount > tempMax.WrongCount)
+                if (q.WrongCount >= tempMax.WrongCount)
                 {
-                    if (q.RightCount < tempMax.RightCount || tempMax.RightCount < 0)
+                    if (q.RightCount <= tempMax.RightCount || tempMax.RightCount < 0)
                     {
-                        if (q.PartiallyRightCount < tempMax.PartiallyRightCount || tempMax.PartiallyRightCount<0)
+                        if (q.PartiallyRightCount <= tempMax.PartiallyRightCount || tempMax.PartiallyRightCount<0)
                         {
                             tempMax.QuestionId = q.QuestionId;
                             tempMax.RightCount = q.RightCount;
@@ -42,11 +42,11 @@ namespace WebApplication3.Models.AnswerViewModels
             QuestionStat tempMax = new QuestionStat{PartiallyRightCount = -1,QuestionId = -1,WrongCount = -1,RightCount = -1};
             foreach (var q in QuestionStats)
             {
-                if (q.RightCount > tempMax.RightCount)
+                if (q.RightCount >= tempMax.RightCount)
                 {
-                    if (q.WrongCount < tempMax.WrongCount || tempMax.WrongCount < 0)
+                    if (q.WrongCount <= tempMax.WrongCount || tempMax.WrongCount < 0)
                     {
-                        if (q.PartiallyRightCount > tempMax.PartiallyRightCount)
+                        if (q.PartiallyRightCount >= tempMax.PartiallyRightCount)
                         {
                             tempMax.QuestionId = q.QuestionId;
                             tempMax.RightCount = q.RightCount;

@@ -128,7 +128,7 @@ namespace WebApplication3.Controllers
         #endregion
 
         #region Поля
-        private readonly float EPSILON = 0.0000001F;
+        public static readonly float EPSILON = 0.0000001F;
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
 
@@ -877,7 +877,7 @@ namespace WebApplication3.Controllers
 
                 var score = question.Score *
                             (countChecked - countWrong) / (float) countChecked;
-                multiChoiceAnswer.Score = score > 0 ? score : 0;
+                multiChoiceAnswer.Score = score;
                 if (Math.Abs(multiChoiceAnswer.Score - question.Score) < EPSILON)
                 {
                     count++;
@@ -885,11 +885,11 @@ namespace WebApplication3.Controllers
                 }
                 else
                 {
-                    if (multiChoiceAnswer.Score < EPSILON)
+                    if (Math.Abs(multiChoiceAnswer.Score) < EPSILON)
                     {
-                        multiChoiceAnswer.Result = AnswerResult.PartiallyRight;
+                        multiChoiceAnswer.Result = AnswerResult.Wrong;
                     }
-                    else multiChoiceAnswer.Result = AnswerResult.Wrong;
+                    else multiChoiceAnswer.Result = AnswerResult.PartiallyRight;
                 }
             }
 

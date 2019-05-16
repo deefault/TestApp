@@ -6,6 +6,7 @@ using System.Xml.Linq;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using WebApplication3.Controllers;
 using WebApplication3.Models;
 
 namespace WebApplication3.Data
@@ -86,19 +87,19 @@ namespace WebApplication3.Data
             await _context.SaveChangesAsync();
         }
 
-        private async Task<User> GenerateUser()
+        private User GenerateUser()
         {
             var count = _context.Users.Count();
             var user = new User {UserName = $"user{count}@example.com", Email = $"user{count}@example.com"};
-            if (await _userManager.FindByNameAsync(user.UserName) != null ||
-                await _userManager.FindByEmailAsync(user.Email) != null)
+            if ( _userManager.FindByNameAsync(user.UserName).Result != null || 
+                 _userManager.FindByEmailAsync(user.Email).Result != null)
             {
                 var name = GenerateExampleEmail();
                 user.UserName = name;
                 user.Email = name;
             }
 
-            var result = await _userManager.CreateAsync(user, "Qwerty123");
+            var result = _userManager.CreateAsync(user, "Qwerty123").Result;
             if (result.Succeeded)
             {
                 user.LockoutEnabled = true;
@@ -122,9 +123,9 @@ namespace WebApplication3.Data
                 CompleteTest(testId);
             }
         }
-        private async void CompleteTest(int testId)
+        private void CompleteTest(int testId)
         {
-            var user = await GenerateUser();
+            var user = GenerateUser();
             var test = _context.Tests.Include(t => t.Questions).SingleOrDefault(t => t.Id == testId);
             // add test to user
             var testResult = new TestResult
@@ -133,29 +134,135 @@ namespace WebApplication3.Data
                 IsCompleted = false,
                 Test = test
             };
-            await _context.TestResults.AddAsync(testResult);
+            _context.TestResults.Add(testResult);
             // start test
-            await StartTest(user, testResult, test);
+            StartTest(user, testResult, test);
 
-            await _context.Entry(testResult).Collection(x=>x.Answers).LoadAsync();
+            _context.Entry(testResult).Collection(x=>x.Answers).Load();
             foreach (var answer in testResult.Answers)
             {
                 switch (answer.AnswerType)
                 {
                     case "SingleChoiceAnswer": AnswerSingleChoice(answer);
+                        CheckSingleChoice(answer);
                         break;
                     case "MultiChoiceAnswer": AnswerMultiChoice(answer);
+                        CheckMultiChoice(answer);
                         break;
                     case "TextAnswer": AnswerText(answer);
+                        CheckText(answer);
                         break;
                     case "DragAndDropAnswer": AnswerDragAndDrop(answer);
+                        CheckDragAndDrop(answer);
                         break;
                     case "CodeAnswer": AnswerCode(answer);
+                        CheckCode(answer);
                         break;
                 }
             }
 
             _context.SaveChanges();
+        }
+
+        private void CheckSingleChoice(Answer _answer)
+        {
+            var answer = _answer as SingleChoiceAnswer;
+            var question = _context.SingleChoiceQuestions.Include(x=>x.RightAnswer)
+                .SingleOrDefault(x => x.Id == answer.QuestionId);
+            if (question == null) throw new NullReferenceException();
+            if (answer.OptionId == question.RightAnswer.Id)
+            {
+                answer.Score = question.Score;
+                answer.Result = AnswerResult.Right;
+            }
+            else
+            {
+                answer.Score = 0;
+                answer.Result = AnswerResult.Wrong;
+            }
+
+            _context.Update(answer);
+        }
+
+        private void CheckMultiChoice(Answer _answer)
+        {
+            var answer = _answer as MultiChoiceAnswer;
+            _context.Entry(answer).Collection(x=>x.AnswerOptions).Load();
+            var question = _context.MultiChoiceQuestions.Include(x=>x.Options)
+                .SingleOrDefault(x => x.Id == answer.QuestionId);
+            if (question == null) throw new NullReferenceException();
+            int countChecked = 0, countWrong = 0;
+            float countOptions = answer.AnswerOptions.Count;
+            if (answer.AnswerOptions == null || answer.AnswerOptions.Count == 0)
+            {
+                answer.Score = 0;
+                answer.Result = null;
+            }
+            else
+            {
+                foreach (var answerOption in answer.AnswerOptions)
+                {
+                    var rightAnswer = question.Options.Single(o => o.Id == answerOption.OptionId).IsRight;
+                    if (rightAnswer) countChecked++;
+                    if (answerOption.Checked != rightAnswer) countWrong++;
+                }
+
+                var score = question.Score *
+                            (countChecked - countWrong) / (float) countChecked;
+                answer.Score = score > 0 ? score : 0;
+                if (Math.Abs(answer.Score - question.Score) < TestController.EPSILON)
+                {
+                    answer.Result = AnswerResult.Right;
+                }
+                else
+                {
+                    if (answer.Score < TestController.EPSILON)
+                    {
+                        answer.Result = AnswerResult.Wrong;
+                    }
+                    else answer.Result = AnswerResult.PartiallyRight;
+                }
+            }
+
+            _context.MultiChoiceAnswers.Update(answer);
+        }
+
+        private void CheckText(Answer _answer)
+        {
+            var answer = _answer as TextAnswer;
+            var question = _context.TextQuestions.Include(x=>x.Options)
+                .SingleOrDefault(x => x.Id == answer.QuestionId);
+            if (question == null) throw new NullReferenceException();
+            if (!String.IsNullOrEmpty(answer.Text) && !String.IsNullOrEmpty(question.TextRightAnswer))
+            {
+                if (String.Equals(answer.Text, question.TextRightAnswer, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    answer.Score = question.Score;
+                    answer.Result = AnswerResult.Right;
+                }
+                else
+                {
+                    answer.Result = AnswerResult.Wrong;
+                    answer.Score = 0;
+                }
+            }
+            else
+            {
+                answer.Result = null;
+                answer.Text = "";
+                answer.Score = 0;
+            }
+            _context.TextAnswers.Update(answer);
+        }
+
+        private void CheckDragAndDrop(Answer _answer)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void CheckCode(Answer _answer)
+        {
+            throw new NotImplementedException();
         }
 
         private int GetRandomOptionId(List<Option> options)
@@ -227,7 +334,7 @@ namespace WebApplication3.Data
             throw new NotImplementedException();
         }
 
-        private async Task StartTest(User user, TestResult testResult, Test test)
+        private void StartTest(User user, TestResult testResult, Test test)
         {
 
             var answers = new List<Answer>();
@@ -269,9 +376,9 @@ namespace WebApplication3.Data
                     answer.Score = 0;
                     answer.TestResult = testResult;
                     answer.Order = order[j++];
-                    await _context.Answers.AddAsync(answer);
+                    _context.Answers.Add(answer);
                     answers.Add(answer);
-                    await _context.SaveChangesAsync();
+                    _context.SaveChanges();
                 }
             }
             else
@@ -307,15 +414,15 @@ namespace WebApplication3.Data
                     answer.Score = 0;
                     answer.TestResult = testResult;
                     answer.Order = order[j++];
-                    await _context.Answers.AddAsync(answer);
+                    _context.Answers.Add(answer);
                     answers.Add(answer);
-                    await _context.SaveChangesAsync();
+                   _context.SaveChanges();
                 }
             }
 
             testResult.StartedOn = DateTime.UtcNow;
             _context.TestResults.Update(testResult);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
 
         }
 

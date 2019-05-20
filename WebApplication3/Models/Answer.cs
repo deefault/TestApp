@@ -21,8 +21,7 @@ namespace WebApplication3.Models
         public int? OptionId { get; set; }
         
         public Option Option { get; set; }
-        
-        
+
         public AnswerResult? Result { get; set; }
     }
 

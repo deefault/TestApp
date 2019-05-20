@@ -733,8 +733,6 @@ namespace WebApplication3.Controllers
                 {
                     GedCodeResult(_question, codeAnswer, ref count);
                 }
-
-                //_context.Update(answer);
                 await _context.SaveChangesAsync();
             }
                 
@@ -874,7 +872,6 @@ namespace WebApplication3.Controllers
                     if (rightAnswer) countChecked++;
                     if (answerOption.Checked != rightAnswer) countWrong++;
                 }
-
                 var score = question.Score *
                             (countChecked - countWrong) / (float) countChecked;
                 multiChoiceAnswer.Score = score;

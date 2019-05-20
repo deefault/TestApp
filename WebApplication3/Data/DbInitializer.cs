@@ -137,34 +137,37 @@ namespace WebApplication3.Data
             _context.TestResults.Add(testResult);
             // start test
             StartTest(user, testResult, test);
-
+            uint count = 0;
             _context.Entry(testResult).Collection(x=>x.Answers).Load();
             foreach (var answer in testResult.Answers)
             {
                 switch (answer.AnswerType)
                 {
                     case "SingleChoiceAnswer": AnswerSingleChoice(answer);
-                        CheckSingleChoice(answer);
+                        CheckSingleChoice(answer,ref count);
                         break;
                     case "MultiChoiceAnswer": AnswerMultiChoice(answer);
-                        CheckMultiChoice(answer);
+                        CheckMultiChoice(answer,ref count);
                         break;
                     case "TextAnswer": AnswerText(answer);
-                        CheckText(answer);
+                        CheckText(answer,ref count);
                         break;
                     case "DragAndDropAnswer": AnswerDragAndDrop(answer);
-                        CheckDragAndDrop(answer);
+                        CheckDragAndDrop(answer,ref count);
                         break;
                     case "CodeAnswer": AnswerCode(answer);
-                        CheckCode(answer);
+                        CheckCode(answer,ref count);
                         break;
                 }
             }
-
+            testResult.IsCompleted = true;
+            testResult.CompletedOn = DateTime.UtcNow;
+            testResult.RightAnswersCount = count;
+            _context.Update(testResult);
             _context.SaveChanges();
         }
 
-        private void CheckSingleChoice(Answer _answer)
+        private void CheckSingleChoice(Answer _answer, ref uint count)
         {
             var answer = _answer as SingleChoiceAnswer;
             var question = _context.SingleChoiceQuestions.Include(x=>x.RightAnswer)
@@ -174,6 +177,7 @@ namespace WebApplication3.Data
             {
                 answer.Score = question.Score;
                 answer.Result = AnswerResult.Right;
+                count++;
             }
             else
             {
@@ -184,7 +188,7 @@ namespace WebApplication3.Data
             _context.Update(answer);
         }
 
-        private void CheckMultiChoice(Answer _answer)
+        private void CheckMultiChoice(Answer _answer, ref uint count)
         {
             var answer = _answer as MultiChoiceAnswer;
             _context.Entry(answer).Collection(x=>x.AnswerOptions).Load();
@@ -213,6 +217,7 @@ namespace WebApplication3.Data
                 if (Math.Abs(answer.Score - question.Score) < TestController.EPSILON)
                 {
                     answer.Result = AnswerResult.Right;
+                    count++;
                 }
                 else
                 {
@@ -227,7 +232,7 @@ namespace WebApplication3.Data
             _context.MultiChoiceAnswers.Update(answer);
         }
 
-        private void CheckText(Answer _answer)
+        private void CheckText(Answer _answer, ref uint count)
         {
             var answer = _answer as TextAnswer;
             var question = _context.TextQuestions.Include(x=>x.Options)
@@ -239,6 +244,7 @@ namespace WebApplication3.Data
                 {
                     answer.Score = question.Score;
                     answer.Result = AnswerResult.Right;
+                    count++;
                 }
                 else
                 {
@@ -255,12 +261,12 @@ namespace WebApplication3.Data
             _context.TextAnswers.Update(answer);
         }
 
-        private void CheckDragAndDrop(Answer _answer)
+        private void CheckDragAndDrop(Answer _answer, ref uint count)
         {
             throw new NotImplementedException();
         }
 
-        private void CheckCode(Answer _answer)
+        private void CheckCode(Answer _answer, ref uint count)
         {
             throw new NotImplementedException();
         }
@@ -340,6 +346,7 @@ namespace WebApplication3.Data
             var answers = new List<Answer>();
             Answer answer = null;
             var questions = testResult.Test.Questions.Where(q => !q.IsDeleted).ToList();
+            testResult.TotalQuestions = (uint)questions.Count;
             if (test.Count != 0 && test.Count < test.Questions.Count && testResult.Test.Shuffled)
             {
                 

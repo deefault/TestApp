@@ -508,6 +508,9 @@ namespace WebApplication3.Controllers
                     QuestionTitle = question.Title
                 };
                 var answersForQuestion = _context.Answers.Where(a => a.QuestionId == question.Id);
+                questionStat.MaxScore = question.Score;
+                float averageSum = 0, derivationSum = 0;
+                int n = 0;
                 foreach (var answer in answersForQuestion)
                 {
                     switch (answer.Result)
@@ -533,7 +536,16 @@ namespace WebApplication3.Controllers
                             break;
                         }
                     }
+                    n++;
+                    averageSum += answer.Score;
+                    derivationSum += answer.Score * answer.Score;
                 }
+
+                var average = averageSum / n;
+                var derivationSumAverage = derivationSum / n;
+                var stDer = Math.Sqrt(derivationSumAverage - (average * average));
+                questionStat.AverageScore = (float)Math.Round(average, 2);
+                questionStat.ScoreStandartDerivation = (float)Math.Round(stDer, 2);
                 stat.QuestionStats.Add(questionStat);
             }
 

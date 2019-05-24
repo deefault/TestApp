@@ -7,13 +7,9 @@ namespace WebApplication3.Models.AnswerViewModels
     {
         public string TestName { get; set; }
         public int TestId { get; set; }
-        
         public Question MostDifficult { get; set; }
-
         public Question MostEasy { get; set; }
-
         public List<QuestionStat> QuestionStats { get; set; } = new List<QuestionStat>();
-
         public int GetMostDifficultId()
         {
             QuestionStat tempMax = new QuestionStat{PartiallyRightCount = -1,QuestionId = -1,WrongCount = -1,RightCount = -1};
@@ -72,8 +68,12 @@ namespace WebApplication3.Models.AnswerViewModels
         public int NullCount { get; set; }
         public string QuestionType { get; set; }
         public string QuestionTitle { get; set; }
+        
+        public float AverageScore { get; set; }
+        
+        public float MaxScore { get; set; }
+        
+        public float ScoreStandartDerivation { get; set; }
 
     }
-
-    
 }

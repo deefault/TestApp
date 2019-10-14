@@ -13,6 +13,7 @@ namespace WebApplication3.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
+            Database.EnsureCreated();
         }
         public new DbSet<User> Users { get; set; }
         public DbSet<Test> Tests { get; set; }

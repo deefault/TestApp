@@ -62,8 +62,18 @@ namespace WebApplication3
             
 
             
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+            {
+                services.AddDbContext<ApplicationDbContext>(options =>
+                    options.UseSqlServer(Configuration.GetConnectionString("SQLServer")));
+            }
+            else
+            {
+                services.AddDbContext<ApplicationDbContext>(options =>
+                    options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
+            }
+            services.BuildServiceProvider().GetService<ApplicationDbContext>().Database.Migrate();
+
             
             services.AddIdentity<User , IdentityRole<int>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()

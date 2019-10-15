@@ -25,6 +25,7 @@ namespace WebApplication3.Models
 
         [Required] public User CompletedByUser { get; set; }
 
+        public int TestId { get; set; }
         [Required] public Test Test { get; set; }
         
         [NotMapped]

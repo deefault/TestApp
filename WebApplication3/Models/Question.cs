@@ -1,7 +1,15 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace WebApplication3.Models
 {
@@ -42,7 +50,7 @@ namespace WebApplication3.Models
 
         public string GetTypeString()
         {
-            switch (this.QuestionType)
+            switch (QuestionType)
             {
                 case "SingleChoiceQuestion":
                     return "С одним ответом";
@@ -97,6 +105,8 @@ namespace WebApplication3.Models
         [Required] public int Order { get; set; }
 
         public ICollection<AnswerOption> AnswerOptions { get; set; }
+
+        public ICollection<DragAndDropAnswerOption> DropAnswerOptions { get; set; }
     }
 
     public class Code

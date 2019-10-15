@@ -13,7 +13,7 @@ namespace WebApplication3.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
-            Database.EnsureCreated();
+            //Database.EnsureCreated();
         }
         public new DbSet<User> Users { get; set; }
         public DbSet<Test> Tests { get; set; }
@@ -47,52 +47,73 @@ namespace WebApplication3.Data
                 q.Property(p => p.Score).HasDefaultValue(1);
                 q.Property(p => p.IsDeleted)
                     .HasDefaultValue(false);
+                q.HasOne(c => c.Test)
+                    .WithMany(c => c.Questions)
+                    .HasForeignKey(c => c.TestId).OnDelete(DeleteBehavior.Restrict);
             });
-            builder.Entity<MultiChoiceQuestion>().ToTable("MultiChoiceQuestion");
-            builder.Entity<SingleChoiceQuestion>().ToTable("SingleChoiceQuestion");
-            builder.Entity<TextQuestion>().ToTable("TextQuestion");
-            builder.Entity<DragAndDropQuestion>().ToTable("DragAndDropQuestion");
-            builder.Entity<CodeQuestion>().ToTable("CodeQuestion");
+            builder.Entity<MultiChoiceQuestion>().ToTable("MultiChoiceQuestions");
+            builder.Entity<SingleChoiceQuestion>().ToTable("SingleChoiceQuestions");
+            builder.Entity<TextQuestion>().ToTable("TextQuestions");
+            builder.Entity<DragAndDropQuestion>().ToTable("DragAndDropQuestions");
+            builder.Entity<CodeQuestion>().ToTable("CodeQuestions");
 
             builder.Entity<Answer>(a =>
             {
                 a.HasDiscriminator<string>("AnswerType");
-                a.ToTable("Answer");
+                a.ToTable("Answers");
                 a.Property(e => e.AnswerType)
                     .HasMaxLength(50).HasColumnName("answer_type");
+                a.HasOne(c => c.Question)
+                    .WithMany()
+                    .HasForeignKey(c => c.QuestionId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
-            builder.Entity<MultiChoiceAnswer>().ToTable("MultiChoiceAnswer");
-            builder.Entity<SingleChoiceAnswer>().ToTable("SingleChoiceAnswer");
-            builder.Entity<TextAnswer>().ToTable("TextAnswer");
-            builder.Entity<DragAndDropAnswer>().ToTable("DragAndDropAnswer");
-            builder.Entity<CodeAnswer>().ToTable("CodeAnswer");
-            builder.Entity<DragAndDropAnswerOption>().ToTable("DragAndDropAnswerOption");
-            
-            builder.Entity<Option>().ToTable("Option");
+            builder.Entity<MultiChoiceAnswer>().ToTable("MultiChoiceAnswers");
+            builder.Entity<SingleChoiceAnswer>().ToTable("SingleChoiceAnswers");
+            builder.Entity<TextAnswer>().ToTable("TextAnswers");
+            builder.Entity<DragAndDropAnswer>().ToTable("DragAndDropAnswers");
+            builder.Entity<CodeAnswer>().ToTable("CodeAnswers");
+            builder.Entity<DragAndDropAnswerOption>().ToTable("DragAndDropAnswerOptions")
+                .HasOne(c=>c.Option)
+                .WithMany(c=>c.DropAnswerOptions)
+                .HasForeignKey(c=>c.OptionId)
+                .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<DragAndDropAnswerOption>().ToTable("DragAndDropAnswerOptions")
+                .HasOne(c=>c.RightOption)
+                .WithMany()
+                .HasForeignKey(c=>c.RightOptionId)
+                .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<Option>().ToTable("Options");
             builder.Entity<Test>(e =>
             {
-                e.ToTable("Test");
+                e.ToTable("Tests");
                 e.Property("IsDeleted")
                     .HasDefaultValue(false);
             });
-            builder.Entity<TestResult>().ToTable("TestResult");
-            builder.Entity<User>().ToTable("User");
+            builder.Entity<TestResult>().ToTable("TestResults")
+                .HasOne(c=>c.Test)
+                .WithMany(t=>t.TestResults)
+                .HasForeignKey(t=>t.TestId)
+                .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<User>().ToTable("Users");
             builder.Entity<AnswerOption>().ToTable("AnswerOptions");
             builder.Entity<Code>().ToTable("Codes");
-            builder.Entity<Code>().HasOne(c => c.Answer).WithMany().HasForeignKey("AnswerId").OnDelete(DeleteBehavior.Cascade);
-            builder.Entity<Code>().HasOne(c => c.Test).WithMany().HasForeignKey("TestId").OnDelete(DeleteBehavior.Cascade);
-            builder.Entity<Code>().HasOne(c => c.Question).WithMany().HasForeignKey("QuestionId").OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<Code>().HasOne(c => c.Answer).WithMany().HasForeignKey("AnswerId");
+            builder.Entity<Code>().HasOne(c => c.Test).WithMany().HasForeignKey("TestId");
+            builder.Entity<Code>().HasOne(c => c.Question).WithMany().HasForeignKey("QuestionId");
             // many-to-many
             builder.Entity<AnswerOption>()
                 .HasKey(ao => new { ao.AnswerId, ao.OptionId });
             builder.Entity<AnswerOption>()
                 .HasOne(ao => ao.Answer)
                 .WithMany(a => a.AnswerOptions)
-                .HasForeignKey(ao => ao.AnswerId);
+                .HasForeignKey(ao => ao.AnswerId)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<AnswerOption>()
                 .HasOne(ao => ao.Option)
                 .WithMany(o => o.AnswerOptions)
-                .HasForeignKey(ao => ao.OptionId);
+                .HasForeignKey(ao => ao.OptionId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
     }

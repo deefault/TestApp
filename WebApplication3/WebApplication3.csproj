@@ -29,6 +29,7 @@
     <Content Remove="Views\Question\AddSingleChoiceQuestion - Копировать.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Migrations" />
     <Folder Include="Migrations\" />
     <Folder Include="Pages\Question" />
     <Folder Include="Pages\Test" />

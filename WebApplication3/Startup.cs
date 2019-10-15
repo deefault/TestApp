@@ -58,10 +58,10 @@ namespace WebApplication3
                 options.Password.RequireNonAlphanumeric = false;
                 
             });
-            
-            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+            Console.WriteLine("$ENV$: "+ Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") );
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "PRODUCTION")
             {
-                Console.WriteLine("$ENV$: "+ Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") );
+               
                 services.AddDbContext<ApplicationDbContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("SQLServer")));
             }

@@ -13,7 +13,8 @@ using Microsoft.EntityFrameworkCore;
 using WebApplication3.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using WebApplication3.Models;
+ using Microsoft.Extensions.Logging;
+ using WebApplication3.Models;
 
 
 namespace WebApplication3
@@ -26,8 +27,6 @@ namespace WebApplication3
         {
             _contentRootPath = env.ContentRootPath;
             Configuration = configuration;
-            
-            
         }
 
         public IConfiguration Configuration { get; set; }
@@ -60,10 +59,9 @@ namespace WebApplication3
                 
             });
             
-
-            
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
             {
+                Console.WriteLine("$ENV$: "+ Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") );
                 services.AddDbContext<ApplicationDbContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("SQLServer")));
             }
@@ -72,7 +70,7 @@ namespace WebApplication3
                 services.AddDbContext<ApplicationDbContext>(options =>
                     options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
             }
-            services.BuildServiceProvider().GetService<ApplicationDbContext>().Database.Migrate();
+            //services.BuildServiceProvider().GetService<ApplicationDbContext>().Database.Migrate();
 
             
             services.AddIdentity<User , IdentityRole<int>>()

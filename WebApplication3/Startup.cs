@@ -59,9 +59,8 @@ namespace WebApplication3
                 
             });
             Console.WriteLine("$ENV$: "+ Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") );
-            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "PRODUCTION")
+            if (EnvIsProduction)
             {
-               
                 services.AddDbContext<ApplicationDbContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("SQLServer")));
             }
@@ -88,6 +87,10 @@ namespace WebApplication3
             services.AddLogging();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
+
+        public static bool EnvIsProduction =>
+            string.Equals(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"), "PRODUCTION",
+                StringComparison.OrdinalIgnoreCase);
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

@@ -1,9 +1,8 @@
 {
   "name": "asp.net",
-  "directory": "wwwroot/lib",
   "private": true,
   "dependencies": {
-    "bootstrap": "4.1.3",
+    "bootstrap": "4.3.1",
     "Sortable": "sortablejs#1.8.1",
     "jquery": "3.3.1",
     "jquery-validation": "1.17.0",
@@ -14,15 +13,7 @@
   "authors": [
     "Alexander Solovyov <alextomsky@protonmail.com>"
   ],
-  "description": "",
-  "main": "",
-  "license": "MIT",
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests"
-  ],
-
+  "resolutions": {
+    "bootstrap": "4.3.1"
+  }
 }

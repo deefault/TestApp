@@ -112,8 +112,7 @@ if [ -e "$DEPLOYMENT_TARGET/bower.json" ]; then
   cd - > /dev/null
 fi
 
-apt install -y libgdiplus
-cd /usr/lib
-ln -s libgdiplus.so gdiplus.dll
+
+
 ##################################################################################################################################
 echo "Finished successfully."
